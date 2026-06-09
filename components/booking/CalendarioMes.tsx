@@ -64,23 +64,23 @@ export default function CalendarioMes({ value, onChange, diasSinSlots, onMesChan
   const mesLabelCapitalized = mesLabel.charAt(0).toUpperCase() + mesLabel.slice(1);
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+      <div className="flex items-center justify-between mb-4">
         <button
           type="button"
           onClick={handlePrevMes}
           disabled={mesEsActual}
-          className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 text-slate-500 disabled:opacity-30 hover:bg-slate-700 hover:text-slate-200 transition text-lg"
+          className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 disabled:opacity-30 hover:bg-zinc-800 hover:text-zinc-200 transition text-lg"
         >
           ‹
         </button>
-        <span className="text-sm font-bold text-slate-200 tracking-tight">
+        <span className="text-sm font-bold text-zinc-100 tracking-tight">
           {mesLabelCapitalized}
         </span>
         <button
           type="button"
           onClick={handleNextMes}
-          className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 text-slate-500 hover:bg-slate-700 hover:text-slate-200 transition text-lg"
+          className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition text-lg"
         >
           ›
         </button>
@@ -90,7 +90,7 @@ export default function CalendarioMes({ value, onChange, diasSinSlots, onMesChan
         {DIAS_SEMANA.map((d, i) => (
           <div
             key={i}
-            className="text-center text-[10px] font-semibold uppercase tracking-widest text-slate-600 pb-2"
+            className="text-center text-[10px] font-semibold uppercase tracking-widest text-zinc-500 pb-2"
           >
             {d}
           </div>
@@ -109,19 +109,19 @@ export default function CalendarioMes({ value, onChange, diasSinSlots, onMesChan
           const deshabilitado = pasado || !!sinDisponibilidad;
 
           let clases =
-            "flex items-center justify-center rounded-lg min-h-[40px] text-[13px] font-medium transition select-none ";
+            "flex items-center justify-center rounded-lg min-h-[40px] text-[13px] font-medium transition select-none border border-transparent ";
 
           if (pasado) {
-            clases += "text-[#1e3a5f] cursor-not-allowed";
+            clases += "text-zinc-700 cursor-not-allowed";
           } else if (sinDisponibilidad) {
-            // Día bloqueado por el admin: apagado con una línea tachada sutil
-            clases += "text-slate-700 cursor-not-allowed line-through decoration-slate-800";
+            // Día bloqueado por el admin
+            clases += "text-zinc-700 cursor-not-allowed line-through decoration-zinc-800";
           } else if (seleccionado) {
-            clases += "bg-gradient-to-br from-blue-500 to-violet-600 text-white font-bold shadow-[0_3px_12px_rgba(99,102,241,0.5)]";
+            clases += "bg-amber-500 text-zinc-950 font-bold shadow-[0_2px_10px_rgba(245,158,11,0.4)]";
           } else if (esHoy) {
-            clases += "text-sky-400 font-bold outline outline-[1.5px] outline-sky-500 outline-offset-[-1.5px] cursor-pointer";
+            clases += "text-amber-500 font-bold border border-amber-500/40 cursor-pointer";
           } else {
-            clases += "text-slate-400 hover:bg-slate-800 hover:text-sky-300 cursor-pointer";
+            clases += "text-zinc-300 hover:bg-zinc-900 hover:text-amber-500 cursor-pointer";
           }
 
           return (

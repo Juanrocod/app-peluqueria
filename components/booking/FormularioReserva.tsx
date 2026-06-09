@@ -180,17 +180,17 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
     const fechaLarga = formatearFechaLarga(fecha);
 
     return (
-      <div className="bg-slate-900 rounded-2xl shadow-2xl overflow-hidden">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden">
 
-        {/* ── Header con acento verde ───────────────────────────────── */}
-        <div className="bg-gradient-to-br from-emerald-600 to-teal-700 px-6 py-6 text-center">
-          <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
-            <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+        {/* ── Header con acento amber ───────────────────────────────── */}
+        <div className="bg-zinc-900 px-6 py-8 text-center border-b border-zinc-800">
+          <div className="w-14 h-14 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+            <svg className="w-7 h-7 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h1 className="text-2xl font-black text-white tracking-tight leading-tight">{marcaNombre}</h1>
-          <p className="text-emerald-100 text-sm mt-1 font-medium">Tu turno está confirmado</p>
+          <h1 className="text-2xl font-black text-zinc-100 tracking-tight leading-tight">{marcaNombre}</h1>
+          <p className="text-amber-500 text-sm mt-1 font-semibold uppercase tracking-wider">Tu turno está confirmado</p>
         </div>
 
         {/* ── Bloques informativos ──────────────────────────────────── */}
@@ -198,30 +198,30 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
 
           {/* Fecha y hora */}
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0 text-base">
+            <div className="w-9 h-9 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center flex-shrink-0 text-base">
               📅
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Fecha y hora</p>
-              <p className="text-slate-100 font-semibold leading-snug">{fechaLarga}</p>
-              <p className="text-slate-300 text-sm">{hora} – {horaFin}</p>
-              <p className="text-slate-600 text-xs mt-0.5">Zona horaria: Argentina, Buenos Aires</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-0.5">Fecha y hora</p>
+              <p className="text-zinc-100 font-semibold leading-snug">{fechaLarga}</p>
+              <p className="text-zinc-300 text-sm">{hora} – {horaFin}</p>
+              <p className="text-zinc-500 text-xs mt-0.5">Zona horaria: Argentina, Buenos Aires</p>
             </div>
           </div>
 
-          <div className="h-px bg-slate-800" />
+          <div className="h-px bg-zinc-800" />
 
           {/* Servicio */}
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0 text-base">
+            <div className="w-9 h-9 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center flex-shrink-0 text-base">
               ✂️
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Servicio</p>
-              <p className="text-slate-100 font-semibold leading-snug">{servicio?.nombre}</p>
-              <p className="text-slate-500 text-xs">{servicio?.duracion} min</p>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-0.5">Servicio</p>
+              <p className="text-zinc-100 font-semibold leading-snug">{servicio?.nombre}</p>
+              <p className="text-zinc-400 text-xs">{servicio?.duracion} min</p>
               {modalidad === "DOMICILIO" && (
-                <p className="text-indigo-400 text-xs mt-0.5">A domicilio · {direccion}</p>
+                <p className="text-amber-500 text-xs mt-0.5">A domicilio · {direccion}</p>
               )}
             </div>
           </div>
@@ -229,14 +229,14 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
           {/* Productos (si hay) */}
           {productosSeleccionados.size > 0 && (
             <>
-              <div className="h-px bg-slate-800" />
+              <div className="h-px bg-zinc-800" />
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0 text-base">
+                <div className="w-9 h-9 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center flex-shrink-0 text-base">
                   📦
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Productos</p>
-                  <p className="text-slate-100 font-semibold leading-snug">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-0.5">Productos</p>
+                  <p className="text-zinc-100 font-semibold leading-snug">
                     {productosSeleccionados.size} producto{productosSeleccionados.size > 1 ? "s" : ""} solicitado{productosSeleccionados.size > 1 ? "s" : ""}
                   </p>
                 </div>
@@ -247,26 +247,26 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
           {/* Dirección y teléfono del local (si están en config) */}
           {(marcaDireccion || marcaTelefono) && (
             <>
-              <div className="h-px bg-slate-800" />
+              <div className="h-px bg-zinc-800" />
               {marcaDireccion && (
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0 text-base">
+                  <div className="w-9 h-9 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center flex-shrink-0 text-base">
                     📍
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Dirección</p>
-                    <p className="text-slate-100 font-semibold leading-snug">{marcaDireccion}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-0.5">Dirección</p>
+                    <p className="text-zinc-100 font-semibold leading-snug">{marcaDireccion}</p>
                   </div>
                 </div>
               )}
               {marcaTelefono && (
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0 text-base">
+                  <div className="w-9 h-9 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center flex-shrink-0 text-base">
                     📞
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">Teléfono</p>
-                    <p className="text-slate-100 font-semibold leading-snug">{marcaTelefono}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-0.5">Teléfono</p>
+                    <p className="text-zinc-100 font-semibold leading-snug">{marcaTelefono}</p>
                   </div>
                 </div>
               )}
@@ -279,38 +279,35 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
         <div className="px-6 pb-6">
           <button
             onClick={() => { setPaso("servicio"); setServicio(null); setFecha(""); setHora(""); setDescuento(null); setCodigoInput(""); setProductosSeleccionados(new Set()); }}
-            className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-400 hover:text-slate-200 text-sm font-medium transition"
+            className="w-full py-3 rounded-xl bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 hover:text-zinc-200 text-sm font-semibold transition"
           >
             Reservar otro turno
           </button>
         </div>
-
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-900 rounded-2xl shadow-2xl p-6 flex flex-col gap-6">
-
+    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl p-6 flex flex-col gap-6">
       {/* ── Paso 1: Servicio ───────────────────────────────────────────── */}
       <StepHeader n={1} titulo="Elegí el servicio" activo={paso === "servicio"} completado={!!servicio && paso !== "servicio"} resumen={servicio ? `${servicio.nombre} · ${servicio.duracion} min · $${servicio.precio.toLocaleString("es-AR")}` : ""} onEdit={() => setPaso("servicio")} />
       {paso === "servicio" && (
         <div className="grid gap-2">
           {servicios.map((s) => (
-            <button key={s.id} type="button" onClick={() => { setServicio(s); setPaso("fechaHora"); cargarDiasDisponibles(s.id, mesCalendario, modalidad); }} className={`text-left border rounded-xl px-4 py-3 transition ${servicio?.id === s.id ? "border-indigo-500 bg-indigo-950" : "border-slate-700 bg-slate-800 hover:border-slate-500"}`}>
-              <div className="font-medium text-slate-200">{s.nombre}</div>
-              <div className="text-sm text-slate-500">{s.duracion} min · ${s.precio.toLocaleString("es-AR")}</div>
+            <button key={s.id} type="button" onClick={() => { setServicio(s); setPaso("fechaHora"); cargarDiasDisponibles(s.id, mesCalendario, modalidad); }} className={`text-left border rounded-xl px-4 py-3.5 transition ${servicio?.id === s.id ? "border-amber-500 bg-amber-500/5" : "border-zinc-800 bg-zinc-950 hover:border-zinc-700 hover:bg-zinc-900"}`}>
+              <div className="font-semibold text-zinc-100">{s.nombre}</div>
+              <div className="text-xs text-zinc-400 mt-1">{s.duracion} min · ${s.precio.toLocaleString("es-AR")}</div>
             </button>
           ))}
         </div>
       )}
-
       {/* ── Paso 2: Fecha y hora ───────────────────────────────────────── */}
       {(paso === "fechaHora" || (!!servicio && paso !== "servicio")) && (
         <>
           <StepHeader n={2} titulo="Elegí fecha y horario" activo={paso === "fechaHora"} completado={!!hora && paso !== "fechaHora"} resumen={hora ? `${formatearFecha(fecha)} a las ${hora}` : ""} onEdit={() => { setPaso("fechaHora"); setHora(""); }} />
           {paso === "fechaHora" && (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-4">
               <CalendarioMes
                 value={fecha}
                 onChange={(f) => { setFecha(f); setEspecial(false); setHora(""); cargarSlots(f, false, modalidad); }}
@@ -321,27 +318,27 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
                 }}
               />
               {fecha && tieneEspecial(fecha) && (
-                <div className="flex items-center gap-3 bg-[#1e1040] border border-[#4c1d95] rounded-lg px-4 py-3">
+                <div className="flex items-center gap-3 bg-violet-950/20 border border-violet-900/60 rounded-xl px-4 py-3">
                   <div className="flex-1">
-                    <div className="font-medium text-violet-300 text-sm">Horario nocturno especial</div>
-                    <div className="text-violet-500 text-xs">20:00 – 23:00 · Salís directo a bailar</div>
+                    <div className="font-semibold text-violet-300 text-sm">Horario nocturno especial</div>
+                    <div className="text-violet-400/80 text-xs">20:00 – 23:00 · Salís directo a bailar</div>
                   </div>
-                  <button type="button" onClick={() => { const next = !especial; setEspecial(next); cargarSlots(fecha, next, modalidad); }} className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${especial ? "bg-violet-600" : "bg-slate-700"}`}>
-                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${especial ? "translate-x-6" : "translate-x-1"}`} />
+                  <button type="button" onClick={() => { const next = !especial; setEspecial(next); cargarSlots(fecha, next, modalidad); }} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${especial ? "bg-violet-500" : "bg-zinc-800"}`}>
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${especial ? "translate-x-6" : "translate-x-1"}`} />
                   </button>
                 </div>
               )}
               {fecha && (
                 <div>
-                  <div className="text-sm font-medium mb-2 text-slate-500">Horarios disponibles — <span className="font-normal text-slate-600">{formatearFecha(fecha)}</span></div>
+                  <div className="text-sm font-semibold mb-3 text-zinc-400">Horarios disponibles — <span className="font-medium text-zinc-550">{formatearFecha(fecha)}</span></div>
                   {cargandoSlots ? (
-                    <p className="text-slate-600 text-sm">Cargando horarios...</p>
+                    <p className="text-zinc-500 text-sm">Cargando horarios...</p>
                   ) : slots.length === 0 ? (
-                    <p className="text-slate-600 text-sm">Sin horarios disponibles para este día.</p>
+                    <p className="text-zinc-500 text-sm">Sin horarios disponibles para este día.</p>
                   ) : (
                     <div className="grid grid-cols-4 gap-2">
                       {slots.map((s) => (
-                        <button key={s} type="button" onClick={() => { setHora(s); setPaso("modalidad"); }} className={`border rounded-lg py-2 text-sm font-medium transition ${hora === s ? "bg-gradient-to-br from-blue-500 to-violet-600 text-white border-transparent shadow-[0_2px_8px_rgba(99,102,241,0.4)]" : "border-slate-700 bg-slate-800 text-slate-400 hover:border-sky-500 hover:text-sky-300"}`}>{s}</button>
+                        <button key={s} type="button" onClick={() => { setHora(s); setPaso("modalidad"); }} className={`border rounded-xl py-2.5 text-sm font-semibold transition ${hora === s ? "border-transparent bg-amber-500 text-zinc-950 shadow-[0_2px_10px_rgba(245,158,11,0.3)]" : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:text-amber-500"}`}>{s}</button>
                       ))}
                     </div>
                   )}
@@ -351,7 +348,6 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
           )}
         </>
       )}
-
       {/* ── Paso 3: Modalidad ──────────────────────────────────────────── */}
       {(paso === "modalidad" || paso === "datos" || paso === "productos") && (
         <>
@@ -360,7 +356,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
             <div className="flex flex-col gap-3">
               <div className="grid grid-cols-2 gap-3">
                 {(["PRESENCIAL", "DOMICILIO"] as const).map((m) => (
-                  <button key={m} type="button" onClick={() => { setModalidad(m); if (servicio) cargarDiasDisponibles(servicio.id, mesCalendario, m); }} className={`border rounded-xl px-4 py-4 text-sm font-medium transition flex flex-col items-center gap-1 ${modalidad === m ? "border-indigo-500 bg-indigo-950 text-indigo-300" : "border-slate-700 bg-slate-800 text-slate-400 hover:border-slate-500"}`}>
+                  <button key={m} type="button" onClick={() => { setModalidad(m); if (servicio) cargarDiasDisponibles(servicio.id, mesCalendario, m); }} className={`border rounded-xl px-4 py-4 text-sm font-semibold transition flex flex-col items-center gap-1.5 ${modalidad === m ? "border-amber-500 bg-amber-500/5 text-amber-500" : "border-zinc-800 bg-zinc-950 text-zinc-400 hover:border-zinc-700 hover:bg-zinc-900"}`}>
                     <span className="text-2xl">{m === "PRESENCIAL" ? "🏪" : "🏠"}</span>
                     {m === "PRESENCIAL" ? "En el local" : "A domicilio"}
                   </button>
@@ -368,7 +364,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
               </div>
               {modalidad === "DOMICILIO" && (
                 <div className="flex flex-col gap-2">
-                  <div className="text-xs text-amber-400 bg-amber-950/40 border border-amber-800 rounded-lg px-3 py-2">
+                  <div className="text-xs text-amber-400 bg-amber-500/5 border border-amber-500/20 rounded-xl px-3 py-2">
                     ⚠️ Tené en cuenta que puede haber un adicional según la distancia.
                   </div>
                   <input
@@ -376,7 +372,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
                     value={direccion}
                     onChange={(e) => setDireccion(e.target.value)}
                     placeholder="Ingresá tu dirección completa"
-                    className="bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
               )}
@@ -384,7 +380,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
                 type="button"
                 disabled={modalidad === "DOMICILIO" && !direccion.trim()}
                 onClick={() => setPaso("datos")}
-                className="bg-gradient-to-r from-blue-500 to-violet-600 text-white py-2 rounded-lg text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
+                className="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 py-2.5 rounded-xl text-sm font-semibold transition disabled:opacity-50 disabled:hover:bg-amber-500"
               >
                 Continuar
               </button>
@@ -392,7 +388,6 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
           )}
         </>
       )}
-
       {/* ── Paso 4: Datos personales ───────────────────────────────────── */}
       {(paso === "datos" || paso === "productos") && (
         <>
@@ -400,37 +395,37 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
           {paso === "datos" && (
             <div className="flex flex-col gap-3">
               <div>
-                <label className="block text-sm font-medium mb-1 text-slate-300">Nombre completo *</label>
-                <input value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <label className="block text-sm font-medium mb-1 text-zinc-350">Nombre completo *</label>
+                <input value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-slate-300">Teléfono *</label>
-                <input type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <label className="block text-sm font-medium mb-1 text-zinc-350">Teléfono *</label>
+                <input type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-slate-300">Email (opcional)</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <label className="block text-sm font-medium mb-1 text-zinc-350">Email (opcional)</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-slate-300">Observaciones (opcional)</label>
-                <textarea value={observaciones} onChange={(e) => setObservaciones(e.target.value)} rows={2} placeholder="Algo que quieras aclarar..." className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none" />
+                <label className="block text-sm font-medium mb-1 text-zinc-355">Observaciones (opcional)</label>
+                <textarea value={observaciones} onChange={(e) => setObservaciones(e.target.value)} rows={2} placeholder="Algo que quieras aclarar..." className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 resize-none" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-slate-300">Código de descuento (opcional)</label>
+                <label className="block text-sm font-medium mb-1 text-zinc-355">Código de descuento (opcional)</label>
                 <div className="flex gap-2">
-                  <input value={codigoInput} onChange={(e) => { setCodigoInput(e.target.value.toUpperCase().slice(0, 5)); setDescuento(null); setErrorCodigo(""); }} placeholder="XXXXX" maxLength={5} className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono uppercase tracking-widest text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                  <button type="button" onClick={validarCodigo} disabled={codigoInput.length !== 5 || validandoCodigo} className="px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-400 hover:bg-slate-700 disabled:opacity-50 transition">
+                  <input value={codigoInput} onChange={(e) => { setCodigoInput(e.target.value.toUpperCase().slice(0, 5)); setDescuento(null); setErrorCodigo(""); }} placeholder="XXXXX" maxLength={5} className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm font-mono uppercase tracking-widest text-zinc-100 placeholder:text-zinc-655 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
+                  <button type="button" onClick={validarCodigo} disabled={codigoInput.length !== 5 || validandoCodigo} className="px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 disabled:opacity-50 transition">
                     {validandoCodigo ? "..." : "Aplicar"}
                   </button>
                 </div>
-                {descuento && <p className="text-green-400 text-xs mt-1">✓ {descuento.porcentaje}% de descuento aplicado</p>}
-                {errorCodigo && <p className="text-red-400 text-xs mt-1">{errorCodigo}</p>}
+                {descuento && <p className="text-emerald-500 text-xs mt-1">✓ {descuento.porcentaje}% de descuento aplicado</p>}
+                {errorCodigo && <p className="text-rose-500 text-xs mt-1">{errorCodigo}</p>}
               </div>
               <button
                 type="button"
                 disabled={!nombre.trim() || !telefono.trim()}
                 onClick={() => setPaso("productos")}
-                className="bg-gradient-to-r from-blue-500 to-violet-600 text-white py-2 rounded-lg text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
+                className="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 py-2.5 rounded-xl text-sm font-semibold transition disabled:opacity-50 disabled:hover:bg-amber-500"
               >
                 Continuar
               </button>
@@ -438,63 +433,60 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
           )}
         </>
       )}
-
       {/* ── Paso 5: Productos ──────────────────────────────────────────── */}
       {paso === "productos" && (
         <div className="flex flex-col gap-3">
           <div className="text-center">
-            <div className="text-lg font-semibold text-slate-100">💈 ¿Querés agregar productos de peinado?</div>
-            <div className="text-sm text-slate-500 mt-1">Llevate algo para mantener tu estilo en casa.</div>
+            <div className="text-lg font-semibold text-zinc-100">💈 ¿Querés agregar productos de peinado?</div>
+            <div className="text-sm text-zinc-400 mt-1">Llevate algo para mantener tu estilo en casa.</div>
           </div>
           {productos.length > 0 ? (
             <div className="flex flex-col gap-2">
               {productos.map((p) => (
-                <button key={p.id} type="button" onClick={() => toggleProducto(p.id)} className={`flex items-center gap-3 border rounded-xl px-3 py-3 text-left transition ${productosSeleccionados.has(p.id) ? "border-indigo-500 bg-indigo-950" : "border-slate-700 bg-slate-800 hover:border-slate-500"}`}>
+                <button key={p.id} type="button" onClick={() => toggleProducto(p.id)} className={`flex items-center gap-3 border rounded-xl px-3 py-3 text-left transition ${productosSeleccionados.has(p.id) ? "border-amber-500 bg-amber-500/5" : "border-zinc-800 bg-zinc-950 hover:border-zinc-700 hover:bg-zinc-900"}`}>
                   {p.imagenUrl ? (
                     <img src={p.imagenUrl} alt={p.nombre} className="w-12 h-12 object-cover rounded-lg flex-shrink-0" />
                   ) : (
-                    <div className="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center text-xl flex-shrink-0">📦</div>
+                    <div className="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-lg flex items-center justify-center text-xl flex-shrink-0">📦</div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm text-slate-200">{p.nombre}</div>
-                    {p.descripcion && <div className="text-xs text-slate-500 truncate">{p.descripcion}</div>}
-                    <div className="text-sm font-semibold text-green-400 mt-0.5">${p.precio.toLocaleString("es-AR")}</div>
+                    <div className="font-semibold text-sm text-zinc-200">{p.nombre}</div>
+                    {p.descripcion && <div className="text-xs text-zinc-500 truncate">{p.descripcion}</div>}
+                    <div className="text-sm font-semibold text-amber-500 mt-0.5">${p.precio.toLocaleString("es-AR")}</div>
                   </div>
-                  <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 ${productosSeleccionados.has(p.id) ? "border-indigo-500 bg-indigo-500" : "border-slate-600"}`}>
-                    {productosSeleccionados.has(p.id) && <span className="text-white text-xs">✓</span>}
+                  <div className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 ${productosSeleccionados.has(p.id) ? "border-amber-500 bg-amber-500 text-zinc-950" : "border-zinc-700 bg-zinc-950"}`}>
+                    {productosSeleccionados.has(p.id) && <span className="text-zinc-950 text-xs font-bold">✓</span>}
                   </div>
                 </button>
               ))}
             </div>
           ) : (
-            <p className="text-slate-600 text-sm text-center">No hay productos disponibles por el momento.</p>
+            <p className="text-zinc-500 text-sm text-center">No hay productos disponibles por el momento.</p>
           )}
-
-          <div className="border-t border-slate-700 pt-3 mt-1">
+          <div className="border-t border-zinc-800 pt-4 mt-2">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-500">Servicio</span>
-              <span className="text-slate-300">${servicio?.precio.toLocaleString("es-AR")}</span>
+              <span className="text-zinc-500">Servicio</span>
+              <span className="text-zinc-300">${servicio?.precio.toLocaleString("es-AR")}</span>
             </div>
             {productosSeleccionados.size > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-slate-500">Productos ({productosSeleccionados.size})</span>
-                <span className="text-slate-300">${[...productosSeleccionados].reduce((acc, id) => acc + (productos.find((p) => p.id === id)?.precio ?? 0), 0).toLocaleString("es-AR")}</span>
+                <span className="text-zinc-500">Productos ({productosSeleccionados.size})</span>
+                <span className="text-zinc-300">${[...productosSeleccionados].reduce((acc, id) => acc + (productos.find((p) => p.id === id)?.precio ?? 0), 0).toLocaleString("es-AR")}</span>
               </div>
             )}
             {descuento && (
-              <div className="flex justify-between text-sm text-green-400">
+              <div className="flex justify-between text-sm text-emerald-500 font-medium">
                 <span>Descuento ({descuento.porcentaje}%)</span>
                 <span>-${((servicio?.precio ?? 0 + [...productosSeleccionados].reduce((acc, id) => acc + (productos.find((p) => p.id === id)?.precio ?? 0), 0)) * descuento.porcentaje / 100).toLocaleString("es-AR")}</span>
               </div>
             )}
-            <div className="flex justify-between font-bold mt-1 text-slate-100">
+            <div className="flex justify-between font-bold mt-2 text-zinc-105 text-base border-t border-zinc-800/50 pt-2">
               <span>Total estimado</span>
               <span>${precioFinal().toLocaleString("es-AR")}</span>
             </div>
           </div>
-
           {errorReserva && (
-            <div className="bg-red-950/50 border border-red-800 text-red-400 text-sm rounded-lg px-4 py-3">
+            <div className="bg-rose-950/20 border border-rose-900/40 text-rose-500 text-sm rounded-xl px-4 py-3">
               {errorReserva}
             </div>
           )}
@@ -502,11 +494,11 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
             type="button"
             disabled={enviando}
             onClick={confirmarReserva}
-            className="bg-gradient-to-r from-blue-500 to-violet-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50"
+            className="w-full bg-amber-500 hover:bg-amber-400 text-zinc-950 py-3 rounded-xl font-bold shadow-[0_4px_16px_rgba(245,158,11,0.2)] transition disabled:opacity-50 disabled:hover:bg-amber-500"
           >
             {enviando ? "Reservando..." : "Confirmar reserva"}
           </button>
-          <button type="button" disabled={enviando} onClick={confirmarReserva} className="text-xs text-slate-600 hover:underline text-center disabled:opacity-50">
+          <button type="button" disabled={enviando} onClick={confirmarReserva} className="text-xs text-zinc-500 hover:text-zinc-350 transition text-center disabled:opacity-50">
             Omitir y confirmar sin productos
           </button>
         </div>
@@ -514,18 +506,17 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
     </div>
   );
 }
-
 function StepHeader({ n, titulo, activo, completado, resumen, onEdit }: { n: number; titulo: string; activo: boolean; completado: boolean; resumen: string; onEdit: () => void }) {
   return (
     <div className="flex items-center gap-3">
-      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${activo ? "bg-indigo-500 text-white" : completado ? "bg-green-500 text-white" : "bg-slate-800 text-slate-600"}`}>
+      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${activo ? "bg-amber-500 text-zinc-950" : completado ? "bg-zinc-800 text-amber-500 border border-amber-500/20" : "bg-zinc-950 text-zinc-600 border border-zinc-800"}`}>
         {completado ? "✓" : n}
       </div>
       <div className="flex-1 min-w-0">
-        <div className={`text-sm font-medium ${activo ? "text-slate-100" : "text-slate-600"}`}>{titulo}</div>
-        {completado && resumen && <div className="text-xs text-slate-500 truncate">{resumen}</div>}
+        <div className={`text-sm font-semibold ${activo ? "text-zinc-100" : "text-zinc-500"}`}>{titulo}</div>
+        {completado && resumen && <div className="text-xs text-zinc-400 truncate">{resumen}</div>}
       </div>
-      {completado && <button type="button" onClick={onEdit} className="text-xs text-blue-400 hover:underline flex-shrink-0">Cambiar</button>}
+      {completado && <button type="button" onClick={onEdit} className="text-xs text-amber-500 hover:text-amber-400 transition flex-shrink-0">Cambiar</button>}
     </div>
   );
 }
