@@ -125,7 +125,7 @@ export default function ProductoEditable({ producto }: { producto: Producto }) {
       <div className="flex flex-col gap-2 flex-shrink-0">
         <button
           onClick={() => setEditando(true)}
-          className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-550 dark:hover:text-indigo-300 font-medium transition cursor-pointer"
+          className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 font-medium transition cursor-pointer"
         >
           Editar
         </button>
