@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { format, addDays, subDays } from "date-fns";
 import { es } from "date-fns/locale";
 import Link from "next/link";
@@ -11,8 +12,8 @@ type TurnoConRelaciones = Turno & { servicio: Servicio; peluquero: Peluquero | n
 const HORAS = Array.from({ length: 15 }, (_, i) => i + 8);
 
 const ESTADO_COLORES: Record<string, string> = {
-  PENDIENTE: "bg-yellow-100 text-yellow-800 border-yellow-200",
-  CONFIRMADO: "bg-blue-100 text-blue-800 border-blue-200",
+  PENDIENTE: "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400 hover:bg-amber-500/15",
+  CONFIRMADO: "bg-blue-500/10 border-blue-500/20 text-blue-600 dark:text-blue-400 hover:bg-blue-500/15",
 };
 
 export default function CalendarioAdmin({
@@ -58,25 +59,25 @@ export default function CalendarioAdmin({
   }
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       {/* Barra de navegación */}
-      <div className="flex items-center justify-between bg-white rounded-xl shadow px-4 py-3">
+      <div className="flex items-center justify-between bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/80 rounded-xl shadow-sm px-4 py-3">
         <Link
           href={`/admin?semana=${prevLunes}`}
-          className="flex items-center gap-1 text-sm text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition"
+          className="flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-1.5 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-all duration-200"
         >
           ← Semana anterior
         </Link>
 
         <div className="flex items-center gap-3">
-          <span className="font-semibold text-gray-800">{mesLabel}</span>
-          <span className="text-sm text-gray-400">
+          <span className="font-semibold text-zinc-800 dark:text-zinc-100">{mesLabel}</span>
+          <span className="text-sm text-zinc-400 dark:text-zinc-500">
             {format(lunes, "d", { locale: es })} – {format(addDays(lunes, 6), "d MMM", { locale: es })}
           </span>
           {semanaDesde !== format(new Date(), "yyyy-MM-dd").slice(0, 8) && (
             <Link
               href="/admin"
-              className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-full hover:bg-blue-100 transition"
+              className="text-xs bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all duration-200"
             >
               Hoy
             </Link>
@@ -85,26 +86,26 @@ export default function CalendarioAdmin({
 
         <Link
           href={`/admin?semana=${nextLunes}`}
-          className="flex items-center gap-1 text-sm text-gray-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition"
+          className="flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-1.5 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/60 transition-all duration-200"
         >
           Semana siguiente →
         </Link>
       </div>
 
       {/* Grilla del calendario */}
-      <div className="bg-white rounded-xl shadow overflow-auto">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/80 rounded-xl shadow-sm overflow-auto">
         <div className="grid min-w-[700px]" style={{ gridTemplateColumns: `64px repeat(7, 1fr)` }}>
           {/* Header días */}
-          <div className="border-b border-r bg-gray-50" />
+          <div className="border-b border-r border-zinc-200 dark:border-zinc-800/80 bg-zinc-50 dark:bg-zinc-900/50" />
           {diasSemana.map((dia) => (
             <div
               key={dia.toISOString()}
-              className={`border-b border-r px-2 py-3 text-center text-sm font-medium ${
-                esHoy(dia) ? "bg-blue-50 text-blue-700" : "bg-gray-50 text-gray-600"
+              className={`border-b border-r border-zinc-200 dark:border-zinc-800/80 px-2 py-3 text-center text-sm font-medium ${
+                esHoy(dia) ? "bg-blue-50/40 dark:bg-blue-950/10 text-blue-700 dark:text-blue-400" : "bg-zinc-50 dark:bg-zinc-900/50 text-zinc-600 dark:text-zinc-400"
               }`}
             >
-              <div className="uppercase text-xs tracking-wide">{format(dia, "EEE", { locale: es })}</div>
-              <div className={`text-xl mt-0.5 ${esHoy(dia) ? "bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto" : ""}`}>
+              <div className="uppercase text-xs tracking-wide text-zinc-500 dark:text-zinc-400">{format(dia, "EEE", { locale: es })}</div>
+              <div className={`text-lg font-semibold mt-1 ${esHoy(dia) ? "bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto shadow-sm" : "text-zinc-800 dark:text-zinc-200"}`}>
                 {format(dia, "d")}
               </div>
             </div>
@@ -112,48 +113,54 @@ export default function CalendarioAdmin({
 
           {/* Filas horarias */}
           {HORAS.map((hora) => (
-            <>
+            <React.Fragment key={`hora-row-${hora}`}>
               <div
-                key={`hora-${hora}`}
-                className="border-b border-r px-2 py-1 text-xs text-gray-400 text-right pt-2"
+                className="border-b border-r border-zinc-200 dark:border-zinc-800/80 px-2 py-1 text-xs text-zinc-400 dark:text-zinc-500 text-right pt-2"
               >
                 {hora}:00
               </div>
               {diasSemana.map((dia) => {
                 const slotTurnos = turnosEnSlot(dia, hora);
+                const isNocturna = hora >= 20;
                 return (
                   <div
                     key={`${dia.toISOString()}-${hora}`}
-                    className={`border-b border-r px-1 py-1 min-h-[52px] ${hora >= 20 ? "bg-purple-50/40" : ""}`}
+                    className={`border-b border-r border-zinc-200 dark:border-zinc-800/80 px-1 py-1 min-h-[56px] transition-colors ${
+                      isNocturna
+                        ? "bg-violet-500/[0.04] dark:bg-violet-500/[0.08]"
+                        : "bg-transparent"
+                    }`}
                   >
                     {slotTurnos.map((t) => (
                       <div
                         key={t.id}
-                        className={`border rounded px-2 py-1 text-xs mb-1 ${ESTADO_COLORES[t.estado] ?? "bg-gray-100 text-gray-700"}`}
+                        className={`border rounded-lg p-1.5 text-[11px] leading-tight mb-1 shadow-sm transition-all duration-200 ${
+                          ESTADO_COLORES[t.estado] ?? "bg-zinc-500/10 border-zinc-500/20 text-zinc-600 dark:text-zinc-400"
+                        }`}
                       >
-                        <div className="font-medium truncate">{t.clienteNombre}</div>
-                        <div className="truncate opacity-80">{t.servicio.nombre}</div>
-                        <div className="opacity-60">{format(new Date(t.fechaHora), "HH:mm")}</div>
-                      </div>
+                        <div className="font-semibold truncate">{t.clienteNombre}</div>
+                        <div className="truncate opacity-90">{t.servicio.nombre}</div>
+                        <div className="opacity-75 font-mono text-[10px] mt-0.5 block">{format(new Date(t.fechaHora), "HH:mm")}</div>
+                       </div>
                     ))}
                   </div>
                 );
               })}
-            </>
+            </React.Fragment>
           ))}
         </div>
       </div>
 
       {/* Leyenda */}
-      <div className="flex gap-4 text-xs text-gray-500 px-1">
+      <div className="flex flex-wrap gap-4 text-xs text-zinc-500 dark:text-zinc-400 px-1 py-1">
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-yellow-100 border border-yellow-200 inline-block" /> Pendiente
+          <span className="w-3 h-3 rounded bg-amber-500/10 border border-amber-500/20 inline-block" /> Pendiente
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-blue-100 border border-blue-200 inline-block" /> Confirmado
+          <span className="w-3 h-3 rounded bg-blue-500/10 border border-blue-500/20 inline-block" /> Confirmado
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-purple-100 border border-purple-200 inline-block" /> Franja nocturna especial
+          <span className="w-3 h-3 rounded bg-violet-500/10 border border-violet-500/20 inline-block" /> Franja nocturna especial
         </span>
       </div>
     </div>
