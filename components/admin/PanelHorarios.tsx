@@ -85,33 +85,32 @@ export default function PanelHorarios({
     startTransition(async () => { await eliminarBloqueo(id); refresh(); });
   }
 
-  const inputCls = "w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500";
-  const labelCls = "text-xs text-slate-500 mb-1 block";
-
+  const inputCls = "w-full bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 transition";
+  const labelCls = "text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5 block";
   return (
     <div className="flex flex-col gap-8">
       {/* ── Vista semanal (solo lectura) ───────────────────────────── */}
       <div>
-        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">
+        <h3 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">
           Vista semanal
         </h3>
-        <div className="grid grid-cols-7 gap-1.5 rounded-xl border border-slate-700/60 p-3 bg-slate-900/40">
+        <div className="grid grid-cols-7 gap-2 rounded-xl border border-zinc-200 dark:border-zinc-850 p-4 bg-white dark:bg-zinc-900 shadow-xs">
           {ORDEN_SEMANA.map((dia) => {
             const pos = positivas.filter((h) => h.diaSemana === dia);
             const neg = negativas.filter((h) => h.diaSemana === dia);
             return (
-              <div key={dia} className="flex flex-col gap-1 min-w-0">
-                <div className="text-center text-[10px] font-bold uppercase tracking-wider text-slate-500 pb-1 border-b border-slate-800">
+              <div key={dia} className="flex flex-col gap-1.5 min-w-0">
+                <div className="text-center text-[10px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 pb-1 border-b border-zinc-100 dark:border-zinc-800">
                   {NOMBRES_DIA[dia]}
                 </div>
                 {pos.length === 0 && neg.length === 0 ? (
-                  <div className="text-center text-[10px] text-slate-700 py-1">—</div>
+                  <div className="text-center text-[10px] text-zinc-400 dark:text-zinc-600 py-1">—</div>
                 ) : null}
                 {pos.map((h) => (
                   <div
                     key={h.id}
                     title={`Atención: ${h.horaApertura}–${h.horaCierre}`}
-                    className="rounded px-1 py-0.5 bg-emerald-900/40 border border-emerald-700/40 text-[9px] text-emerald-400 text-center font-mono truncate"
+                    className="rounded px-1.5 py-1 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 text-[9px] text-emerald-700 dark:text-emerald-400 text-center font-mono truncate"
                   >
                     {h.horaApertura}–{h.horaCierre}
                   </div>
@@ -120,7 +119,7 @@ export default function PanelHorarios({
                   <div
                     key={h.id}
                     title={h.motivo ? `Descanso: ${h.horaApertura}–${h.horaCierre} (${h.motivo})` : `Descanso: ${h.horaApertura}–${h.horaCierre}`}
-                    className="rounded px-1 py-0.5 bg-orange-900/40 border border-orange-700/40 text-[9px] text-orange-400 text-center font-mono truncate"
+                    className="rounded px-1.5 py-1 bg-amber-50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30 text-[9px] text-amber-700 dark:text-amber-400 text-center font-mono truncate"
                   >
                     {h.horaApertura}–{h.horaCierre}
                   </div>
@@ -129,58 +128,55 @@ export default function PanelHorarios({
             );
           })}
         </div>
-        <div className="flex gap-5 mt-2">
-          <span className="flex items-center gap-1.5 text-[10px] text-slate-500">
-            <span className="w-2 h-2 rounded-sm bg-emerald-700 inline-block" />
+        <div className="flex gap-5 mt-3">
+          <span className="flex items-center gap-1.5 text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">
+            <span className="w-2.5 h-2.5 rounded bg-emerald-500 inline-block" />
             Horario de atención
           </span>
-          <span className="flex items-center gap-1.5 text-[10px] text-slate-500">
-            <span className="w-2 h-2 rounded-sm bg-orange-700 inline-block" />
+          <span className="flex items-center gap-1.5 text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">
+            <span className="w-2.5 h-2.5 rounded bg-amber-500 inline-block" />
             Descanso recurrente
           </span>
         </div>
       </div>
-
       {/* ── Formularios de configuración ───────────────────────────── */}
       <div>
-        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">
+        <h3 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">
           Configuración
         </h3>
-
         {/* Tabs */}
         <div className="flex gap-1.5 mb-5 flex-wrap">
           {(["base", "descansos", "bloqueos"] as Tab[]).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer ${
                 tab === t
-                  ? "bg-blue-600 text-white shadow"
-                  : "bg-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-700"
+                  ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-950 shadow-sm font-semibold"
+                  : "bg-zinc-100 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-zinc-700/80"
               }`}
             >
               {t === "base" ? "Horario base" : t === "descansos" ? "Descansos" : "Bloquear agenda"}
             </button>
           ))}
         </div>
-
         {/* ── Tab: Horario base (POSITIVA) ── */}
         {tab === "base" && (
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               {ORDEN_SEMANA.flatMap((dia) =>
                 positivas
                   .filter((h) => h.diaSemana === dia)
                   .map((h) => (
-                    <div key={h.id} className="flex items-center justify-between bg-slate-800/50 rounded-lg px-3 py-2">
-                      <span className="text-sm text-slate-300">
-                        <span className="font-semibold text-slate-200 w-8 inline-block">{NOMBRES_DIA[h.diaSemana]}</span>
-                        <span className="font-mono ml-2 text-emerald-400">{h.horaApertura} – {h.horaCierre}</span>
+                    <div key={h.id} className="flex items-center justify-between bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 shadow-xs">
+                      <span className="text-sm text-zinc-650 dark:text-zinc-350">
+                        <span className="font-semibold text-zinc-900 dark:text-zinc-50 w-8 inline-block">{NOMBRES_DIA[h.diaSemana]}</span>
+                        <span className="font-mono ml-3 text-emerald-600 dark:text-emerald-400">{h.horaApertura} – {h.horaCierre}</span>
                       </span>
                       <button
                         onClick={() => delFranja(h.id)}
                         disabled={pending}
-                        className="text-slate-600 hover:text-red-400 transition text-xl leading-none px-1"
+                        className="text-zinc-400 hover:text-red-500 dark:text-zinc-550 dark:hover:text-red-400 transition text-xl leading-none px-1.5 py-0.5 rounded cursor-pointer"
                         title="Eliminar"
                       >
                         ×
@@ -189,15 +185,14 @@ export default function PanelHorarios({
                   ))
               )}
               {positivas.length === 0 && (
-                <p className="text-sm text-slate-600 italic">Sin horarios configurados aún.</p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 italic">Sin horarios configurados aún.</p>
               )}
             </div>
-
-            <div className="border-t border-slate-800 pt-4">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+            <div className="border-t border-zinc-200 dark:border-zinc-800 pt-5 mt-2">
+              <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-4">
                 Agregar ventana de atención
               </p>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className={labelCls}>Día</label>
                   <select
@@ -232,32 +227,31 @@ export default function PanelHorarios({
               <button
                 onClick={() => addFranja("POSITIVA", fBase.dia, fBase.apertura, fBase.cierre)}
                 disabled={pending}
-                className="mt-3 w-full bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-lg py-2 text-sm font-semibold transition"
+                className="mt-4 w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-950 cursor-pointer shadow-xs"
               >
                 {pending ? "Guardando..." : "Agregar horario de atención"}
               </button>
             </div>
           </div>
         )}
-
         {/* ── Tab: Descansos (NEGATIVA) ── */}
         {tab === "descansos" && (
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               {ORDEN_SEMANA.flatMap((dia) =>
                 negativas
                   .filter((h) => h.diaSemana === dia)
                   .map((h) => (
-                    <div key={h.id} className="flex items-center justify-between bg-slate-800/50 rounded-lg px-3 py-2">
-                      <span className="text-sm text-slate-300">
-                        <span className="font-semibold text-slate-200 w-8 inline-block">{NOMBRES_DIA[h.diaSemana]}</span>
-                        <span className="font-mono ml-2 text-orange-400">{h.horaApertura} – {h.horaCierre}</span>
-                        {h.motivo && <span className="text-slate-500 ml-2 text-xs">({h.motivo})</span>}
+                    <div key={h.id} className="flex items-center justify-between bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 shadow-xs">
+                      <span className="text-sm text-zinc-650 dark:text-zinc-350">
+                        <span className="font-semibold text-zinc-900 dark:text-zinc-50 w-8 inline-block">{NOMBRES_DIA[h.diaSemana]}</span>
+                        <span className="font-mono ml-3 text-amber-600 dark:text-amber-500">{h.horaApertura} – {h.horaCierre}</span>
+                        {h.motivo && <span className="text-zinc-400 dark:text-zinc-500 ml-2 text-xs">({h.motivo})</span>}
                       </span>
                       <button
                         onClick={() => delFranja(h.id)}
                         disabled={pending}
-                        className="text-slate-600 hover:text-red-400 transition text-xl leading-none px-1"
+                        className="text-zinc-400 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400 transition text-xl leading-none px-1.5 py-0.5 rounded cursor-pointer"
                         title="Eliminar"
                       >
                         ×
@@ -266,15 +260,14 @@ export default function PanelHorarios({
                   ))
               )}
               {negativas.length === 0 && (
-                <p className="text-sm text-slate-600 italic">Sin descansos configurados aún.</p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 italic">Sin descansos configurados aún.</p>
               )}
             </div>
-
-            <div className="border-t border-slate-800 pt-4">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+            <div className="border-t border-zinc-200 dark:border-zinc-800 pt-5 mt-2">
+              <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-4">
                 Agregar franja de descanso / almuerzo
               </p>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className={labelCls}>Día</label>
                   <select
@@ -313,40 +306,39 @@ export default function PanelHorarios({
                   value={fDesc.motivo}
                   onChange={(e) => setFDesc((p) => ({ ...p, motivo: e.target.value }))}
                   placeholder="Ej: almuerzo, clase de yoga..."
-                  className={inputCls + " placeholder:text-slate-600"}
+                  className={inputCls + " placeholder:text-zinc-400 dark:placeholder:text-zinc-600"}
                 />
               </div>
               <button
                 onClick={() => addFranja("NEGATIVA", fDesc.dia, fDesc.apertura, fDesc.cierre, fDesc.motivo)}
                 disabled={pending}
-                className="mt-3 w-full bg-orange-700 hover:bg-orange-600 disabled:opacity-50 text-white rounded-lg py-2 text-sm font-semibold transition"
+                className="mt-4 w-full bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-950 cursor-pointer shadow-xs"
               >
                 {pending ? "Guardando..." : "Agregar descanso recurrente"}
               </button>
             </div>
           </div>
         )}
-
         {/* ── Tab: Bloqueos puntuales ── */}
         {tab === "bloqueos" && (
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               {bloqueos.length === 0 && (
-                <p className="text-sm text-slate-600 italic">Sin bloqueos próximos.</p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 italic">Sin bloqueos próximos.</p>
               )}
               {bloqueos.map((b) => (
-                <div key={b.id} className="flex items-center justify-between bg-slate-800/50 rounded-lg px-3 py-2">
-                  <span className="text-sm text-slate-300">
-                    <span className="font-semibold text-slate-200 font-mono">{b.fecha}</span>
-                    <span className="ml-2 text-red-400">
+                <div key={b.id} className="flex items-center justify-between bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 shadow-xs">
+                  <span className="text-sm text-zinc-650 dark:text-zinc-350">
+                    <span className="font-semibold text-zinc-900 dark:text-zinc-50 font-mono">{b.fecha}</span>
+                    <span className="ml-3 text-red-600 dark:text-red-400 font-medium">
                       {b.todoElDia ? "Todo el día" : `${b.horaInicio} – ${b.horaFin}`}
                     </span>
-                    {b.motivo && <span className="text-slate-500 ml-2 text-xs">({b.motivo})</span>}
+                    {b.motivo && <span className="text-zinc-400 dark:text-zinc-500 ml-2 text-xs">({b.motivo})</span>}
                   </span>
                   <button
                     onClick={() => delBloqueo(b.id)}
                     disabled={pending}
-                    className="text-slate-600 hover:text-red-400 transition text-xl leading-none px-1"
+                    className="text-zinc-400 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400 transition text-xl leading-none px-1.5 py-0.5 rounded cursor-pointer"
                     title="Eliminar"
                   >
                     ×
@@ -354,12 +346,11 @@ export default function PanelHorarios({
                 </div>
               ))}
             </div>
-
-            <div className="border-t border-slate-800 pt-4">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
+            <div className="border-t border-zinc-200 dark:border-zinc-800 pt-5 mt-2">
+              <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-4">
                 Bloquear agenda por día / horario
               </p>
-              <div className="grid grid-cols-2 gap-3 items-end">
+              <div className="grid grid-cols-2 gap-4 items-end">
                 <div>
                   <label className={labelCls}>Fecha</label>
                   <input
@@ -369,21 +360,20 @@ export default function PanelHorarios({
                     className={inputCls}
                   />
                 </div>
-                <div className="pb-1.5">
-                  <label className="flex items-center gap-2 cursor-pointer">
+                <div className="pb-2.5">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
                     <input
                       type="checkbox"
                       checked={fBloqueo.todoElDia}
                       onChange={(e) => setFBloqueo((p) => ({ ...p, todoElDia: e.target.checked }))}
-                      className="w-4 h-4 rounded accent-blue-500"
+                      className="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 text-indigo-600 dark:text-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-zinc-950 accent-indigo-600 cursor-pointer"
                     />
-                    <span className="text-sm text-slate-300">Todo el día</span>
+                    <span className="text-sm text-zinc-700 dark:text-zinc-300 font-medium">Todo el día</span>
                   </label>
                 </div>
               </div>
-
               {!fBloqueo.todoElDia && (
-                <div className="grid grid-cols-2 gap-3 mt-3">
+                <div className="grid grid-cols-2 gap-4 mt-3">
                   <div>
                     <label className={labelCls}>Desde</label>
                     <input
@@ -404,7 +394,6 @@ export default function PanelHorarios({
                   </div>
                 </div>
               )}
-
               <div className="mt-3">
                 <label className={labelCls}>Motivo (opcional)</label>
                 <input
@@ -412,14 +401,13 @@ export default function PanelHorarios({
                   value={fBloqueo.motivo}
                   onChange={(e) => setFBloqueo((p) => ({ ...p, motivo: e.target.value }))}
                   placeholder="Ej: feriado, vacaciones, evento..."
-                  className={inputCls + " placeholder:text-slate-600"}
+                  className={inputCls + " placeholder:text-zinc-400 dark:placeholder:text-zinc-650"}
                 />
               </div>
-
               <button
                 onClick={addBloqueo}
                 disabled={pending || !fBloqueo.fecha}
-                className="mt-3 w-full bg-red-800 hover:bg-red-700 disabled:opacity-50 text-white rounded-lg py-2 text-sm font-semibold transition"
+                className="mt-4 w-full bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white rounded-lg py-2.5 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-950 cursor-pointer shadow-xs"
               >
                 {pending ? "Guardando..." : "Bloquear agenda"}
               </button>

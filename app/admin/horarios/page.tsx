@@ -18,14 +18,13 @@ export default async function HorariosPage() {
   ]);
 
   return (
-    <div className="flex flex-col gap-6 max-w-3xl">
+    <div className="flex flex-col gap-6 max-w-4xl">
       <div>
-        <h2 className="text-2xl font-bold mb-1">Horarios de atención</h2>
-        <p className="text-sm text-slate-500">
+        <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">Horarios de atención</h2>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
           Configurá las ventanas de atención, descansos recurrentes y bloqueos puntuales de agenda.
         </p>
       </div>
-
       <PanelHorarios
         horarios={horarios.map((h) => ({
           id: h.id,

@@ -1,5 +1,4 @@
 import { auth, signOut } from "@/lib/auth";
-import Link from "next/link";
 import { NavLink } from "@/components/admin/NavLink";
 
 export default async function AdminLayout({
