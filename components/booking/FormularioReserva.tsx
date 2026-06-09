@@ -330,7 +330,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
               )}
               {fecha && (
                 <div>
-                  <div className="text-sm font-semibold mb-3 text-zinc-400">Horarios disponibles — <span className="font-medium text-zinc-550">{formatearFecha(fecha)}</span></div>
+                  <div className="text-sm font-semibold mb-3 text-zinc-400">Horarios disponibles — <span className="font-medium text-zinc-400">{formatearFecha(fecha)}</span></div>
                   {cargandoSlots ? (
                     <p className="text-zinc-500 text-sm">Cargando horarios...</p>
                   ) : slots.length === 0 ? (
@@ -395,25 +395,25 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
           {paso === "datos" && (
             <div className="flex flex-col gap-3">
               <div>
-                <label className="block text-sm font-medium mb-1 text-zinc-350">Nombre completo *</label>
-                <input value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
+                <label className="block text-sm font-medium mb-1 text-zinc-300">Nombre completo *</label>
+                <input value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-zinc-350">Teléfono *</label>
-                <input type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
+                <label className="block text-sm font-medium mb-1 text-zinc-300">Teléfono *</label>
+                <input type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-zinc-350">Email (opcional)</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
+                <label className="block text-sm font-medium mb-1 text-zinc-300">Email (opcional)</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-zinc-355">Observaciones (opcional)</label>
-                <textarea value={observaciones} onChange={(e) => setObservaciones(e.target.value)} rows={2} placeholder="Algo que quieras aclarar..." className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-650 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 resize-none" />
+                <label className="block text-sm font-medium mb-1 text-zinc-300">Observaciones (opcional)</label>
+                <textarea value={observaciones} onChange={(e) => setObservaciones(e.target.value)} rows={2} placeholder="Algo que quieras aclarar..." className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 resize-none" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 text-zinc-355">Código de descuento (opcional)</label>
+                <label className="block text-sm font-medium mb-1 text-zinc-300">Código de descuento (opcional)</label>
                 <div className="flex gap-2">
-                  <input value={codigoInput} onChange={(e) => { setCodigoInput(e.target.value.toUpperCase().slice(0, 5)); setDescuento(null); setErrorCodigo(""); }} placeholder="XXXXX" maxLength={5} className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm font-mono uppercase tracking-widest text-zinc-100 placeholder:text-zinc-655 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
+                  <input value={codigoInput} onChange={(e) => { setCodigoInput(e.target.value.toUpperCase().slice(0, 5)); setDescuento(null); setErrorCodigo(""); }} placeholder="XXXXX" maxLength={5} className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm font-mono uppercase tracking-widest text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500" />
                   <button type="button" onClick={validarCodigo} disabled={codigoInput.length !== 5 || validandoCodigo} className="px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 disabled:opacity-50 transition">
                     {validandoCodigo ? "..." : "Aplicar"}
                   </button>
@@ -480,7 +480,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
                 <span>-${((servicio?.precio ?? 0 + [...productosSeleccionados].reduce((acc, id) => acc + (productos.find((p) => p.id === id)?.precio ?? 0), 0)) * descuento.porcentaje / 100).toLocaleString("es-AR")}</span>
               </div>
             )}
-            <div className="flex justify-between font-bold mt-2 text-zinc-105 text-base border-t border-zinc-800/50 pt-2">
+            <div className="flex justify-between font-bold mt-2 text-zinc-100 text-base border-t border-zinc-800/50 pt-2">
               <span>Total estimado</span>
               <span>${precioFinal().toLocaleString("es-AR")}</span>
             </div>
@@ -498,7 +498,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
           >
             {enviando ? "Reservando..." : "Confirmar reserva"}
           </button>
-          <button type="button" disabled={enviando} onClick={confirmarReserva} className="text-xs text-zinc-500 hover:text-zinc-350 transition text-center disabled:opacity-50">
+          <button type="button" disabled={enviando} onClick={confirmarReserva} className="text-xs text-zinc-500 hover:text-zinc-300 transition text-center disabled:opacity-50">
             Omitir y confirmar sin productos
           </button>
         </div>
