@@ -1,0 +1,212 @@
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, sans-serif; }
+
+  .form-shell {
+    background: #0f172a;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.45);
+    padding: 22px;
+    width: 370px;
+    font-size: 13px;
+  }
+
+  .step-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .badge { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .badge.done { background: #22c55e; color: white; }
+  .badge.active { background: #6366f1; color: white; }
+  .badge.idle { background: #1e293b; color: #475569; }
+  .step-label { font-weight: 600; color: #e2e8f0; }
+  .step-label.done-text { color: #94a3b8; }
+  .step-label.idle-text { color: #334155; }
+  .step-sub { font-size: 11px; color: #475569; }
+  .step-change { font-size: 11px; color: #60a5fa; margin-left: auto; cursor: pointer; }
+  .divider { border: none; border-top: 1px solid #1e293b; margin: 10px 0; }
+
+  /* Calendar */
+  .cal-nav-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-month { font-size: 14px; font-weight: 700; color: #e2e8f0; letter-spacing: -0.01em; }
+  .cal-btn { background: #1e293b; border: none; cursor: pointer; color: #64748b; border-radius: 8px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .cal-btn.disabled-nav { opacity: 0.3; cursor: not-allowed; }
+
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .dl { text-align: center; font-size: 10px; font-weight: 600; color: #334155; text-transform: uppercase; letter-spacing: .07em; padding: 4px 0 8px; }
+  .day { text-align: center; border-radius: 8px; font-size: 12px; font-weight: 500; min-height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .day.empty { visibility: hidden; }
+  .day.past { color: #1e3a5f; cursor: not-allowed; }
+  .day.available { color: #94a3b8; }
+  .day.today-ring { color: #38bdf8; font-weight: 700; outline: 1.5px solid #0ea5e9; outline-offset: -1.5px; border-radius: 8px; }
+  .day.selected { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); color: white; font-weight: 700; box-shadow: 0 3px 12px rgba(99,102,241,.5); }
+
+  /* Service cards */
+  .service-card { background: #1e293b; border: 1px solid #263445; border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; cursor: pointer; }
+  .service-card.selected-svc { border-color: #6366f1; background: #1e1b4b; }
+  .svc-name { font-weight: 600; color: #e2e8f0; font-size: 13px; }
+  .svc-sub { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+  /* Slots */
+  .slots-label { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: #475569; margin: 14px 0 8px; font-weight: 600; }
+  .slots-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .slot { text-align: center; padding: 9px 0; border-radius: 9px; font-size: 12px; font-weight: 500; }
+  .slot.free { background: #1e293b; color: #94a3b8; border: 1px solid #263445; }
+  .slot.picked { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; box-shadow: 0 2px 8px rgba(99,102,241,.4); }
+
+  /* Special toggle */
+  .special-row { display: flex; align-items: center; gap: 10px; background: #1e1040; border: 1px solid #4c1d95; border-radius: 10px; padding: 10px 12px; margin: 12px 0 4px; }
+  .special-text .t { font-size: 12px; font-weight: 600; color: #c4b5fd; }
+  .special-text .s { font-size: 10px; color: #7c3aed; margin-top: 1px; }
+  .toggle { width: 38px; height: 22px; border-radius: 11px; background: #7c3aed; flex-shrink: 0; position: relative; }
+  .toggle-knob { position: absolute; top: 3px; right: 3px; width: 16px; height: 16px; border-radius: 50%; background: white; }
+
+  /* Modalidad */
+  .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .modal-btn { background: #1e293b; border: 1px solid #263445; border-radius: 12px; padding: 14px; text-align: center; cursor: pointer; }
+  .modal-btn.selected-m { border-color: #6366f1; background: #1e1b4b; }
+  .modal-icon { font-size: 22px; margin-bottom: 4px; }
+  .modal-label { font-size: 12px; font-weight: 600; color: #94a3b8; }
+  .modal-btn.selected-m .modal-label { color: #a5b4fc; }
+
+  /* Input */
+  .dark-input { width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 10px 12px; font-size: 13px; color: #e2e8f0; outline: none; }
+  .dark-input::placeholder { color: #475569; }
+  .field-label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+
+  /* CTA */
+  .cta { width: 100%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border: none; border-radius: 12px; padding: 13px; font-size: 14px; font-weight: 700; cursor: pointer; margin-top: 12px; box-shadow: 0 4px 16px rgba(99,102,241,.4); }
+
+  /* Price summary */
+  .price-row { display: flex; justify-content: space-between; font-size: 12px; color: #64748b; margin-bottom: 4px; }
+  .price-row.total { color: #e2e8f0; font-weight: 700; font-size: 14px; }
+</style>
+
+<h2>Formulario completo — Todo dark, todo homogéneo</h2>
+<p class="subtitle">Cada paso activo se muestra con su contenido. Los completados quedan resumidos en el mismo fondo oscuro.</p>
+
+<div style="display:flex;gap:32px;justify-content:center;flex-wrap:wrap;padding:20px 0">
+
+  <!-- Estado: paso 1 activo -->
+  <div>
+    <p class="label" style="text-align:center;margin-bottom:10px">Paso 1 activo — Elegí servicio</p>
+    <div class="form-shell">
+      <div class="step-row" style="margin-bottom:14px">
+        <div class="badge active">1</div>
+        <div class="step-label">Elegí el servicio</div>
+      </div>
+      <div class="service-card selected-svc">
+        <div class="svc-name">Corte + barba</div>
+        <div class="svc-sub">45 min · $3.500</div>
+      </div>
+      <div class="service-card">
+        <div class="svc-name">Corte clásico</div>
+        <div class="svc-sub">30 min · $2.500</div>
+      </div>
+      <div class="service-card">
+        <div class="svc-name">Arreglo de barba</div>
+        <div class="svc-sub">20 min · $1.800</div>
+      </div>
+      <div class="divider"></div>
+      <div class="step-row" style="margin-bottom:0">
+        <div class="badge idle">2</div>
+        <div class="step-label idle-text">Elegí fecha y horario</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado: paso 2 activo -->
+  <div>
+    <p class="label" style="text-align:center;margin-bottom:10px">Paso 2 activo — Calendario</p>
+    <div class="form-shell">
+      <!-- Paso 1 done -->
+      <div class="step-row">
+        <div class="badge done">✓</div>
+        <div class="step-label done-text">Corte + barba · 45 min · $3.500</div>
+        <span class="step-change">Cambiar</span>
+      </div>
+      <div class="divider"></div>
+      <!-- Paso 2 activo -->
+      <div class="step-row" style="margin-bottom:14px">
+        <div class="badge active">2</div>
+        <div class="step-label">Elegí fecha y horario</div>
+      </div>
+      <div class="cal-nav-row">
+        <button class="cal-btn disabled-nav">‹</button>
+        <span class="cal-month">Junio 2026</span>
+        <button class="cal-btn">›</button>
+      </div>
+      <div class="cal-grid">
+        <div class="dl">L</div><div class="dl">M</div><div class="dl">M</div><div class="dl">J</div><div class="dl">V</div><div class="dl">S</div><div class="dl">D</div>
+        <div class="day past">1</div><div class="day past">2</div><div class="day past">3</div><div class="day past">4</div><div class="day past">5</div><div class="day past">6</div><div class="day past">7</div>
+        <div class="day today-ring">9</div><div class="day available">10</div><div class="day available">11</div><div class="day available">12</div><div class="day available">13</div><div class="day selected">14</div><div class="day available">15</div>
+        <div class="day available">16</div><div class="day available">17</div><div class="day available">18</div><div class="day available">19</div><div class="day available">20</div><div class="day available">21</div><div class="day available">22</div>
+        <div class="day available">23</div><div class="day available">24</div><div class="day available">25</div><div class="day available">26</div><div class="day available">27</div><div class="day available">28</div><div class="day available">29</div>
+        <div class="day available">30</div>
+      </div>
+      <div class="special-row">
+        <div class="special-text"><div class="t">Horario nocturno especial</div><div class="s">20:00 – 23:00 · Salís directo a bailar</div></div>
+        <div class="toggle"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="slots-label">Horarios disponibles · sáb 14 de junio</div>
+      <div class="slots-grid">
+        <div class="slot free">09:00</div><div class="slot free">09:30</div><div class="slot picked">10:00</div><div class="slot free">10:30</div>
+        <div class="slot free">11:00</div><div class="slot free">14:00</div><div class="slot free">15:00</div><div class="slot free">16:30</div>
+      </div>
+      <div class="divider" style="margin-top:14px"></div>
+      <div class="step-row" style="margin-bottom:0">
+        <div class="badge idle">3</div>
+        <div class="step-label idle-text">¿Cómo querés el turno?</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado: paso 3 activo -->
+  <div>
+    <p class="label" style="text-align:center;margin-bottom:10px">Paso 3 activo — Modalidad</p>
+    <div class="form-shell">
+      <div class="step-row">
+        <div class="badge done">✓</div>
+        <div class="step-label done-text">Corte + barba · 45 min · $3.500</div>
+        <span class="step-change">Cambiar</span>
+      </div>
+      <div class="divider"></div>
+      <div class="step-row">
+        <div class="badge done">✓</div>
+        <div class="step-label done-text">sábado 14 de junio a las 10:00</div>
+        <span class="step-change">Cambiar</span>
+      </div>
+      <div class="divider"></div>
+      <div class="step-row" style="margin-bottom:14px">
+        <div class="badge active">3</div>
+        <div class="step-label">¿Cómo querés el turno?</div>
+      </div>
+      <div class="modal-grid">
+        <div class="modal-btn selected-m"><div class="modal-icon">🏪</div><div class="modal-label">En el local</div></div>
+        <div class="modal-btn"><div class="modal-icon">🏠</div><div class="modal-label">A domicilio</div></div>
+      </div>
+      <button class="cta">Continuar</button>
+      <div class="divider" style="margin-top:14px"></div>
+      <div class="step-row" style="margin-bottom:0">
+        <div class="badge idle">4</div>
+        <div class="step-label idle-text">Tus datos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Estado: paso 4 activo -->
+  <div>
+    <p class="label" style="text-align:center;margin-bottom:10px">Paso 4 activo — Tus datos</p>
+    <div class="form-shell">
+      <div class="step-row"><div class="badge done">✓</div><div class="step-label done-text">Corte + barba · $3.500</div><span class="step-change">Cambiar</span></div>
+      <div class="divider"></div>
+      <div class="step-row"><div class="badge done">✓</div><div class="step-label done-text">sáb 14/6 · 10:00</div><span class="step-change">Cambiar</span></div>
+      <div class="divider"></div>
+      <div class="step-row"><div class="badge done">✓</div><div class="step-label done-text">Presencial en el local</div><span class="step-change">Cambiar</span></div>
+      <div class="divider"></div>
+      <div class="step-row" style="margin-bottom:14px"><div class="badge active">4</div><div class="step-label">Tus datos</div></div>
+      <div style="margin-bottom:10px"><div class="field-label">Nombre completo *</div><input class="dark-input" placeholder="Juan García"></div>
+      <div style="margin-bottom:10px"><div class="field-label">Teléfono *</div><input class="dark-input" type="tel" placeholder="+54 11 1234-5678"></div>
+      <div style="margin-bottom:10px"><div class="field-label">Email (opcional)</div><input class="dark-input" type="email" placeholder="juan@email.com"></div>
+      <button class="cta">Continuar</button>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"http://localhost:37777/api/sessions\")",
+      "Bash(curl -s \"http://localhost:37777/api/events?limit=5\")",
+      "Bash(node *)",
+      "Bash(gh repo *)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(npm run *)",
+      "Bash(curl -s \"http://localhost:3000/api/disponibilidad?fecha=2026-06-09&servicioId=cmq1ck2zp0009vt7cvq1i0436&especial=0&modalidad=PRESENCIAL\")",
+      "Bash(curl -s \"http://localhost:3000/api/disponibilidad?fecha=2026-06-10&servicioId=cmq1ck2zp0009vt7cvq1i0436&especial=0&modalidad=PRESENCIAL\")",
+      "Bash(curl -s \"http://localhost:3000/api/disponibilidad?fecha=2026-06-12&servicioId=cmq1ck2zp0009vt7cvq1i0436&especial=0&modalidad=PRESENCIAL\")",
+      "Bash(curl -s \"http://localhost:3000/api/disponibilidad?fecha=2026-06-12&servicioId=cmq1ck2zp0007vt7cp8u53o3t&especial=0&modalidad=PRESENCIAL\")",
+      "Bash(curl -s \"http://localhost:3000/api/disponibilidad?fecha=2026-06-08&servicioId=cmq1ck2zp0007vt7cp8u53o3t&especial=0&modalidad=PRESENCIAL\")",
+      "Bash(curl *)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\USER\\\\OneDrive\\\\Documentos\\\\ProyectosSoft\\\\Agenda-turnos-peluquieria\\\\components\\\\admin\\\\GrillaHorarios.tsx\" -Force)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\USER\\\\OneDrive\\\\Documentos\\\\ProyectosSoft\\\\Agenda-turnos-peluquieria\\\\components\\\\admin\\\\CeldaSlot.tsx\" -Force)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\USER\\\\OneDrive\\\\Documentos\\\\ProyectosSoft\\\\Agenda-turnos-peluquieria\\\\components\\\\admin\\\\BarraAcciones.tsx\" -Force)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\USER\\\\OneDrive\\\\Documentos\\\\ProyectosSoft\\\\Agenda-turnos-peluquieria\\\\components\\\\admin\\\\EncabezadoDia.tsx\" -Force)",
+      "Bash(Remove-Item \"C:\\\\Users\\\\USER\\\\OneDrive\\\\Documentos\\\\ProyectosSoft\\\\Agenda-turnos-peluquieria\\\\components\\\\admin\\\\PanelPreview.tsx\" -Force)",
+      "Bash(git init *)",
+      "Bash(git checkout *)"
+    ]
+  }
+}

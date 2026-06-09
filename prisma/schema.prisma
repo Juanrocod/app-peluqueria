@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ────────────────────────────────────────────────────────────────────
+
+enum EstadoTurno {
+  PENDIENTE
+  CONFIRMADO
+  CANCELADO
+  COMPLETADO
+}
+
+enum OrigenTurno {
+  ONLINE
+  MANUAL
+}
+
+enum ModalidadTurno {
+  PRESENCIAL
+  DOMICILIO
+}
+
+enum TipoFranja {
+  POSITIVA  // Capa 1: ventana de atención base
+  NEGATIVA  // Capa 2: bloqueo recurrente dentro de la ventana (ej. almuerzo)
+}
+
+enum RolUsuario {
+  ADMIN
+  CLIENTE
+}
+
+// ─── MODELOS ──────────────────────────────────────────────────────────────────
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String     // MUST be bcrypt hash — nunca plaintext
+  nombre    String
+  rol       RolUsuario @default(CLIENTE)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  bloqueos  BloqueoHorario[]
+}
+
+model Peluquero {
+  id        String   @id @default(cuid())
+  nombre    String
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  turnos    Turno[]
+}
+
+model Servicio {
+  id        String   @id @default(cuid())
+  nombre    String
+  duracion  Int      // minutos
+  precio    Decimal  @db.Decimal(10, 2)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  turnos    Turno[]
+}
+
+model Turno {
+  id                    String         @id @default(cuid())
+  fechaHora             DateTime
+  clienteNombre         String
+  clienteTelefono       String
+  clienteEmail          String?
+  observaciones         String?
+  modalidad             ModalidadTurno @default(PRESENCIAL)
+  direccion             String?
+  estado                EstadoTurno    @default(PENDIENTE)
+  origen                OrigenTurno    @default(ONLINE)
+  notas                 String?
+  descuentoAplicado     Int?
+  duracionSnapshot      Int?           // snapshot de servicio.duracion al reservar
+  // Snapshot al completar (valores fijos, no cambian si editás precios)
+  precioServicioFinal   Decimal?       @db.Decimal(10, 2)
+  nombreServicioFinal   String?
+  servicioId            String
+  peluqueroId           String?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  servicio  Servicio       @relation(fields: [servicioId], references: [id])
+  peluquero Peluquero?     @relation(fields: [peluqueroId], references: [id])
+  productos TurnoProducto[]
+
+  @@index([fechaHora, estado])
+}
+
+model Producto {
+  id          String          @id @default(cuid())
+  nombre      String
+  descripcion String?
+  precio      Decimal         @db.Decimal(10, 2)
+  ganancia    Decimal?        @db.Decimal(10, 2)
+  imagenUrl   String?
+  activo      Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  turnos      TurnoProducto[]
+}
+
+model TurnoProducto {
+  id                  String   @id @default(cuid())
+  turnoId             String
+  productoId          String
+  // Snapshot al momento de marcar COMPLETADO (valores fijos)
+  gananciaFinal       Decimal? @db.Decimal(10, 2)
+  nombreProductoFinal String?
+
+  turno    Turno    @relation(fields: [turnoId], references: [id])
+  producto Producto @relation(fields: [productoId], references: [id])
+}
+
+model HorarioAtencion {
+  id           String     @id @default(cuid())
+  diaSemana    Int        // 0=domingo .. 6=sábado
+  horaApertura String     // "HH:mm"
+  horaCierre   String     // "HH:mm"
+  etiqueta     String?
+  esBloqueo    Boolean    @default(false) // mantenido por retrocompat.
+  tipoFranja   TipoFranja @default(POSITIVA)
+  motivo       String?    // descripción del bloqueo (solo texto operativo, sin PII)
+  activo       Boolean    @default(true)
+
+  @@index([diaSemana, tipoFranja, activo])
+}
+
+model BloqueoHorario {
+  id          String   @id @default(cuid())
+  fecha       DateTime @db.Date
+  horaInicio  String   // "HH:mm" — ignorado si todoElDia = true
+  horaFin     String   // "HH:mm" — ignorado si todoElDia = true
+  todoElDia   Boolean  @default(false)
+  motivo      String?  // solo texto operativo, sin PII
+  creadoPorId String?
+  createdAt   DateTime @default(now())
+
+  creadoPor User? @relation(fields: [creadoPorId], references: [id])
+
+  @@index([fecha])
+}
+
+model CodigoDescuento {
+  id        String   @id @default(cuid())
+  codigo    String   @unique
+  descuento Int      // porcentaje 0-100
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ConfiguracionApp {
+  clave String @id
+  valor String
+}

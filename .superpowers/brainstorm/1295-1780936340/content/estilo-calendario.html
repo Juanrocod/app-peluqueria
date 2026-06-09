@@ -1,0 +1,118 @@
+<style>
+  .cal-wrap { font-family: system-ui, sans-serif; }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cal-nav { background: none; border: none; cursor: pointer; font-size: 18px; padding: 4px 10px; border-radius: 6px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .cal-day-label { text-align: center; font-size: 11px; font-weight: 600; padding: 4px 0; }
+  .cal-day { text-align: center; padding: 8px 4px; border-radius: 8px; font-size: 13px; cursor: pointer; min-width: 32px; min-height: 36px; display: flex; align-items: center; justify-content: center; }
+
+  /* Estilo A - Minimalista Azul */
+  .a .cal-header .month { font-weight: 700; font-size: 14px; color: #1e293b; }
+  .a .cal-nav { color: #64748b; }
+  .a .cal-nav:hover { background: #f1f5f9; }
+  .a .cal-day-label { color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; }
+  .a .cal-day.disabled { color: #cbd5e1; cursor: not-allowed; }
+  .a .cal-day.available:hover { background: #eff6ff; color: #2563eb; }
+  .a .cal-day.selected { background: #2563eb; color: white; font-weight: 700; box-shadow: 0 2px 8px rgba(37,99,235,0.35); }
+  .a .cal-day.today { outline: 2px solid #93c5fd; outline-offset: -2px; }
+
+  /* Estilo B - Dark Premium */
+  .b { background: #0f172a; border-radius: 14px; padding: 16px; }
+  .b .cal-header .month { font-weight: 700; font-size: 14px; color: #e2e8f0; }
+  .b .cal-nav { color: #64748b; }
+  .b .cal-nav:hover { background: #1e293b; color: #e2e8f0; }
+  .b .cal-day-label { color: #475569; text-transform: uppercase; letter-spacing: 0.05em; }
+  .b .cal-day.disabled { color: #334155; cursor: not-allowed; }
+  .b .cal-day.available { color: #cbd5e1; }
+  .b .cal-day.available:hover { background: #1e293b; color: #7dd3fc; }
+  .b .cal-day.selected { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; font-weight: 700; box-shadow: 0 3px 12px rgba(139,92,246,0.45); }
+  .b .cal-day.today { color: #38bdf8; font-weight: 700; }
+
+  /* Estilo C - Neutral con acento dorado */
+  .c { background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 14px; padding: 16px; }
+  .c .cal-header .month { font-weight: 700; font-size: 14px; color: #292524; letter-spacing: -0.01em; }
+  .c .cal-nav { color: #a8a29e; }
+  .c .cal-nav:hover { background: #f5f5f4; color: #292524; }
+  .c .cal-day-label { color: #a8a29e; }
+  .c .cal-day.disabled { color: #d6d3d1; cursor: not-allowed; }
+  .c .cal-day.available { color: #44403c; }
+  .c .cal-day.available:hover { background: #fef3c7; color: #92400e; }
+  .c .cal-day.selected { background: #d97706; color: white; font-weight: 700; border-radius: 50%; box-shadow: 0 2px 10px rgba(217,119,6,0.4); }
+  .c .cal-day.today { background: #fef9c3; color: #713f12; font-weight: 700; border-radius: 50%; }
+</style>
+
+<h2>¿Qué estilo visual tiene el calendario?</h2>
+<p class="subtitle">El calendario reemplaza el input de fecha en el Paso 2 del formulario. Las celdas grises = días pasados bloqueados.</p>
+
+<div class="cards">
+
+  <!-- Opción A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: white;">
+      <div class="cal-wrap a">
+        <div class="cal-header">
+          <button class="cal-nav">‹</button>
+          <span class="month">Junio 2026</span>
+          <button class="cal-nav">›</button>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-day-label">L</div><div class="cal-day-label">M</div><div class="cal-day-label">M</div><div class="cal-day-label">J</div><div class="cal-day-label">V</div><div class="cal-day-label">S</div><div class="cal-day-label">D</div>
+          <div class="cal-day disabled">2</div><div class="cal-day disabled">3</div><div class="cal-day disabled">4</div><div class="cal-day disabled">5</div><div class="cal-day disabled">6</div><div class="cal-day disabled">7</div><div class="cal-day disabled">8</div>
+          <div class="cal-day today">9</div><div class="cal-day available">10</div><div class="cal-day available">11</div><div class="cal-day available">12</div><div class="cal-day available">13</div><div class="cal-day available selected">14</div><div class="cal-day available">15</div>
+          <div class="cal-day available">16</div><div class="cal-day available">17</div><div class="cal-day available">18</div><div class="cal-day available">19</div><div class="cal-day available">20</div><div class="cal-day available">21</div><div class="cal-day available">22</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Minimalista Azul</h3>
+      <p>Limpio, consistente con el azul actual del formulario. Fondo blanco, día seleccionado con fill azul sólido. Fácil de leer en cualquier luz.</p>
+    </div>
+  </div>
+
+  <!-- Opción B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 12px; background: #1e293b;">
+      <div class="cal-wrap b">
+        <div class="cal-header">
+          <button class="cal-nav">‹</button>
+          <span class="month">Junio 2026</span>
+          <button class="cal-nav">›</button>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-day-label">L</div><div class="cal-day-label">M</div><div class="cal-day-label">M</div><div class="cal-day-label">J</div><div class="cal-day-label">V</div><div class="cal-day-label">S</div><div class="cal-day-label">D</div>
+          <div class="cal-day disabled">2</div><div class="cal-day disabled">3</div><div class="cal-day disabled">4</div><div class="cal-day disabled">5</div><div class="cal-day disabled">6</div><div class="cal-day disabled">7</div><div class="cal-day disabled">8</div>
+          <div class="cal-day today">9</div><div class="cal-day available">10</div><div class="cal-day available">11</div><div class="cal-day available">12</div><div class="cal-day available">13</div><div class="cal-day available selected">14</div><div class="cal-day available">15</div>
+          <div class="cal-day available">16</div><div class="cal-day available">17</div><div class="cal-day available">18</div><div class="cal-day available">19</div><div class="cal-day available">20</div><div class="cal-day available">21</div><div class="cal-day available">22</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Dark Premium</h3>
+      <p>Fondo oscuro con gradiente azul-violeta en el día seleccionado. Look de "barbería de alto nivel". Requiere adaptar el card del paso 2 a dark mode.</p>
+    </div>
+  </div>
+
+  <!-- Opción C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #f5f5f4;">
+      <div class="cal-wrap c">
+        <div class="cal-header">
+          <button class="cal-nav">‹</button>
+          <span class="month">Junio 2026</span>
+          <button class="cal-nav">›</button>
+        </div>
+        <div class="cal-grid">
+          <div class="cal-day-label">L</div><div class="cal-day-label">M</div><div class="cal-day-label">M</div><div class="cal-day-label">J</div><div class="cal-day-label">V</div><div class="cal-day-label">S</div><div class="cal-day-label">D</div>
+          <div class="cal-day disabled">2</div><div class="cal-day disabled">3</div><div class="cal-day disabled">4</div><div class="cal-day disabled">5</div><div class="cal-day disabled">6</div><div class="cal-day disabled">7</div><div class="cal-day disabled">8</div>
+          <div class="cal-day today">9</div><div class="cal-day available">10</div><div class="cal-day available">11</div><div class="cal-day available">12</div><div class="cal-day available">13</div><div class="cal-day available selected">14</div><div class="cal-day available">15</div>
+          <div class="cal-day available">16</div><div class="cal-day available">17</div><div class="cal-day available">18</div><div class="cal-day available">19</div><div class="cal-day available">20</div><div class="cal-day available">21</div><div class="cal-day available">22</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Neutral Dorado</h3>
+      <p>Tono cálido piedra, acento ámbar/dorado para el día seleccionado. Estética premium de barbería clásica. Contrasta bien con el hero oscuro de la página.</p>
+    </div>
+  </div>
+
+</div>

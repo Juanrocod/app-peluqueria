@@ -1,0 +1,134 @@
+<style>
+  .form-shell {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    padding: 20px;
+    max-width: 360px;
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
+  }
+  .step-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: #22c55e; color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .step-num.active { background: #3b82f6; }
+  .step-title { font-weight: 600; color: #1e293b; }
+  .step-sub { font-size: 11px; color: #94a3b8; }
+  .divider { border: none; border-top: 1px solid #f1f5f9; margin: 8px 0 14px; }
+
+  /* Calendar shared */
+  .cal-g { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .cal-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .cal-hd span { font-weight: 700; font-size: 13px; }
+  .cal-hd button { background: none; border: none; cursor: pointer; font-size: 16px; padding: 2px 8px; border-radius: 6px; }
+  .cal-dl { text-align: center; font-size: 10px; font-weight: 600; text-transform: uppercase; padding: 3px 0; }
+  .cal-d { text-align: center; padding: 7px 3px; border-radius: 6px; font-size: 12px; min-height: 32px; display: flex; align-items: center; justify-content: center; }
+
+  /* Opción A: isla oscura flotante dentro de la card blanca */
+  .island { background: #0f172a; border-radius: 14px; padding: 14px; }
+  .island .cal-hd span { color: #e2e8f0; }
+  .island .cal-hd button { color: #64748b; }
+  .island .cal-dl { color: #475569; }
+  .island .cal-d.dis { color: #1e3a5f; }
+  .island .cal-d.ok { color: #94a3b8; }
+  .island .cal-d.ok:hover { background: #1e293b; color: #7dd3fc; }
+  .island .cal-d.sel { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; font-weight: 700; box-shadow: 0 2px 10px rgba(139,92,246,0.4); }
+  .island .cal-d.today { color: #38bdf8; font-weight: 700; }
+
+  /* Opción B: full dark – la tarjeta del paso 2 es completamente oscura */
+  .full-dark {
+    background: #0f172a;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.30);
+    padding: 20px;
+    max-width: 360px;
+    font-family: system-ui, sans-serif;
+    font-size: 13px;
+  }
+  .full-dark .step-num.active { background: #6366f1; }
+  .full-dark .step-title { color: #e2e8f0; }
+  .full-dark .step-sub { color: #475569; }
+  .full-dark hr { border-color: #1e293b; }
+  .full-dark .cal-hd span { color: #e2e8f0; }
+  .full-dark .cal-hd button { color: #475569; }
+  .full-dark .cal-dl { color: #334155; }
+  .full-dark .cal-d.dis { color: #1e293b; }
+  .full-dark .cal-d.ok { color: #94a3b8; }
+  .full-dark .cal-d.sel { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; font-weight: 700; border-radius: 8px; }
+  .full-dark .cal-d.today { color: #38bdf8; font-weight: 700; }
+  .full-dark .slots-title { color: #64748b; font-size: 11px; margin-bottom: 8px; }
+  .slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+  .slot { text-align: center; padding: 8px 0; border-radius: 8px; font-size: 12px; font-weight: 500; }
+  .slot.ok { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+  .slot.picked { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border: none; }
+</style>
+
+<h2>¿Cómo integramos el calendario en el formulario?</h2>
+<p class="subtitle">Los pasos 1, 3, 4 y 5 del formulario ya existen y no los tocamos. Solo estamos diseñando el Paso 2 (Elegí fecha y horario).</p>
+
+<div class="split">
+
+  <!-- Opción A: Isla oscura dentro de card blanca -->
+  <div class="mockup">
+    <div class="mockup-header">A — Isla oscura · Card blanca</div>
+    <div class="mockup-body" style="display:flex;justify-content:center;padding:16px;">
+      <div class="form-shell">
+        <!-- Step completado anterior -->
+        <div class="step-row">
+          <div class="step-num">✓</div>
+          <div><div class="step-title">Corte clásico · 30 min · $2500</div><div style="font-size:11px;color:#94a3b8">Cambiar</div></div>
+        </div>
+        <hr class="divider">
+        <!-- Step activo -->
+        <div class="step-row" style="margin-bottom:12px">
+          <div class="step-num active">2</div>
+          <div class="step-title">Elegí fecha y horario</div>
+        </div>
+        <div class="island">
+          <div class="cal-hd"><button>‹</button><span>Junio 2026</span><button>›</button></div>
+          <div class="cal-g">
+            <div class="cal-dl">L</div><div class="cal-dl">M</div><div class="cal-dl">M</div><div class="cal-dl">J</div><div class="cal-dl">V</div><div class="cal-dl">S</div><div class="cal-dl">D</div>
+            <div class="cal-d dis">2</div><div class="cal-d dis">3</div><div class="cal-d dis">4</div><div class="cal-d dis">5</div><div class="cal-d dis">6</div><div class="cal-d dis">7</div><div class="cal-d dis">8</div>
+            <div class="cal-d today">9</div><div class="cal-d ok">10</div><div class="cal-d ok">11</div><div class="cal-d ok">12</div><div class="cal-d ok">13</div><div class="cal-d sel">14</div><div class="cal-d ok">15</div>
+            <div class="cal-d ok">16</div><div class="cal-d ok">17</div><div class="cal-d ok">18</div><div class="cal-d ok">19</div><div class="cal-d ok">20</div><div class="cal-d ok">21</div><div class="cal-d ok">22</div>
+          </div>
+          <div style="margin-top:12px;">
+            <div style="color:#475569;font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Horarios disponibles · sábado 14</div>
+            <div class="slots">
+              <div class="slot ok">09:00</div><div class="slot ok">09:30</div><div class="slot picked">10:00</div><div class="slot ok">10:30</div>
+              <div class="slot ok">11:00</div><div class="slot ok">14:00</div><div class="slot ok">15:00</div><div class="slot ok">16:30</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Opción B: Card del paso 2 completamente oscura -->
+  <div class="mockup">
+    <div class="mockup-header">B — Card completa oscura · Paso 2 independiente</div>
+    <div class="mockup-body" style="display:flex;justify-content:center;padding:16px;">
+      <div class="full-dark">
+        <div class="step-row" style="margin-bottom:14px">
+          <div class="step-num active">2</div>
+          <div class="step-title">Elegí fecha y horario</div>
+        </div>
+        <hr style="border:none;border-top:1px solid #1e293b;margin-bottom:14px">
+        <div class="cal-hd" style="color:#e2e8f0"><button style="color:#475569;background:none;border:none;cursor:pointer;font-size:16px">‹</button><span style="font-weight:700;font-size:14px;color:#e2e8f0">Junio 2026</span><button style="color:#475569;background:none;border:none;cursor:pointer;font-size:16px">›</button></div>
+        <div class="cal-g">
+          <div class="cal-dl" style="color:#334155">L</div><div class="cal-dl" style="color:#334155">M</div><div class="cal-dl" style="color:#334155">M</div><div class="cal-dl" style="color:#334155">J</div><div class="cal-dl" style="color:#334155">V</div><div class="cal-dl" style="color:#334155">S</div><div class="cal-dl" style="color:#334155">D</div>
+          <div class="cal-d" style="color:#1e293b">2</div><div class="cal-d" style="color:#1e293b">3</div><div class="cal-d" style="color:#1e293b">4</div><div class="cal-d" style="color:#1e293b">5</div><div class="cal-d" style="color:#1e293b">6</div><div class="cal-d" style="color:#1e293b">7</div><div class="cal-d" style="color:#1e293b">8</div>
+          <div class="cal-d" style="color:#38bdf8;font-weight:700">9</div><div class="cal-d" style="color:#94a3b8">10</div><div class="cal-d" style="color:#94a3b8">11</div><div class="cal-d" style="color:#94a3b8">12</div><div class="cal-d" style="color:#94a3b8">13</div><div class="cal-d sel">14</div><div class="cal-d" style="color:#94a3b8">15</div>
+          <div class="cal-d" style="color:#94a3b8">16</div><div class="cal-d" style="color:#94a3b8">17</div><div class="cal-d" style="color:#94a3b8">18</div><div class="cal-d" style="color:#94a3b8">19</div><div class="cal-d" style="color:#94a3b8">20</div><div class="cal-d" style="color:#94a3b8">21</div><div class="cal-d" style="color:#94a3b8">22</div>
+        </div>
+        <div style="margin-top:14px">
+          <div class="slots-title" style="color:#475569;font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;">Horarios · sábado 14</div>
+          <div class="slots">
+            <div class="slot ok">09:00</div><div class="slot ok">09:30</div><div class="slot picked">10:00</div><div class="slot ok">10:30</div>
+            <div class="slot ok">11:00</div><div class="slot ok">14:00</div><div class="slot ok">15:00</div><div class="slot ok">16:30</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

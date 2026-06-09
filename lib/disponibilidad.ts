@@ -1,0 +1,114 @@
+import { prisma } from "@/lib/prisma";
+import { addMinutes, format, parseISO, setHours, setMinutes, startOfDay, endOfDay } from "date-fns";
+
+const BUFFER_DOMICILIO = 40; // minutos de viaje antes y después
+const GRANULARIDAD_SLOT = 30; // alineado con la grilla admin
+
+export async function getSlotDisponibles(
+  fecha: Date,
+  duracionMinutos: number,
+  incluirEspecial = false,
+  modalidad: "PRESENCIAL" | "DOMICILIO" = "PRESENCIAL"
+): Promise<string[]> {
+  const diaSemana = fecha.getDay();
+
+  // Capa 1 — Franjas positivas base
+  const franjas = await prisma.horarioAtencion.findMany({
+    where: {
+      diaSemana,
+      activo: true,
+      tipoFranja: "POSITIVA",
+      ...(incluirEspecial ? {} : { etiqueta: null }),
+    },
+    orderBy: { horaApertura: "asc" },
+  });
+
+  if (franjas.length === 0) return [];
+
+  // Capa 2 — Franjas negativas recurrentes
+  const franjasNegativas = await prisma.horarioAtencion.findMany({
+    where: { diaSemana, activo: true, tipoFranja: "NEGATIVA" },
+  });
+
+  const base = startOfDay(fecha);
+
+  // Generar slots sin duplicados (pueden haber sub-franjas redundantes en la DB)
+  const seen = new Set<number>();
+  const todosLosSlots: Date[] = [];
+  for (const franja of franjas) {
+    const [aH, aM] = franja.horaApertura.split(":").map(Number);
+    const [cH, cM] = franja.horaCierre.split(":").map(Number);
+    const inicio = setMinutes(setHours(base, aH), aM);
+    const fin = setMinutes(setHours(base, cH), cM);
+
+    let cursor = inicio;
+    while (addMinutes(cursor, duracionMinutos) <= fin) {
+      const ts = cursor.getTime();
+      if (!seen.has(ts)) {
+        seen.add(ts);
+        todosLosSlots.push(cursor);
+      }
+      cursor = addMinutes(cursor, GRANULARIDAD_SLOT);
+    }
+  }
+
+  // Capa 3 — Bloqueos puntuales: @db.Date se guarda como medianoche UTC,
+  // así que igualamos contra la medianoche UTC del día local solicitado.
+  const fechaUTC = new Date(Date.UTC(fecha.getFullYear(), fecha.getMonth(), fecha.getDate()));
+  const bloqueosPuntuales = await prisma.bloqueoHorario.findMany({
+    where: {
+      fecha: {
+        gte: fechaUTC,
+        lt: new Date(fechaUTC.getTime() + 86400000), // +24h
+      },
+    },
+  });
+
+  // Turnos confirmados o pendientes ese día
+  const turnosDelDia = await prisma.turno.findMany({
+    where: {
+      fechaHora: { gte: startOfDay(fecha), lte: endOfDay(fecha) },
+      estado: { notIn: ["CANCELADO"] },
+    },
+    include: { servicio: true },
+  });
+
+  const durEfectiva = modalidad === "DOMICILIO"
+    ? duracionMinutos + BUFFER_DOMICILIO * 2
+    : duracionMinutos;
+
+  const slotsLibres = todosLosSlots.filter((slot) => {
+    const slotInicio = modalidad === "DOMICILIO" ? addMinutes(slot, -BUFFER_DOMICILIO) : slot;
+    const slotFin = addMinutes(slotInicio, durEfectiva);
+
+    // Verificar Capa 2
+    const bloqueadoPorNegativa = franjasNegativas.some((b) => {
+      const bInicio = parseISO(`${format(fecha, "yyyy-MM-dd")}T${b.horaApertura}`);
+      const bFin = parseISO(`${format(fecha, "yyyy-MM-dd")}T${b.horaCierre}`);
+      return slot < bFin && addMinutes(slot, duracionMinutos) > bInicio;
+    });
+    if (bloqueadoPorNegativa) return false;
+
+    // Verificar Capa 3
+    const bloqueadoPuntual = bloqueosPuntuales.some((b) => {
+      if (b.todoElDia) return true;
+      const bInicio = parseISO(`${format(fecha, "yyyy-MM-dd")}T${b.horaInicio}`);
+      const bFin = parseISO(`${format(fecha, "yyyy-MM-dd")}T${b.horaFin}`);
+      return slotInicio < bFin && slotFin > bInicio;
+    });
+    if (bloqueadoPuntual) return false;
+
+    // Verificar turnos existentes
+    const ocupado = turnosDelDia.some((t) => {
+      const tModalidad = t.modalidad ?? "PRESENCIAL";
+      const bufferT = tModalidad === "DOMICILIO" ? BUFFER_DOMICILIO : 0;
+      const tInicio = addMinutes(t.fechaHora, -bufferT);
+      const tFin = addMinutes(t.fechaHora, t.servicio.duracion + bufferT);
+      return slotInicio < tFin && slotFin > tInicio;
+    });
+
+    return !ocupado;
+  });
+
+  return slotsLibres.map((s) => format(s, "HH:mm"));
+}
