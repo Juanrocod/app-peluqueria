@@ -74,7 +74,7 @@ export default function CalendarioAdmin({
           <span className="text-sm text-zinc-400 dark:text-zinc-500">
             {format(lunes, "d", { locale: es })} – {format(addDays(lunes, 6), "d MMM", { locale: es })}
           </span>
-          {semanaDesde !== format(new Date(), "yyyy-MM-dd").slice(0, 8) && (
+          {!diasSemana.some((dia) => format(dia, "yyyy-MM-dd") === hoy) && (
             <Link
               href="/admin"
               className="text-xs bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 px-2 py-1 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all duration-200"
@@ -160,7 +160,7 @@ export default function CalendarioAdmin({
           <span className="w-3 h-3 rounded bg-blue-500/10 border border-blue-500/20 inline-block" /> Confirmado
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-violet-500/10 border border-violet-500/20 inline-block" /> Franja nocturna especial
+          <span className="w-3 h-3 rounded bg-violet-500/[0.08] border border-violet-500/10 inline-block" /> Franja nocturna especial
         </span>
       </div>
     </div>
