@@ -70,6 +70,7 @@ export default function CalendarioMes({ value, onChange, diasSinSlots, onMesChan
           type="button"
           onClick={handlePrevMes}
           disabled={mesEsActual}
+          aria-label="Mes anterior"
           className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 disabled:opacity-30 hover:bg-zinc-800 hover:text-zinc-200 transition text-lg"
         >
           ‹
@@ -80,6 +81,7 @@ export default function CalendarioMes({ value, onChange, diasSinSlots, onMesChan
         <button
           type="button"
           onClick={handleNextMes}
+          aria-label="Mes siguiente"
           className="w-8 h-8 flex items-center justify-center rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition text-lg"
         >
           ›

@@ -323,7 +323,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
                     <div className="font-semibold text-violet-300 text-sm">Horario nocturno especial</div>
                     <div className="text-violet-400/80 text-xs">20:00 – 23:00 · Salís directo a bailar</div>
                   </div>
-                  <button type="button" onClick={() => { const next = !especial; setEspecial(next); cargarSlots(fecha, next, modalidad); }} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${especial ? "bg-violet-500" : "bg-zinc-800"}`}>
+                  <button type="button" role="switch" aria-checked={especial} aria-label="Activar horario nocturno especial" onClick={() => { const next = !especial; setEspecial(next); cargarSlots(fecha, next, modalidad); }} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${especial ? "bg-violet-500" : "bg-zinc-800"}`}>
                     <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${especial ? "translate-x-6" : "translate-x-1"}`} />
                   </button>
                 </div>
@@ -443,7 +443,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
           {productos.length > 0 ? (
             <div className="flex flex-col gap-2">
               {productos.map((p) => (
-                <button key={p.id} type="button" onClick={() => toggleProducto(p.id)} className={`flex items-center gap-3 border rounded-xl px-3 py-3 text-left transition ${productosSeleccionados.has(p.id) ? "border-amber-500 bg-amber-500/5" : "border-zinc-800 bg-zinc-950 hover:border-zinc-700 hover:bg-zinc-900"}`}>
+                <button key={p.id} type="button" aria-pressed={productosSeleccionados.has(p.id)} onClick={() => toggleProducto(p.id)} className={`flex items-center gap-3 border rounded-xl px-3 py-3 text-left transition ${productosSeleccionados.has(p.id) ? "border-amber-500 bg-amber-500/5" : "border-zinc-800 bg-zinc-950 hover:border-zinc-700 hover:bg-zinc-900"}`}>
                   {p.imagenUrl ? (
                     <img src={p.imagenUrl} alt={p.nombre} className="w-12 h-12 object-cover rounded-lg flex-shrink-0" />
                   ) : (
@@ -477,7 +477,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
             {descuento && (
               <div className="flex justify-between text-sm text-emerald-500 font-medium">
                 <span>Descuento ({descuento.porcentaje}%)</span>
-                <span>-${((servicio?.precio ?? 0 + [...productosSeleccionados].reduce((acc, id) => acc + (productos.find((p) => p.id === id)?.precio ?? 0), 0)) * descuento.porcentaje / 100).toLocaleString("es-AR")}</span>
+                <span>-${(((servicio?.precio ?? 0) + [...productosSeleccionados].reduce((acc, id) => acc + (productos.find((p) => p.id === id)?.precio ?? 0), 0)) * descuento.porcentaje / 100).toLocaleString("es-AR")}</span>
               </div>
             )}
             <div className="flex justify-between font-bold mt-2 text-zinc-100 text-base border-t border-zinc-800/50 pt-2">
