@@ -13,22 +13,20 @@ export default async function ConfiguracionPage() {
   return (
     <div className="flex flex-col gap-8 max-w-2xl">
       <div>
-        <h2 className="text-2xl font-bold mb-1">Configuración</h2>
-        <p className="text-gray-500 text-sm mb-6">Configurá la identidad de tu peluquería y los códigos de descuento.</p>
+        <h2 className="text-2xl font-bold mb-1 text-zinc-900 dark:text-zinc-50">Configuración</h2>
+        <p className="text-zinc-500 dark:text-zinc-400 text-sm mb-6">Configurá la identidad de tu peluquería y los códigos de descuento.</p>
       </div>
-
       <section>
-        <h3 className="font-semibold text-lg mb-3">Identidad de marca</h3>
+        <h3 className="font-semibold text-lg mb-3 text-zinc-800 dark:text-zinc-200">Identidad de marca</h3>
         <FormularioMarca
           nombreInicial={config.marca_nombre ?? ""}
           descripcionInicial={config.marca_descripcion ?? ""}
           imagenUrlInicial={config.marca_imagen_fondo ?? ""}
         />
       </section>
-
       <section>
-        <h3 className="font-semibold text-lg mb-3">Código de descuento semanal</h3>
-        <p className="text-sm text-gray-500 mb-4">
+        <h3 className="font-semibold text-lg mb-3 text-zinc-800 dark:text-zinc-200">Código de descuento semanal</h3>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
           Podés generar un nuevo código de 5 caracteres cada semana y compartirlo con tus clientes.
           El código anterior se desactiva automáticamente.
         </p>
