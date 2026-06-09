@@ -20,7 +20,11 @@
       "Bash(Remove-Item \"C:\\\\Users\\\\USER\\\\OneDrive\\\\Documentos\\\\ProyectosSoft\\\\Agenda-turnos-peluquieria\\\\components\\\\admin\\\\EncabezadoDia.tsx\" -Force)",
       "Bash(Remove-Item \"C:\\\\Users\\\\USER\\\\OneDrive\\\\Documentos\\\\ProyectosSoft\\\\Agenda-turnos-peluquieria\\\\components\\\\admin\\\\PanelPreview.tsx\" -Force)",
       "Bash(git init *)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ]
   }
 }
