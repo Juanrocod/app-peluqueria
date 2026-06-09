@@ -94,7 +94,7 @@ export default function PanelHorarios({
         <h3 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3">
           Vista semanal
         </h3>
-        <div className="grid grid-cols-7 gap-2 rounded-xl border border-zinc-200 dark:border-zinc-850 p-4 bg-white dark:bg-zinc-900 shadow-xs">
+        <div className="grid grid-cols-7 gap-2 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 bg-white dark:bg-zinc-900 shadow-xs">
           {ORDEN_SEMANA.map((dia) => {
             const pos = positivas.filter((h) => h.diaSemana === dia);
             const neg = negativas.filter((h) => h.diaSemana === dia);
@@ -169,14 +169,14 @@ export default function PanelHorarios({
                   .filter((h) => h.diaSemana === dia)
                   .map((h) => (
                     <div key={h.id} className="flex items-center justify-between bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 shadow-xs">
-                      <span className="text-sm text-zinc-650 dark:text-zinc-350">
+                      <span className="text-sm text-zinc-600 dark:text-zinc-400">
                         <span className="font-semibold text-zinc-900 dark:text-zinc-50 w-8 inline-block">{NOMBRES_DIA[h.diaSemana]}</span>
                         <span className="font-mono ml-3 text-emerald-600 dark:text-emerald-400">{h.horaApertura} – {h.horaCierre}</span>
                       </span>
                       <button
                         onClick={() => delFranja(h.id)}
                         disabled={pending}
-                        className="text-zinc-400 hover:text-red-500 dark:text-zinc-550 dark:hover:text-red-400 transition text-xl leading-none px-1.5 py-0.5 rounded cursor-pointer"
+                        className="text-zinc-400 hover:text-red-500 dark:text-zinc-500 dark:hover:text-red-400 transition text-xl leading-none px-1.5 py-0.5 rounded cursor-pointer"
                         title="Eliminar"
                       >
                         ×
@@ -243,7 +243,7 @@ export default function PanelHorarios({
                   .filter((h) => h.diaSemana === dia)
                   .map((h) => (
                     <div key={h.id} className="flex items-center justify-between bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 shadow-xs">
-                      <span className="text-sm text-zinc-650 dark:text-zinc-350">
+                      <span className="text-sm text-zinc-600 dark:text-zinc-400">
                         <span className="font-semibold text-zinc-900 dark:text-zinc-50 w-8 inline-block">{NOMBRES_DIA[h.diaSemana]}</span>
                         <span className="font-mono ml-3 text-amber-600 dark:text-amber-500">{h.horaApertura} – {h.horaCierre}</span>
                         {h.motivo && <span className="text-zinc-400 dark:text-zinc-500 ml-2 text-xs">({h.motivo})</span>}
@@ -328,7 +328,7 @@ export default function PanelHorarios({
               )}
               {bloqueos.map((b) => (
                 <div key={b.id} className="flex items-center justify-between bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl px-4 py-3 shadow-xs">
-                  <span className="text-sm text-zinc-650 dark:text-zinc-350">
+                  <span className="text-sm text-zinc-600 dark:text-zinc-400">
                     <span className="font-semibold text-zinc-900 dark:text-zinc-50 font-mono">{b.fecha}</span>
                     <span className="ml-3 text-red-600 dark:text-red-400 font-medium">
                       {b.todoElDia ? "Todo el día" : `${b.horaInicio} – ${b.horaFin}`}
@@ -401,7 +401,7 @@ export default function PanelHorarios({
                   value={fBloqueo.motivo}
                   onChange={(e) => setFBloqueo((p) => ({ ...p, motivo: e.target.value }))}
                   placeholder="Ej: feriado, vacaciones, evento..."
-                  className={inputCls + " placeholder:text-zinc-400 dark:placeholder:text-zinc-650"}
+                  className={inputCls + " placeholder:text-zinc-400 dark:placeholder:text-zinc-500"}
                 />
               </div>
               <button

@@ -36,7 +36,7 @@ export default function FormularioProducto() {
           name="nombre"
           type="text"
           required
-          className="w-full border border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-zinc-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 placeholder:text-zinc-400 dark:placeholder:text-zinc-605"
+          className="w-full border border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-zinc-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
           placeholder="Ej: Pomada fijadora"
         />
       </div>
@@ -47,7 +47,7 @@ export default function FormularioProducto() {
         <input
           name="descripcion"
           type="text"
-          className="w-full border border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-zinc-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 placeholder:text-zinc-400 dark:placeholder:text-zinc-605"
+          className="w-full border border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-zinc-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
           placeholder="Breve descripción del producto"
         />
       </div>
@@ -62,7 +62,7 @@ export default function FormularioProducto() {
             min={0}
             step="0.01"
             required
-            className="w-full border border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-zinc-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 placeholder:text-zinc-400 dark:placeholder:text-zinc-605"
+            className="w-full border border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-zinc-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
             placeholder="Lo que ve el cliente"
           />
         </div>
@@ -75,7 +75,7 @@ export default function FormularioProducto() {
             type="number"
             min={0}
             step="0.01"
-            className="w-full border border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-zinc-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 placeholder:text-zinc-400 dark:placeholder:text-zinc-605"
+            className="w-full border border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-zinc-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
             placeholder="Tu margen real"
           />
         </div>
@@ -87,7 +87,7 @@ export default function FormularioProducto() {
         <input
           name="imagenUrl"
           type="url"
-          className="w-full border border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-zinc-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 placeholder:text-zinc-400 dark:placeholder:text-zinc-605"
+          className="w-full border border-zinc-200 dark:border-zinc-800 bg-transparent text-zinc-900 dark:text-zinc-50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 placeholder:text-zinc-400 dark:placeholder:text-zinc-500"
           placeholder="https://..."
         />
       </div>
