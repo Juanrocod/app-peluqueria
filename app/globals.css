@@ -14,8 +14,8 @@
   --color-ap-sub:     #94A3B8;
 
   /* Semantic slot colors (fixed by business rule) */
-  --color-slot-open-bg:      rgba(16, 185, 129, 0.28);
-  --color-slot-open-border:  rgba(16, 185, 129, 0.45);
-  --color-slot-block-bg:     rgba(239, 68, 68, 0.26);
-  --color-slot-block-border: rgba(239, 68, 68, 0.40);
+  --color-slot-open-bg:      #10B98147;
+  --color-slot-open-border:  #10B98173;
+  --color-slot-block-bg:     #EF444442;
+  --color-slot-block-border: #EF444466;
 }
