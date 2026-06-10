@@ -1,5 +1,3 @@
-"use client";
-
 import { addDays, format } from "date-fns";
 import { es } from "date-fns/locale";
 import Link from "next/link";
@@ -168,8 +166,8 @@ export default function ScheduleGrid({
             return (
               <div
                 key={diaSemana}
-                className={`sticky top-0 z-10 border-b border-r border-ap-border bg-ap-s2 px-1 py-2 text-center ${
-                  esHoy ? "bg-ap-border" : ""
+                className={`sticky top-0 z-10 border-b border-r border-ap-border px-1 py-2 text-center ${
+                  esHoy ? "bg-ap-border" : "bg-ap-s2"
                 }`}
               >
                 <p className="text-[9px] font-bold uppercase tracking-wider text-ap-muted">
