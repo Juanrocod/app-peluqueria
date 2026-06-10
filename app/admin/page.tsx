@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import CalendarioAdmin from "@/components/admin/CalendarioAdmin";
+import ScheduleGrid from "@/components/admin/schedule/ScheduleGrid";
 import { startOfWeek, endOfWeek, format } from "date-fns";
+import Link from "next/link";
 
 export default async function AdminDashboard({
   searchParams,
@@ -8,9 +9,8 @@ export default async function AdminDashboard({
   searchParams: Promise<{ semana?: string }>;
 }) {
   const params = await searchParams;
-  const hoy = new Date();
+  const hoy    = new Date();
 
-  // Calcular lunes de la semana solicitada (o semana actual)
   let desde: Date;
   if (params.semana) {
     const [y, m, d] = params.semana.split("-").map(Number);
@@ -20,33 +20,54 @@ export default async function AdminDashboard({
   }
   const hasta = endOfWeek(desde, { weekStartsOn: 1 });
 
-  const turnos = await prisma.turno.findMany({
-    where: {
-      fechaHora: { gte: desde, lte: hasta },
-      estado: { notIn: ["CANCELADO", "COMPLETADO"] },
-    },
-    include: { servicio: true, peluquero: true },
-    orderBy: { fechaHora: "asc" },
-  });
-
-  const semanaDesdeISO = format(desde, "yyyy-MM-dd");
-  const hoyISO = format(hoy, "yyyy-MM-dd");
+  const [turnos, horarios, bloqueos] = await Promise.all([
+    prisma.turno.findMany({
+      where: {
+        fechaHora: { gte: desde, lte: hasta },
+        estado: { notIn: ["CANCELADO", "COMPLETADO"] },
+      },
+      include: { servicio: true },
+      orderBy: { fechaHora: "asc" },
+    }),
+    prisma.horarioAtencion.findMany({
+      where: { activo: true },
+      orderBy: [{ diaSemana: "asc" }, { horaApertura: "asc" }],
+    }),
+    prisma.bloqueoHorario.findMany({
+      where: { fecha: { gte: desde, lte: hasta } },
+      orderBy: { fecha: "asc" },
+    }),
+  ]);
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Agenda</h2>
-        <a
+    <div className="flex h-[calc(100vh-56px)] flex-col lg:h-screen">
+      {/* Header de página */}
+      <div className="flex items-center justify-between border-b border-ap-border px-4 py-3">
+        <h1 className="text-base font-semibold text-ap-text">Agenda</h1>
+        <Link
           href="/admin/turnos/nuevo"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
+          className="rounded-lg bg-ap-cta px-3 py-1.5 text-xs font-semibold text-white transition hover:opacity-90"
         >
           + Nuevo turno
-        </a>
+        </Link>
       </div>
-      <CalendarioAdmin
+
+      <ScheduleGrid
         turnos={turnos}
-        semanaDesde={semanaDesdeISO}
-        hoy={hoyISO}
+        horarios={horarios.map((h) => ({
+          diaSemana: h.diaSemana,
+          horaApertura: h.horaApertura,
+          horaCierre: h.horaCierre,
+          tipoFranja: h.tipoFranja,
+        }))}
+        bloqueos={bloqueos.map((b) => ({
+          fecha: format(b.fecha, "yyyy-MM-dd"),
+          todoElDia: b.todoElDia,
+          horaInicio: b.horaInicio,
+          horaFin: b.horaFin,
+        }))}
+        semanaDesde={format(desde, "yyyy-MM-dd")}
+        hoy={format(hoy, "yyyy-MM-dd")}
       />
     </div>
   );
