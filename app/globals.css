@@ -19,3 +19,18 @@
   --color-slot-block-bg:     #EF444442;
   --color-slot-block-border: #EF444466;
 }
+
+/* Base paint — dark background + readable text for the whole app */
+html,
+body {
+  background-color: var(--color-ap-bg);
+  color: var(--color-ap-text);
+  min-height: 100dvh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
