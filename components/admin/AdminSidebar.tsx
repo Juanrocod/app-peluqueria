@@ -38,11 +38,11 @@ export default function AdminSidebar({
     <div className="flex min-h-screen">
 
       {/* ── Mobile top bar ─────────────────────────────── */}
-      <header className="fixed inset-x-0 top-0 z-30 flex h-12 items-center border-b border-ap-border bg-ap-s1 px-4 md:hidden">
+      <header className="fixed inset-x-0 top-0 z-30 flex h-12 items-center border-b border-zinc-800 bg-zinc-900 px-4 md:hidden">
         <button
           onClick={() => setOpen(true)}
           aria-label="Abrir menú"
-          className="mr-3 rounded p-1 text-ap-sub transition hover:text-ap-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-ap-accent"
+          className="mr-3 rounded p-1 text-zinc-400 transition hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-400"
         >
           <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
             <line x1="2" y1="5"  x2="20" y2="5"  strokeLinecap="round" />
@@ -50,7 +50,7 @@ export default function AdminSidebar({
             <line x1="2" y1="17" x2="20" y2="17" strokeLinecap="round" />
           </svg>
         </button>
-        <span className="text-sm font-semibold text-ap-text">Peluquería</span>
+        <span className="text-sm font-semibold text-zinc-100">Peluquería</span>
       </header>
 
       {/* ── Backdrop ────────────────────────────────────── */}
@@ -65,22 +65,22 @@ export default function AdminSidebar({
       {/* ── Sidebar ─────────────────────────────────────── */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 flex w-56 flex-col border-r border-ap-border bg-ap-s1 text-ap-text
+          fixed inset-y-0 left-0 z-50 flex w-56 flex-col border-r border-zinc-800 bg-zinc-900 text-zinc-100
           transition-transform duration-200 ease-out
           md:static md:translate-x-0 md:transition-none
           ${open ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-ap-border px-6 py-5">
+        <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-5">
           <div>
-            <h1 className="text-lg font-bold text-ap-text">Peluquería</h1>
-            <p className="mt-0.5 text-xs text-ap-muted">{email}</p>
+            <h1 className="text-lg font-bold text-zinc-100">Peluquería</h1>
+            <p className="mt-0.5 text-xs text-zinc-500">{email}</p>
           </div>
           <button
             onClick={() => setOpen(false)}
             aria-label="Cerrar menú"
-            className="rounded p-1 text-ap-muted transition hover:text-ap-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-ap-accent md:hidden"
+            className="rounded p-1 text-zinc-500 transition hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-400 md:hidden"
           >
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
               <line x1="2" y1="2" x2="16" y2="16" strokeLinecap="round" />
@@ -102,8 +102,8 @@ export default function AdminSidebar({
                 aria-current={active ? "page" : undefined}
                 className={`rounded px-3 py-2 text-sm transition-colors duration-150 ${
                   active
-                    ? "bg-ap-border text-ap-text"
-                    : "text-ap-sub hover:bg-ap-s2 hover:text-ap-text"
+                    ? "bg-zinc-800 text-zinc-100"
+                    : "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100"
                 }`}
               >
                 {label}
@@ -113,11 +113,11 @@ export default function AdminSidebar({
         </nav>
 
         {/* Sign out */}
-        <div className="border-t border-ap-border px-3 py-4">
+        <div className="border-t border-zinc-800 px-3 py-4">
           <form action={logout}>
             <button
               type="submit"
-              className="w-full rounded px-3 py-2 text-left text-sm text-ap-muted transition-colors duration-150 hover:text-ap-text"
+              className="w-full rounded px-3 py-2 text-left text-sm text-zinc-500 transition-colors duration-150 hover:text-zinc-100"
             >
               Cerrar sesión
             </button>
@@ -126,7 +126,7 @@ export default function AdminSidebar({
       </aside>
 
       {/* ── Main content ────────────────────────────────── */}
-      <main className="flex-1 overflow-auto bg-ap-bg p-6 pt-[72px] md:pt-6">
+      <main className="flex-1 overflow-auto bg-zinc-950 p-6 pt-[72px] md:pt-6">
         {children}
       </main>
 

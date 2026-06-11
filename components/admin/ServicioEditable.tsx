@@ -31,31 +31,31 @@ export default function ServicioEditable({ servicio }: { servicio: Servicio }) {
 
   if (editando) {
     return (
-      <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 flex flex-col gap-2">
+      <div className="bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-3 flex flex-col gap-2">
         <input
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-          className="border rounded px-2 py-1 text-sm w-full"
+          className="bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-sm w-full text-zinc-100"
           placeholder="Nombre"
         />
         <div className="flex gap-2">
           <div className="flex-1">
-            <label className="text-xs text-gray-500">Duración (min)</label>
+            <label className="text-xs text-zinc-400">Duración (min)</label>
             <input
               type="number"
               value={duracion}
               onChange={(e) => setDuracion(Number(e.target.value))}
-              className="border rounded px-2 py-1 text-sm w-full"
+              className="bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-sm w-full text-zinc-100"
               min={5}
             />
           </div>
           <div className="flex-1">
-            <label className="text-xs text-gray-500">Precio ($)</label>
+            <label className="text-xs text-zinc-400">Precio ($)</label>
             <input
               type="number"
               value={precio}
               onChange={(e) => setPrecio(Number(e.target.value))}
-              className="border rounded px-2 py-1 text-sm w-full"
+              className="bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-sm w-full text-zinc-100"
               min={0}
               step="0.01"
             />
@@ -64,7 +64,7 @@ export default function ServicioEditable({ servicio }: { servicio: Servicio }) {
         <div className="flex gap-2 justify-end">
           <button
             onClick={() => setEditando(false)}
-            className="text-sm text-gray-500 hover:underline px-2"
+            className="text-sm text-zinc-400 hover:text-zinc-200 px-2"
           >
             Cancelar
           </button>
@@ -81,23 +81,23 @@ export default function ServicioEditable({ servicio }: { servicio: Servicio }) {
   }
 
   return (
-    <div className="bg-white rounded-lg border px-4 py-3 flex items-center justify-between">
+    <div className="bg-zinc-900 rounded-lg border border-zinc-800 px-4 py-3 flex items-center justify-between">
       <div>
-        <div className="font-medium">{nombre}</div>
-        <div className="text-sm text-gray-500">
+        <div className="font-medium text-zinc-100">{nombre}</div>
+        <div className="text-sm text-zinc-400">
           {duracion} min — ${Number(precio).toLocaleString("es-AR")}
         </div>
       </div>
       <div className="flex gap-3">
         <button
           onClick={() => setEditando(true)}
-          className="text-blue-600 text-sm hover:underline"
+          className="text-blue-400 text-sm hover:text-blue-300"
         >
           Editar
         </button>
         <button
           onClick={handleEliminar}
-          className="text-red-500 text-sm hover:underline"
+          className="text-red-500 text-sm hover:text-red-400"
         >
           Eliminar
         </button>

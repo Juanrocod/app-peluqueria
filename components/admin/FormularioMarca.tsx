@@ -30,20 +30,20 @@ export default function FormularioMarca({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white border rounded-xl p-5 flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 flex flex-col gap-4">
       <div>
-        <label className="block text-sm font-medium mb-1">Nombre de tu peluquería</label>
-        <input value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="Ej: Peluquería Style" />
+        <label className="block text-sm font-medium text-zinc-300 mb-1">Nombre de tu peluquería</label>
+        <input value={nombre} onChange={(e) => setNombre(e.target.value)} className="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500" placeholder="Ej: Peluquería Style" />
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">Descripción / slogan</label>
-        <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} rows={3} className="w-full border rounded-lg px-3 py-2 text-sm resize-none" placeholder="Ej: Tu imagen, nuestra pasión. Cortate como te mereces." />
+        <label className="block text-sm font-medium text-zinc-300 mb-1">Descripción / slogan</label>
+        <textarea value={descripcion} onChange={(e) => setDescripcion(e.target.value)} rows={3} className="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 resize-none" placeholder="Ej: Tu imagen, nuestra pasión. Cortate como te mereces." />
       </div>
       <div>
-        <label className="block text-sm font-medium mb-1">Imagen de fondo (URL)</label>
-        <input value={imagenUrl} onChange={(e) => setImagenUrl(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm" placeholder="https://... (dejá vacío para usar el fondo por defecto)" />
+        <label className="block text-sm font-medium text-zinc-300 mb-1">Imagen de fondo (URL)</label>
+        <input value={imagenUrl} onChange={(e) => setImagenUrl(e.target.value)} className="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500" placeholder="https://... (dejá vacío para usar el fondo por defecto)" />
         {imagenUrl && (
-          <div className="mt-2 h-24 rounded-lg overflow-hidden border">
+          <div className="mt-2 h-24 rounded-lg overflow-hidden border border-zinc-700">
             <img src={imagenUrl} alt="Preview" className="w-full h-full object-cover" />
           </div>
         )}

@@ -21,9 +21,9 @@ export default async function PeluquerosPage() {
             {peluqueros.map((p) => (
               <div
                 key={p.id}
-                className="bg-white rounded-lg border px-4 py-3 flex items-center justify-between"
+                className="bg-zinc-900 rounded-lg border border-zinc-800 px-4 py-3 flex items-center justify-between"
               >
-                <div className="font-medium">{p.nombre}</div>
+                <div className="font-medium text-zinc-100">{p.nombre}</div>
                 <form
                   action={async () => {
                     "use server";
@@ -33,8 +33,8 @@ export default async function PeluquerosPage() {
                   <button
                     className={`text-sm px-3 py-1 rounded-full border transition ${
                       p.activo
-                        ? "border-green-500 text-green-600 hover:bg-green-50"
-                        : "border-gray-400 text-gray-500 hover:bg-gray-50"
+                        ? "border-green-600 text-green-400 hover:bg-green-900/30"
+                        : "border-zinc-600 text-zinc-500 hover:bg-zinc-800"
                     }`}
                   >
                     {p.activo ? "Activo" : "Inactivo"}
@@ -43,7 +43,7 @@ export default async function PeluquerosPage() {
               </div>
             ))}
             {peluqueros.length === 0 && (
-              <p className="text-gray-400 text-sm">No hay peluqueros cargados</p>
+              <p className="text-zinc-500 text-sm">No hay peluqueros cargados</p>
             )}
           </div>
         </div>

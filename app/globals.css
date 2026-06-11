@@ -1,18 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  /* Admin palette — dark violet SaaS */
-  --color-ap-bg:      #0D0B18;
-  --color-ap-s1:      #0F0C1A;
-  --color-ap-s2:      #160D2E;
-  --color-ap-border:  #2D1B69;
-  --color-ap-primary: #7C3AED;
-  --color-ap-accent:  #A78BFA;
-  --color-ap-cta:     #F97316;
-  --color-ap-muted:   #475569;
-  --color-ap-text:    #F1F5F9;
-  --color-ap-sub:     #94A3B8;
-
   /* Semantic slot colors (fixed by business rule) */
   --color-slot-open-bg:      #10B98147;
   --color-slot-open-border:  #10B98173;
@@ -20,11 +8,11 @@
   --color-slot-block-border: #EF444466;
 }
 
-/* Base paint — dark background + readable text for the whole app */
+/* Base paint — zinc dark mode */
 html,
 body {
-  background-color: var(--color-ap-bg);
-  color: var(--color-ap-text);
+  background-color: #09090b; /* zinc-950 */
+  color: #f4f4f5;             /* zinc-100 */
   min-height: 100dvh;
 }
 

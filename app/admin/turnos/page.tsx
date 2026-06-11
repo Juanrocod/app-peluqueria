@@ -21,45 +21,45 @@ export default async function TurnosPage() {
           + Nuevo turno
         </a>
       </div>
-      <div className="bg-white rounded-xl shadow overflow-hidden">
+      <div className="bg-zinc-900 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-zinc-800 border-b border-zinc-700">
             <tr>
-              <th className="text-left px-4 py-3 font-medium">Fecha y hora</th>
-              <th className="text-left px-4 py-3 font-medium">Cliente</th>
-              <th className="text-left px-4 py-3 font-medium">Servicio</th>
-              <th className="text-left px-4 py-3 font-medium">Productos</th>
-              <th className="text-left px-4 py-3 font-medium">Dirección</th>
-              <th className="text-left px-4 py-3 font-medium">Estado</th>
-              <th className="text-left px-4 py-3 font-medium">Origen</th>
-              <th className="text-left px-4 py-3 font-medium">Acciones</th>
+              <th className="text-left px-4 py-3 font-medium text-zinc-400">Fecha y hora</th>
+              <th className="text-left px-4 py-3 font-medium text-zinc-400">Cliente</th>
+              <th className="text-left px-4 py-3 font-medium text-zinc-400">Servicio</th>
+              <th className="text-left px-4 py-3 font-medium text-zinc-400">Productos</th>
+              <th className="text-left px-4 py-3 font-medium text-zinc-400">Dirección</th>
+              <th className="text-left px-4 py-3 font-medium text-zinc-400">Estado</th>
+              <th className="text-left px-4 py-3 font-medium text-zinc-400">Origen</th>
+              <th className="text-left px-4 py-3 font-medium text-zinc-400">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {turnos.map((turno) => (
-              <tr key={turno.id} className="border-b hover:bg-gray-50">
+              <tr key={turno.id} className="border-b border-zinc-800 hover:bg-zinc-800">
                 <td className="px-4 py-3">
                   {format(turno.fechaHora, "dd/MM HH:mm", { locale: es })}
                 </td>
                 <td className="px-4 py-3">
                   <div className="font-medium">{turno.clienteNombre}</div>
-                  <div className="text-gray-500">{turno.clienteTelefono}</div>
+                  <div className="text-zinc-400">{turno.clienteTelefono}</div>
                 </td>
                 <td className="px-4 py-3">{turno.servicio.nombre}</td>
-                <td className="px-4 py-3 text-gray-500 text-xs">
+                <td className="px-4 py-3 text-zinc-400 text-xs">
                   {turno.productos.length > 0
                     ? turno.productos.map((tp) => tp.producto.nombre).join(", ")
-                    : <span className="text-gray-300">—</span>}
+                    : <span className="text-zinc-600">—</span>}
                 </td>
                 <td className="px-4 py-3 text-sm">
                   {turno.modalidad === "DOMICILIO"
-                    ? <span className="text-amber-700">{turno.direccion || "—"}</span>
-                    : <span className="text-gray-400">Peluquería</span>}
+                    ? <span className="text-amber-400">{turno.direccion || "—"}</span>
+                    : <span className="text-zinc-500">Peluquería</span>}
                 </td>
                 <td className="px-4 py-3">
                   <EstadoBadge estado={turno.estado} />
                 </td>
-                <td className="px-4 py-3 text-gray-500">{turno.origen}</td>
+                <td className="px-4 py-3 text-zinc-400">{turno.origen}</td>
                 <td className="px-4 py-3">
                   <AccionesturnoRow turnoId={turno.id} estadoActual={turno.estado} />
                 </td>
@@ -68,7 +68,7 @@ export default async function TurnosPage() {
           </tbody>
         </table>
         {turnos.length === 0 && (
-          <p className="text-center py-8 text-gray-400">No hay turnos registrados</p>
+          <p className="text-center py-8 text-zinc-500">No hay turnos registrados</p>
         )}
       </div>
     </div>
@@ -77,10 +77,10 @@ export default async function TurnosPage() {
 
 function EstadoBadge({ estado }: { estado: string }) {
   const colores: Record<string, string> = {
-    PENDIENTE: "bg-yellow-100 text-yellow-800",
-    CONFIRMADO: "bg-green-100 text-green-800",
-    CANCELADO: "bg-red-100 text-red-800",
-    COMPLETADO: "bg-gray-100 text-gray-700",
+    PENDIENTE:  "bg-yellow-900/40 text-yellow-300",
+    CONFIRMADO: "bg-green-900/40 text-green-300",
+    CANCELADO:  "bg-red-900/40 text-red-300",
+    COMPLETADO: "bg-zinc-800 text-zinc-400",
   };
   return (
     <span className={`px-2 py-1 rounded-full text-xs font-medium ${colores[estado] ?? ""}`}>
