@@ -89,9 +89,9 @@ export default async function GananciasPage() {
         <h2 className="text-2xl font-bold">Ganancias</h2>
         {filas.length > 0 && (
           <div className="text-right">
-            <div className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total histórico</div>
-            <div className="text-2xl font-bold text-green-600">${totalGeneral.toLocaleString("es-AR")}</div>
-            <div className="text-xs text-gray-400 mt-0.5">
+            <div className="text-xs text-zinc-400 uppercase tracking-wide mb-1">Total histórico</div>
+            <div className="text-2xl font-bold text-green-400">${totalGeneral.toLocaleString("es-AR")}</div>
+            <div className="text-xs text-zinc-500 mt-0.5">
               Servicios ${totalServiciosGeneral.toLocaleString("es-AR")}
               {totalProductosGeneral > 0 && <> + Productos ${totalProductosGeneral.toLocaleString("es-AR")}</>}
             </div>
@@ -100,29 +100,29 @@ export default async function GananciasPage() {
       </div>
 
       {filas.length === 0 ? (
-        <div className="bg-white rounded-xl border p-8 text-center text-gray-400">
+        <div className="bg-zinc-900 rounded-xl border border-zinc-800 p-8 text-center text-zinc-500">
           <p>No hay turnos completados todavía.</p>
           <p className="text-sm mt-1">Marcá turnos como completados desde la pestaña Turnos.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-6">
           {mesesOrdenados.map((mes) => (
-            <div key={mes.key} className="bg-white rounded-xl border overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-4 bg-gray-50 border-b">
+            <div key={mes.key} className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-4 bg-zinc-800 border-b border-zinc-700">
                 <div>
                   <h3 className="font-semibold capitalize">{mes.label}</h3>
-                  <div className="text-xs text-gray-400 mt-0.5">
+                  <div className="text-xs text-zinc-400 mt-0.5">
                     {mes.filas.length} turno{mes.filas.length !== 1 ? "s" : ""}
                     {" · "}Servicios ${mes.totalServicio.toLocaleString("es-AR")}
                     {mes.totalProductos > 0 && <> + Productos ${mes.totalProductos.toLocaleString("es-AR")}</>}
                   </div>
                 </div>
-                <span className="text-lg font-bold text-green-600">${mes.total.toLocaleString("es-AR")}</span>
+                <span className="text-lg font-bold text-green-400">${mes.total.toLocaleString("es-AR")}</span>
               </div>
 
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b text-xs text-gray-400 uppercase tracking-wide">
+                  <tr className="border-b border-zinc-700 text-xs text-zinc-400 uppercase tracking-wide">
                     <th className="text-left px-5 py-2 font-medium">Fecha</th>
                     <th className="text-left px-5 py-2 font-medium">Cliente</th>
                     <th className="text-left px-5 py-2 font-medium">Servicio</th>
@@ -132,42 +132,42 @@ export default async function GananciasPage() {
                 </thead>
                 <tbody>
                   {mes.filas.map((f, i) => (
-                    <tr key={f.id} className={`border-b last:border-0 ${i % 2 === 0 ? "bg-white" : "bg-gray-50"}`}>
-                      <td className="px-5 py-2.5 text-gray-500 whitespace-nowrap">
+                    <tr key={f.id} className={`border-b border-zinc-800 last:border-0 ${i % 2 === 0 ? "bg-zinc-900" : "bg-zinc-800/40"}`}>
+                      <td className="px-5 py-2.5 text-zinc-400 whitespace-nowrap">
                         {format(f.fechaHora, "d MMM", { locale: es })}
-                        <span className="ml-1 text-gray-400 text-xs">{format(f.fechaHora, "HH:mm")}</span>
+                        <span className="ml-1 text-zinc-500 text-xs">{format(f.fechaHora, "HH:mm")}</span>
                       </td>
                       <td className="px-5 py-2.5 font-medium">{f.clienteNombre}</td>
-                      <td className="px-5 py-2.5 text-gray-600">
+                      <td className="px-5 py-2.5 text-zinc-300">
                         {f.servicioNombre}
-                        <span className="ml-2 text-green-700 font-medium">${f.precioServicio.toLocaleString("es-AR")}</span>
+                        <span className="ml-2 text-green-400 font-medium">${f.precioServicio.toLocaleString("es-AR")}</span>
                       </td>
-                      <td className="px-5 py-2.5 text-xs text-gray-500">
+                      <td className="px-5 py-2.5 text-xs text-zinc-400">
                         {f.productosNombres ? (
                           <>
                             {f.productosNombres}
                             {f.gananciasProductos > 0 && (
-                              <span className="ml-2 text-green-700 font-medium text-sm">
+                              <span className="ml-2 text-green-400 font-medium text-sm">
                                 +${f.gananciasProductos.toLocaleString("es-AR")}
                               </span>
                             )}
                           </>
                         ) : (
-                          <span className="text-gray-300">—</span>
+                          <span className="text-zinc-600">—</span>
                         )}
                       </td>
-                      <td className="px-5 py-2.5 text-right font-bold text-green-700 whitespace-nowrap">
+                      <td className="px-5 py-2.5 text-right font-bold text-green-400 whitespace-nowrap">
                         ${f.totalGanancia.toLocaleString("es-AR")}
                       </td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot>
-                  <tr className="border-t bg-green-50">
-                    <td colSpan={4} className="px-5 py-2.5 text-sm font-medium text-gray-600">
+                  <tr className="border-t border-zinc-700 bg-green-950/30">
+                    <td colSpan={4} className="px-5 py-2.5 text-sm font-medium text-zinc-300">
                       Subtotal {mes.label}
                     </td>
-                    <td className="px-5 py-2.5 text-right font-bold text-green-700">
+                    <td className="px-5 py-2.5 text-right font-bold text-green-400">
                       ${mes.total.toLocaleString("es-AR")}
                     </td>
                   </tr>

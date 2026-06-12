@@ -19,7 +19,7 @@ export default function AccionesTurnoRow({
       {estadoActual === "PENDIENTE" && (
         <button
           onClick={() => cambiarEstado("CONFIRMADO")}
-          className="text-xs px-2 py-1 rounded bg-green-100 text-green-700 hover:bg-green-200 transition"
+          className="text-xs px-2 py-1 rounded bg-green-900/50 text-green-400 hover:bg-green-900 transition"
         >
           Confirmar
         </button>
@@ -28,13 +28,13 @@ export default function AccionesTurnoRow({
         <>
           <button
             onClick={() => cambiarEstado("COMPLETADO")}
-            className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+            className="text-xs px-2 py-1 rounded bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition"
           >
             Completado
           </button>
           <button
             onClick={() => cambiarEstado("CANCELADO")}
-            className="text-xs px-2 py-1 rounded bg-red-100 text-red-600 hover:bg-red-200 transition"
+            className="text-xs px-2 py-1 rounded bg-red-900/50 text-red-400 hover:bg-red-900/70 transition"
           >
             Cancelar
           </button>

@@ -26,7 +26,7 @@ export default async function ServiciosPage() {
               />
             ))}
             {servicios.length === 0 && (
-              <p className="text-gray-400 text-sm">No hay servicios cargados</p>
+              <p className="text-zinc-500 text-sm">No hay servicios cargados</p>
             )}
           </div>
         </div>

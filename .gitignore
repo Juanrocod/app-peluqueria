@@ -36,3 +36,12 @@ next-env.d.ts
 
 # prisma
 prisma/migrations/
+
+handoff.md
+
+# logs
+dev-server.log
+
+# claude session temp files
+.superpowers/brainstorm/
+.claude/settings.local.json

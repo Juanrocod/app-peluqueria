@@ -33,7 +33,7 @@ export default async function CatalogoPage() {
               />
             ))}
             {productos.length === 0 && (
-              <p className="text-gray-400 text-sm">No hay productos cargados</p>
+              <p className="text-zinc-500 text-sm">No hay productos cargados</p>
             )}
           </div>
         </div>

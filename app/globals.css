@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+@theme {
+  /* Semantic slot colors (fixed by business rule) */
+  --color-slot-open-bg:      #10B98147;
+  --color-slot-open-border:  #10B98173;
+  --color-slot-block-bg:     #EF444442;
+  --color-slot-block-border: #EF444466;
+}
+
+/* Base paint — zinc dark mode */
+html,
+body {
+  background-color: #09090b; /* zinc-950 */
+  color: #f4f4f5;             /* zinc-100 */
+  min-height: 100dvh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

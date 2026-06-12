@@ -14,7 +14,7 @@ export default async function ConfiguracionPage() {
     <div className="flex flex-col gap-8 max-w-2xl">
       <div>
         <h2 className="text-2xl font-bold mb-1">Configuración</h2>
-        <p className="text-gray-500 text-sm mb-6">Configurá la identidad de tu peluquería y los códigos de descuento.</p>
+        <p className="text-zinc-400 text-sm mb-6">Configurá la identidad de tu peluquería y los códigos de descuento.</p>
       </div>
 
       <section>
@@ -28,7 +28,7 @@ export default async function ConfiguracionPage() {
 
       <section>
         <h3 className="font-semibold text-lg mb-3">Código de descuento semanal</h3>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-zinc-400 mb-4">
           Podés generar un nuevo código de 5 caracteres cada semana y compartirlo con tus clientes.
           El código anterior se desactiva automáticamente.
         </p>
