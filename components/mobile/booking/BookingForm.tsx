@@ -1,0 +1,753 @@
+"use client";
+
+import { useState, useCallback } from "react";
+import { Scissors, Check } from "lucide-react";
+import { crearTurno } from "@/actions/turnos";
+
+interface Servicio {
+  id: string;
+  nombre: string;
+  duracion: number;
+  precio: number;
+}
+
+interface BookingFormProps {
+  servicios: Servicio[];
+}
+
+export function BookingForm({ servicios }: BookingFormProps) {
+  const [step, setStep] = useState(0);
+  const [servicioId, setServicioId] = useState<string | null>(null);
+  const [day, setDay] = useState<string | null>(null);
+  const [time, setTime] = useState<string | null>(null);
+  const [place, setPlace] = useState<"salon" | "home" | null>(null);
+  const [address, setAddress] = useState("");
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [obs, setObs] = useState("");
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountPct, setDiscountPct] = useState(0);
+  const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const selectedSvc = servicios.find((s) => s.id === servicioId);
+  const money = (n: number) => "$" + n.toLocaleString("es-AR");
+
+  const canNext = useCallback(() => {
+    if (step === 0) return !!servicioId;
+    if (step === 1) return !!time;
+    if (step === 2)
+      return place === "salon" || (place === "home" && address.trim() !== "");
+    if (step === 3) return name.trim() !== "" && phone.trim() !== "";
+    return true;
+  }, [step, servicioId, time, place, address, name, phone]);
+
+  async function handleConfirm() {
+    if (!selectedSvc || !day || !time) return;
+    setSubmitting(true);
+    try {
+      const [y, m, d] = day.split("-").map(Number);
+      const [h, min] = time.split(":").map(Number);
+      const fechaHora = new Date(y, m - 1, d, h, min);
+
+      await crearTurno({
+        fechaHora,
+        clienteNombre: name,
+        clienteTelefono: phone,
+        clienteEmail: email || undefined,
+        observaciones: obs || undefined,
+        modalidad: place === "home" ? "DOMICILIO" : "PRESENCIAL",
+        direccion: place === "home" ? address : undefined,
+        servicioId: selectedSvc.id,
+        descuentoAplicado: discountPct || undefined,
+      });
+      setDone(true);
+    } catch (err) {
+      console.error(err);
+    }
+    setSubmitting(false);
+  }
+
+  function next() {
+    if (!canNext()) return;
+    if (step === 4) {
+      handleConfirm();
+    } else {
+      setStep(step + 1);
+    }
+  }
+
+  // Summary labels for completed steps
+  const summaries = [
+    selectedSvc
+      ? `${selectedSvc.nombre} · ${selectedSvc.duracion} min · ${money(selectedSvc.precio)}`
+      : "",
+    day && time ? `${day} a las ${time}` : "",
+    place === "home"
+      ? `A domicilio · ${address}`
+      : place === "salon"
+        ? "En el local"
+        : "",
+    name ? `${name} · ${phone}` : "",
+  ];
+
+  const stepTitles = [
+    "Elegí el servicio",
+    "Elegí fecha y horario",
+    "¿Cómo querés el turno?",
+    "Tus datos",
+    "Revisá y confirmá",
+  ];
+
+  if (done) {
+    return (
+      <div className="flex min-h-screen flex-col bg-cl-bg px-4 py-6">
+        <div
+          className="mx-auto w-full max-w-md overflow-hidden rounded-3xl border border-cl-border bg-cl-card"
+          style={{ boxShadow: "0 24px 60px -28px rgba(0,0,0,.8)" }}
+        >
+          <div
+            className="px-6 py-8 text-center"
+            style={{
+              background: "linear-gradient(160deg, #1B7A53, #0E6B47)",
+            }}
+          >
+            <div className="mx-auto mb-3 flex h-[58px] w-[58px] items-center justify-center rounded-full bg-white/20">
+              <Check size={28} color="#fff" />
+            </div>
+            <div className="font-display text-[25px] font-bold text-white">
+              BarberFras
+            </div>
+            <div className="mt-1 text-sm text-white/85">
+              Tu turno está confirmado
+            </div>
+          </div>
+          <div className="space-y-0 px-5 pb-5">
+            {(
+              [
+                ["✂️", "SERVICIO", selectedSvc?.nombre ?? ""],
+                ["📅", "FECHA Y HORA", `${day} · ${time}`],
+                [
+                  "📍",
+                  "UBICACIÓN",
+                  place === "home" ? "A domicilio" : "En el local",
+                ],
+              ] as const
+            ).map(([emoji, label, value], i) => (
+              <div
+                key={i}
+                className="flex gap-3 border-b border-cl-border py-3.5"
+              >
+                <span className="flex h-10 w-10 items-center justify-center rounded-[11px] border border-cl-border bg-cl-slot text-xl">
+                  {emoji}
+                </span>
+                <div>
+                  <div className="text-[11px] font-bold tracking-wider text-[#5F6B85]">
+                    {label}
+                  </div>
+                  <div className="mt-0.5 text-[15px] font-bold text-white">
+                    {value}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div className="flex items-center justify-between pb-2 pt-4">
+              <span className="text-sm font-bold">Total estimado</span>
+              <span className="font-mono-num text-xl font-bold text-[#22D366]">
+                {money(
+                  selectedSvc
+                    ? selectedSvc.precio * (1 - discountPct / 100)
+                    : 0,
+                )}
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                setStep(0);
+                setServicioId(null);
+                setDay(null);
+                setTime(null);
+                setPlace(null);
+                setAddress("");
+                setName("");
+                setPhone("");
+                setEmail("");
+                setObs("");
+                setDiscountCode("");
+                setDiscountPct(0);
+                setDone(false);
+              }}
+              className="w-full rounded-[13px] border border-cl-border bg-cl-slot py-3.5 text-sm font-semibold text-white"
+            >
+              Reservar otro turno
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const inputClass =
+    "w-full rounded-xl border border-cl-border bg-cl-slot px-3.5 py-3 text-[15px] text-white placeholder-[#46557A] outline-none transition-all focus:border-[#3B6EF5] focus:ring-[3px] focus:ring-[rgba(59,110,245,.2)]";
+
+  return (
+    <div className="flex min-h-screen flex-col bg-cl-bg">
+      {/* Header */}
+      <div className="border-b border-[#16203A] px-4 py-3">
+        <div className="mb-2.5 flex items-center gap-2.5">
+          <span className="flex h-[34px] w-[34px] items-center justify-center rounded-[9px] border border-cl-border bg-cl-card">
+            <Scissors size={17} color="#7C9CFF" />
+          </span>
+          <div className="flex-1">
+            <div className="font-display text-base font-semibold">
+              BarberFras
+            </div>
+            <div className="text-[11px] text-[#5F6B85]">Reservar turno</div>
+          </div>
+          <span className="font-mono-num text-xs text-[#5F6B85]">
+            {step + 1}/5
+          </span>
+        </div>
+        <div className="flex gap-1">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <span
+              key={i}
+              className="h-1 flex-1 rounded-sm transition-colors"
+              style={{
+                background:
+                  i <= step
+                    ? "linear-gradient(135deg, #3B6EF5, #8B5CF6)"
+                    : "#23304E",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto px-4 py-3.5">
+        {/* Completed steps */}
+        {Array.from({ length: step }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-2.5 border-b border-[#223052] py-3"
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#22D366]">
+              <Check size={14} color="#08130D" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="text-xs font-semibold text-[#5F6B85]">
+                {stepTitles[i]}
+              </div>
+              <div className="truncate text-[13px] font-semibold text-[#E4E8F0]">
+                {summaries[i]}
+              </div>
+            </div>
+            <button
+              onClick={() => setStep(i)}
+              className="rounded-lg px-2 py-1 text-[13px] font-bold text-[#4D8BFF]"
+            >
+              Cambiar
+            </button>
+          </div>
+        ))}
+
+        {/* Active step header */}
+        <div className="mb-4 mt-3 flex items-center gap-2.5">
+          <span
+            className="flex h-[27px] w-[27px] items-center justify-center rounded-full font-mono-num text-[13px] font-bold text-white"
+            style={{
+              background: "linear-gradient(135deg, #3B6EF5, #8B5CF6)",
+              boxShadow: "0 6px 18px -4px rgba(124,92,246,.55)",
+            }}
+          >
+            {step + 1}
+          </span>
+          <div className="font-display text-xl font-semibold">
+            {stepTitles[step]}
+          </div>
+        </div>
+
+        {/* Step 0: Service selection */}
+        {step === 0 && (
+          <div className="flex flex-col gap-2.5">
+            {servicios.map((s) => {
+              const on = servicioId === s.id;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => setServicioId(s.id)}
+                  className="w-full rounded-[14px] border-2 px-3.5 py-3 text-left transition-all"
+                  style={{
+                    background: on ? "rgba(34,211,102,.07)" : "#16213A",
+                    borderColor: on ? "#22D366" : "#223052",
+                    boxShadow: on
+                      ? "0 4px 16px -6px rgba(34,211,102,.4)"
+                      : "none",
+                  }}
+                >
+                  <div className="text-[14.5px] font-bold text-white">
+                    {s.nombre}
+                  </div>
+                  <div className="mt-0.5 font-mono-num text-xs text-[#C7D0E0]">
+                    {s.duracion} min · {money(s.precio)}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Step 1: Date + Time */}
+        {step === 1 && selectedSvc && (
+          <DateTimeStep
+            servicioId={selectedSvc.id}
+            modalidad={place === "home" ? "DOMICILIO" : "PRESENCIAL"}
+            selectedDay={day}
+            selectedTime={time}
+            onSelectDay={(d) => {
+              setDay(d);
+              setTime(null);
+            }}
+            onSelectTime={setTime}
+          />
+        )}
+
+        {/* Step 2: Modality */}
+        {step === 2 && (
+          <div>
+            <div className="flex gap-2.5">
+              {(
+                [
+                  [
+                    "salon",
+                    "🏪",
+                    "En el local",
+                    "Venís a la peluquería.",
+                  ],
+                  [
+                    "home",
+                    "🏠",
+                    "A domicilio",
+                    "Vamos a tu dirección.",
+                  ],
+                ] as const
+              ).map(([key, emoji, title, sub]) => {
+                const on = place === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setPlace(key)}
+                    className="flex flex-1 flex-col gap-2 rounded-[15px] border px-3.5 py-4 text-left transition-all"
+                    style={{
+                      background: on ? "rgba(77,139,255,.1)" : "#16213A",
+                      borderColor: on ? "#4D8BFF" : "#223052",
+                    }}
+                  >
+                    <span
+                      className="flex h-[42px] w-[42px] items-center justify-center rounded-[11px] text-[23px]"
+                      style={{
+                        background: on ? "rgba(77,139,255,.16)" : "#1A2742",
+                      }}
+                    >
+                      {emoji}
+                    </span>
+                    <span className="text-sm font-bold text-white">
+                      {title}
+                    </span>
+                    <span className="text-[11px] text-[#9DA9C0]">{sub}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {place === "home" && (
+              <div className="mt-3.5">
+                <div className="mb-3 flex items-start gap-2 rounded-xl border border-[#6E5224] bg-[rgba(232,163,61,.1)] px-3 py-2.5">
+                  <span className="text-sm text-[#E8A33D]">⚠</span>
+                  <span className="text-xs leading-relaxed text-[#E8A33D]">
+                    Tené en cuenta que puede haber un adicional según la
+                    distancia.
+                  </span>
+                </div>
+                <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
+                  Dirección completa
+                </div>
+                <input
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Calle, número, piso…"
+                  className={inputClass}
+                />
+              </div>
+            )}
+            {place === "salon" && (
+              <div className="mt-3 text-center text-xs text-[#5F6B85]">
+                Te esperamos en BarberFras
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Step 3: Personal data */}
+        {step === 3 && (
+          <div className="flex flex-col gap-3">
+            <div>
+              <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
+                Nombre completo *
+              </div>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ej: Juan Pérez"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
+                Teléfono / WhatsApp *
+              </div>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Ej: 11 2345 6789"
+                type="tel"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
+                Email (opcional)
+              </div>
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tucorreo@mail.com"
+                type="email"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
+                Observaciones (opcional)
+              </div>
+              <textarea
+                value={obs}
+                onChange={(e) => setObs(e.target.value)}
+                placeholder="Algo que quieras aclarar…"
+                rows={3}
+                className={`${inputClass} resize-none`}
+              />
+            </div>
+            <div>
+              <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
+                Código de descuento (opcional)
+              </div>
+              <div className="flex gap-2">
+                <input
+                  value={discountCode}
+                  onChange={(e) => setDiscountCode(e.target.value)}
+                  placeholder="XXXXX"
+                  className={`${inputClass} flex-1 tracking-wider`}
+                />
+                <button
+                  onClick={async () => {
+                    if (!discountCode.trim()) return;
+                    try {
+                      const res = await fetch(
+                        `/api/validar-descuento?codigo=${discountCode}`,
+                      );
+                      const data = await res.json();
+                      if (data.valido) setDiscountPct(data.porcentaje);
+                    } catch {
+                      /* ignore */
+                    }
+                  }}
+                  className="shrink-0 rounded-xl border border-cl-border bg-cl-card px-4 text-sm font-semibold text-white"
+                >
+                  Aplicar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Confirm */}
+        {step === 4 && selectedSvc && (
+          <div>
+            <div className="border-t border-[#223052] pt-3">
+              <div className="mb-1.5 flex justify-between text-[13px] text-[#9DA9C0]">
+                <span>{selectedSvc.nombre}</span>
+                <span className="font-mono-num">
+                  {money(selectedSvc.precio)}
+                </span>
+              </div>
+              {discountPct > 0 && (
+                <div className="mb-1.5 flex justify-between text-[13px] text-[#22D366]">
+                  <span>Descuento ({discountPct}%)</span>
+                  <span className="font-mono-num">
+                    -{money(Math.round((selectedSvc.precio * discountPct) / 100))}
+                  </span>
+                </div>
+              )}
+              <div className="mt-2 flex items-center justify-between">
+                <span className="text-sm font-bold">Total estimado</span>
+                <span className="font-mono-num text-xl font-bold text-[#22D366]">
+                  {money(
+                    Math.round(
+                      selectedSvc.precio * (1 - discountPct / 100),
+                    ),
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Footer CTA */}
+      <div className="border-t border-[#16203A] bg-cl-bg px-4 py-3">
+        <button
+          onClick={next}
+          disabled={!canNext() || submitting}
+          className="w-full rounded-[14px] py-[15px] text-[15px] font-bold text-white transition-all disabled:cursor-not-allowed"
+          style={{
+            background: canNext()
+              ? "linear-gradient(135deg, #3B6EF5, #8B5CF6)"
+              : "#1A2742",
+            color: canNext() ? "#fff" : "#46557A",
+            boxShadow: canNext()
+              ? "0 6px 18px -4px rgba(124,92,246,.55)"
+              : "none",
+          }}
+        >
+          {submitting
+            ? "Confirmando..."
+            : step === 4
+              ? "Confirmar reserva"
+              : "Continuar"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── DateTimeStep (internal) ──────────────────────────────────
+
+function DateTimeStep({
+  servicioId,
+  modalidad,
+  selectedDay,
+  selectedTime,
+  onSelectDay,
+  onSelectTime,
+}: {
+  servicioId: string;
+  modalidad: string;
+  selectedDay: string | null;
+  selectedTime: string | null;
+  onSelectDay: (d: string) => void;
+  onSelectTime: (t: string) => void;
+}) {
+  const [slots, setSlots] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [nightMode, setNightMode] = useState(false);
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const daysIn = new Date(year, month + 1, 0).getDate();
+  const firstWd = (new Date(year, month, 1).getDay() + 6) % 7;
+  const WD = ["L", "M", "M", "J", "V", "S", "D"];
+  const MONTHS = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+
+  const cells: (number | null)[] = [];
+  for (let i = 0; i < firstWd; i++) cells.push(null);
+  for (let d = 1; d <= daysIn; d++) cells.push(d);
+  while (cells.length % 7) cells.push(null);
+
+  async function loadSlots(dateStr: string) {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `/api/disponibilidad?fecha=${dateStr}&servicioId=${servicioId}&modalidad=${modalidad}`,
+      );
+      const data = await res.json();
+      setSlots(data);
+    } catch {
+      setSlots([]);
+    }
+    setLoading(false);
+  }
+
+  function handleDayClick(d: number) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    onSelectDay(dateStr);
+    loadSlots(dateStr);
+    setNightMode(false);
+  }
+
+  const selectedDayNum = selectedDay
+    ? parseInt(selectedDay.split("-")[2])
+    : null;
+  const selectedDow = selectedDay ? new Date(selectedDay).getDay() : null;
+  const isSaturday = selectedDow === 6;
+
+  const daySlots = nightMode
+    ? slots.filter((s) => parseInt(s) >= 20)
+    : slots.filter((s) => parseInt(s) < 20);
+
+  return (
+    <div>
+      {/* Month header */}
+      <div className="mb-2.5 flex items-center justify-between">
+        <span className="text-[15px] font-bold">
+          {MONTHS[month]} {year}
+        </span>
+      </div>
+
+      {/* Weekday headers */}
+      <div className="mb-1 grid grid-cols-7 gap-0.5">
+        {WD.map((w, i) => (
+          <div
+            key={i}
+            className="text-center text-[11px] font-bold text-[#5F6B85]"
+          >
+            {w}
+          </div>
+        ))}
+      </div>
+
+      {/* Days grid */}
+      <div className="mb-3.5 grid grid-cols-7 gap-0.5">
+        {cells.map((d, i) => {
+          if (!d) return <div key={i} className="h-[38px]" />;
+          const past = d < today.getDate();
+          const on = d === selectedDayNum;
+          const isToday = d === today.getDate();
+          return (
+            <button
+              key={i}
+              disabled={past}
+              onClick={() => handleDayClick(d)}
+              className="flex h-[38px] items-center justify-center rounded-[10px] font-mono-num text-sm transition-all"
+              style={{
+                background: on
+                  ? "linear-gradient(135deg, #3B6EF5, #8B5CF6)"
+                  : "transparent",
+                border:
+                  isToday && !on
+                    ? "1.5px solid #4D8BFF"
+                    : "1px solid transparent",
+                color: past ? "#39455E" : on ? "#fff" : "#E4E8F0",
+                fontWeight: on ? 700 : 500,
+                boxShadow: on
+                  ? "0 6px 18px -4px rgba(124,92,246,.55)"
+                  : "none",
+              }}
+            >
+              {d}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Saturday night toggle */}
+      {isSaturday && slots.some((s) => parseInt(s) >= 20) && (
+        <button
+          onClick={() => setNightMode(!nightMode)}
+          className="mb-4 flex w-full items-center gap-2.5 rounded-[13px] border px-3.5 py-3 text-left"
+          style={{
+            background: nightMode ? "rgba(124,92,246,.14)" : "#16213A",
+            borderColor: nightMode ? "#6D4FCF" : "#223052",
+          }}
+        >
+          <span className="text-base">🌙</span>
+          <div className="flex-1">
+            <div
+              className="text-[13px] font-bold"
+              style={{ color: nightMode ? "#C4B0FF" : "#F4F4F2" }}
+            >
+              Horario nocturno especial
+            </div>
+            <div
+              className="text-[11px]"
+              style={{ color: nightMode ? "#9B85D6" : "#5F6B85" }}
+            >
+              20:00 – 23:00
+            </div>
+          </div>
+          <span
+            className="relative h-6 w-[42px] rounded-full"
+            style={{
+              background: nightMode
+                ? "linear-gradient(135deg, #3B6EF5, #8B5CF6)"
+                : "#33405E",
+            }}
+          >
+            <span
+              className="absolute top-0.5 h-5 w-5 rounded-full bg-white transition-[left] duration-150"
+              style={{ left: nightMode ? 20 : 2 }}
+            />
+          </span>
+        </button>
+      )}
+
+      {/* Slots */}
+      {selectedDay && (
+        <>
+          <div className="mb-2.5 text-xs font-semibold text-[#9DA9C0]">
+            Horarios disponibles
+          </div>
+          {loading ? (
+            <div className="py-6 text-center text-sm text-[#5F6B85]">
+              Cargando horarios...
+            </div>
+          ) : daySlots.length === 0 ? (
+            <div className="py-6 text-center text-sm text-[#5F6B85]">
+              No hay horarios disponibles
+            </div>
+          ) : (
+            <div className="grid grid-cols-4 gap-2">
+              {daySlots.map((t) => {
+                const on = selectedTime === t;
+                return (
+                  <button
+                    key={t}
+                    onClick={() => onSelectTime(t)}
+                    className="rounded-[11px] border py-3 text-center font-mono-num text-[13px] font-semibold transition-all"
+                    style={{
+                      background: on
+                        ? "linear-gradient(135deg, #3B6EF5, #8B5CF6)"
+                        : "#1A2742",
+                      borderColor: on ? "transparent" : "#2A3A5E",
+                      color: on ? "#fff" : "#E4E8F0",
+                      boxShadow: on
+                        ? "0 6px 18px -4px rgba(124,92,246,.55)"
+                        : "none",
+                    }}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
