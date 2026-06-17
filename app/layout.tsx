@@ -5,6 +5,13 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Agenda Peluquería",
   description: "Sistema de turnos online",
+  manifest: "/manifest.json",
+  themeColor: "#131313",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Turnos",
+  },
 };
 
 export default function RootLayout({

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { format, startOfDay, endOfDay } from "date-fns";
 import TodayView from "@/components/admin/today/TodayView";
+import { HoyScreen } from "@/components/mobile/hoy/HoyScreen";
 import { getSlotDisponibles } from "@/lib/disponibilidad";
 
 export default async function HoyPage() {
@@ -21,13 +22,33 @@ export default async function HoyPage() {
   const slotsArray = await getSlotDisponibles(hoy, 30);
   const slotsLibres = slotsArray.length;
 
+  // Serialize for client components (Dates → ISO strings, Decimals → numbers)
+  const serializedTurnos = turnos.map((t) => ({
+    ...t,
+    fechaHora: t.fechaHora.toISOString(),
+    servicio: {
+      ...t.servicio,
+      precio: Number(t.servicio.precio),
+    },
+  }));
+
+  const slotsTotal = turnos.length + slotsLibres;
+
   return (
     <div className="flex flex-col overflow-auto">
-      <TodayView
-        turnos={turnos}
-        slotsLibres={slotsLibres}
-        fecha={format(hoy, "yyyy-MM-dd")}
-      />
+      {/* Desktop view */}
+      <div className="hidden md:block">
+        <TodayView
+          turnos={turnos}
+          slotsLibres={slotsLibres}
+          fecha={format(hoy, "yyyy-MM-dd")}
+        />
+      </div>
+
+      {/* Mobile view */}
+      <div className="md:hidden">
+        <HoyScreen turnos={serializedTurnos} slotsTotal={slotsTotal} />
+      </div>
     </div>
   );
 }

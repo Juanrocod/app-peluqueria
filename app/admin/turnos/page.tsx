@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import AccionesturnoRow from "@/components/admin/AccionesTurnoRow";
+import { TurnosScreen } from "@/components/mobile/turnos/TurnosScreen";
 
 export default async function TurnosPage() {
   const turnos = await prisma.turno.findMany({
@@ -10,8 +11,32 @@ export default async function TurnosPage() {
     take: 100,
   });
 
+  const serializedTurnos = turnos.map((t) => ({
+    id: t.id,
+    fechaHora: t.fechaHora.toISOString(),
+    clienteNombre: t.clienteNombre,
+    clienteTelefono: t.clienteTelefono,
+    clienteEmail: t.clienteEmail ?? null,
+    observaciones: t.observaciones ?? null,
+    modalidad: t.modalidad,
+    direccion: t.direccion ?? null,
+    estado: t.estado,
+    servicio: {
+      nombre: t.servicio.nombre,
+      precio: Number(t.servicio.precio),
+      duracion: t.servicio.duracion,
+    },
+  }));
+
   return (
     <div>
+      {/* Mobile view */}
+      <div className="md:hidden">
+        <TurnosScreen turnos={serializedTurnos} />
+      </div>
+
+      {/* Desktop view */}
+      <div className="hidden md:block">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">Turnos</h2>
         <a
@@ -70,6 +95,7 @@ export default async function TurnosPage() {
         {turnos.length === 0 && (
           <p className="text-center py-8 text-zinc-500">No hay turnos registrados</p>
         )}
+      </div>
       </div>
     </div>
   );
