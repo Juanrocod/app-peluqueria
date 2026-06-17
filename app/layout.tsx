@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { playfair, manrope, jetbrainsMono } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,8 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
-      <body className="min-h-screen bg-gray-50 text-gray-900">{children}</body>
+    <html lang="es" className={`${playfair.variable} ${manrope.variable} ${jetbrainsMono.variable}`}>
+      <body className="min-h-screen font-[family-name:var(--font-manrope)] antialiased">
+        {children}
+      </body>
     </html>
   );
 }

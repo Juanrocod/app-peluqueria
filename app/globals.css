@@ -47,3 +47,11 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Font utilities */
+.font-display {
+  font-family: var(--font-playfair), serif;
+}
+.font-mono-num {
+  font-family: var(--font-mono), monospace;
+}
