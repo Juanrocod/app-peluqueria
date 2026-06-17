@@ -28,7 +28,10 @@ export default async function ReservarPage() {
     <>
       {/* Mobile booking wizard */}
       <div className="md:hidden">
-        <BookingForm servicios={serializedServicios} />
+        <BookingForm
+          servicios={serializedServicios}
+          productos={productos.map((p) => ({ id: p.id, nombre: p.nombre, precio: Number(p.precio), imagenUrl: p.imagenUrl ?? "" }))}
+        />
       </div>
 
       {/* Desktop booking (existing) */}

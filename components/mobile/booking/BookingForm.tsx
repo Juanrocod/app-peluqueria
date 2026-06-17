@@ -11,11 +11,19 @@ interface Servicio {
   precio: number;
 }
 
-interface BookingFormProps {
-  servicios: Servicio[];
+interface Producto {
+  id: string;
+  nombre: string;
+  precio: number;
+  imagenUrl: string;
 }
 
-export function BookingForm({ servicios }: BookingFormProps) {
+interface BookingFormProps {
+  servicios: Servicio[];
+  productos?: Producto[];
+}
+
+export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   const [step, setStep] = useState(0);
   const [servicioId, setServicioId] = useState<string | null>(null);
   const [day, setDay] = useState<string | null>(null);
@@ -28,11 +36,20 @@ export function BookingForm({ servicios }: BookingFormProps) {
   const [obs, setObs] = useState("");
   const [discountCode, setDiscountCode] = useState("");
   const [discountPct, setDiscountPct] = useState(0);
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const selectedSvc = servicios.find((s) => s.id === servicioId);
+  const selectedProducts = productos.filter((p) => selectedProductIds.includes(p.id));
+  const productosTotal = selectedProducts.reduce((a, p) => a + p.precio, 0);
   const money = (n: number) => "$" + n.toLocaleString("es-AR");
+
+  function toggleProducto(id: string) {
+    setSelectedProductIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  }
 
   const canNext = useCallback(() => {
     if (step === 0) return !!servicioId;
@@ -61,6 +78,7 @@ export function BookingForm({ servicios }: BookingFormProps) {
         direccion: place === "home" ? address : undefined,
         servicioId: selectedSvc.id,
         descuentoAplicado: discountPct || undefined,
+        productoIds: selectedProductIds.length > 0 ? selectedProductIds : undefined,
       });
       setDone(true);
     } catch (err) {
@@ -133,6 +151,13 @@ export function BookingForm({ servicios }: BookingFormProps) {
                   "UBICACIÓN",
                   place === "home" ? "A domicilio" : "En el local",
                 ],
+                [
+                  "💈",
+                  "PRODUCTOS",
+                  selectedProducts.length > 0
+                    ? selectedProducts.map((p) => p.nombre).join(", ")
+                    : "Sin productos",
+                ],
               ] as const
             ).map(([emoji, label, value], i) => (
               <div
@@ -157,7 +182,7 @@ export function BookingForm({ servicios }: BookingFormProps) {
               <span className="font-mono-num text-xl font-bold text-[#22D366]">
                 {money(
                   selectedSvc
-                    ? selectedSvc.precio * (1 - discountPct / 100)
+                    ? Math.round(selectedSvc.precio * (1 - discountPct / 100) + productosTotal)
                     : 0,
                 )}
               </span>
@@ -176,6 +201,7 @@ export function BookingForm({ servicios }: BookingFormProps) {
                 setObs("");
                 setDiscountCode("");
                 setDiscountPct(0);
+                setSelectedProductIds([]);
                 setDone(false);
               }}
               className="w-full rounded-[13px] border border-cl-border bg-cl-slot py-3.5 text-sm font-semibold text-white"
@@ -472,16 +498,65 @@ export function BookingForm({ servicios }: BookingFormProps) {
           </div>
         )}
 
-        {/* Step 4: Confirm */}
+        {/* Step 4: Confirm + Products */}
         {step === 4 && selectedSvc && (
           <div>
+            {/* Products selection */}
+            {productos.length > 0 && (
+              <div className="mb-4">
+                <div className="mb-2 text-center">
+                  <div className="font-display text-lg font-semibold">¿Querés agregar productos?</div>
+                  <div className="mt-0.5 text-xs text-[#5F6B85]">Llevate algo para mantener tu estilo en casa.</div>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {productos.map((p) => {
+                    const on = selectedProductIds.includes(p.id);
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => toggleProducto(p.id)}
+                        className="flex w-full items-center gap-3 rounded-[14px] border px-3.5 py-3 text-left transition-all"
+                        style={{
+                          background: on ? "rgba(77,139,255,.1)" : "#16213A",
+                          borderColor: on ? "#4D8BFF" : "#223052",
+                        }}
+                      >
+                        <span className="flex h-[46px] w-[46px] items-center justify-center rounded-[10px] bg-cl-slot text-[22px]">
+                          🫙
+                        </span>
+                        <div className="flex-1">
+                          <div className="text-sm font-bold">{p.nombre}</div>
+                          <div className="mt-0.5 font-mono-num text-[13px] font-bold text-[#22D366]">{money(p.precio)}</div>
+                        </div>
+                        <span
+                          className="flex h-[22px] w-[22px] items-center justify-center rounded-[7px]"
+                          style={{
+                            background: on ? "#22D366" : "transparent",
+                            border: on ? "none" : "1.5px solid #2A3A5E",
+                            boxShadow: on ? "0 4px 12px -3px rgba(34,211,102,.5)" : "none",
+                          }}
+                        >
+                          {on && <Check size={13} color="#08130D" />}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Price summary */}
             <div className="border-t border-[#223052] pt-3">
               <div className="mb-1.5 flex justify-between text-[13px] text-[#9DA9C0]">
                 <span>{selectedSvc.nombre}</span>
-                <span className="font-mono-num">
-                  {money(selectedSvc.precio)}
-                </span>
+                <span className="font-mono-num">{money(selectedSvc.precio)}</span>
               </div>
+              {selectedProducts.map((p) => (
+                <div key={p.id} className="mb-1.5 flex justify-between text-[13px] text-[#9DA9C0]">
+                  <span>{p.nombre}</span>
+                  <span className="font-mono-num">{money(p.precio)}</span>
+                </div>
+              ))}
               {discountPct > 0 && (
                 <div className="mb-1.5 flex justify-between text-[13px] text-[#22D366]">
                   <span>Descuento ({discountPct}%)</span>
@@ -493,11 +568,7 @@ export function BookingForm({ servicios }: BookingFormProps) {
               <div className="mt-2 flex items-center justify-between">
                 <span className="text-sm font-bold">Total estimado</span>
                 <span className="font-mono-num text-xl font-bold text-[#22D366]">
-                  {money(
-                    Math.round(
-                      selectedSvc.precio * (1 - discountPct / 100),
-                    ),
-                  )}
+                  {money(Math.round(selectedSvc.precio * (1 - discountPct / 100) + productosTotal))}
                 </span>
               </div>
             </div>
