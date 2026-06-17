@@ -11,11 +11,12 @@ export const authConfig: NextAuthConfig = {
       const isLoggedIn = !!auth?.user;
       const isAdminRoute = nextUrl.pathname.startsWith("/admin");
       const isLoginPage = nextUrl.pathname === "/login";
+      const isRegistroPage = nextUrl.pathname === "/registro";
 
       if (isAdminRoute && !isLoggedIn) {
         return Response.redirect(new URL("/login", nextUrl));
       }
-      if (isLoginPage && isLoggedIn) {
+      if ((isLoginPage || isRegistroPage) && isLoggedIn) {
         return Response.redirect(new URL("/admin", nextUrl));
       }
       return true;
