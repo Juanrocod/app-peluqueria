@@ -124,10 +124,7 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
             return (
               <div key={dia} className="border-b border-[#1E1E20] last:border-b-0">
                 {/* Day row */}
-                <button
-                  onClick={() => setExpandedDay(expanded ? null : dia)}
-                  className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[#232325]"
-                >
+                <div className="flex w-full items-center gap-3 px-4 py-3">
                   <span
                     className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold"
                     style={{ background: active ? `${DAY_COLORS[dia]}20` : "#1E1E20", color: active ? DAY_COLORS[dia] : "#6F6F73" }}
@@ -138,21 +135,46 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
                     <div className={`text-sm font-semibold ${active ? "text-ap-text" : "text-ap-muted"}`}>{DAYS[dia]}</div>
                     <div className="text-[11px] text-ap-muted">{dayRange(dia)}</div>
                   </div>
-                  <span
-                    className="relative h-[26px] w-[44px] shrink-0 rounded-full"
+                  {/* Toggle: activar/desactivar día */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (active) {
+                        franjas.forEach((fr) => {
+                          startTransition(async () => {
+                            await eliminarFranjaAdmin(fr.id);
+                            router.refresh();
+                          });
+                        });
+                      } else {
+                        startTransition(async () => {
+                          await crearFranjaAdmin({ diaSemana: dia, horaApertura: "09:00", horaCierre: "18:00", tipoFranja: "POSITIVA" });
+                          router.refresh();
+                        });
+                        setExpandedDay(dia);
+                      }
+                    }}
+                    disabled={isPending}
+                    className="relative h-[26px] w-[44px] shrink-0 rounded-full transition-colors duration-150"
                     style={{ background: active ? "#22D366" : "#2A2A2C" }}
                   >
                     <span className="absolute top-[3px] h-5 w-5 rounded-full bg-white transition-[left] duration-150" style={{ left: active ? 21 : 3 }} />
-                  </span>
-                  {active && (
-                    expanded
+                  </button>
+                  {/* Chevron: expandir/colapsar (solo si hay franjas) */}
+                  <button
+                    onClick={() => setExpandedDay(expanded ? null : dia)}
+                    className="flex shrink-0"
+                    disabled={!active}
+                  >
+                    {expanded
                       ? <ChevronDown size={16} color="#2F6BFF" />
-                      : <ChevronRight size={16} color="#6F6F73" />
-                  )}
-                </button>
+                      : <ChevronRight size={16} color={active ? "#6F6F73" : "#3A3A3D"} />
+                    }
+                  </button>
+                </div>
 
                 {/* Expanded franjas */}
-                {expanded && active && (
+                {expanded && (
                   <div className="border-t border-[#1E1E20] bg-[#161618] px-4 py-3">
                     {franjas.map((fr) => (
                       <div key={fr.id} className="mb-2 flex items-center gap-2 rounded-[10px] border border-[#2A3A2C] bg-[#1A2A1C] px-3.5 py-2.5">
@@ -164,6 +186,10 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
                         </button>
                       </div>
                     ))}
+
+                    {franjas.length === 0 && (
+                      <div className="mb-2 text-center text-xs text-ap-muted">Sin franjas — agregá una para activar el día</div>
+                    )}
 
                     {addingFranjaDay === dia ? (
                       <form
