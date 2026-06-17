@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { format, startOfToday } from "date-fns";
 import ConfigPageClient from "@/components/admin/config/ConfigPageClient";
+import { HorariosMobile } from "@/components/mobile/config/HorariosMobile";
 
 export default async function HorariosPage() {
   const hoy    = startOfToday();
@@ -36,34 +37,25 @@ export default async function HorariosPage() {
   }));
 
   return (
-    <div className="flex flex-col gap-0">
-      {/* Header — hidden on mobile, the AppBar handles it */}
-      <div className="hidden border-b border-ap-border bg-ap-s2 px-4 py-4 md:block">
-        <p className="text-xs font-semibold uppercase tracking-widest text-ap-accent">
-          Config
-        </p>
-        <h1 className="mt-0.5 text-xl font-bold text-ap-text">Horarios de atención</h1>
-        <p className="mt-0.5 text-sm text-ap-sub">
-          Configurá tu disponibilidad semanal en 3 capas.
-        </p>
+    <>
+      {/* Mobile */}
+      <div className="md:hidden">
+        <HorariosMobile horarios={horariosData} bloqueos={bloqueosData} />
       </div>
 
-      {/* Mobile header */}
-      <div className="px-4 pt-1 pb-2 md:hidden">
-        <div className="flex items-center gap-2.5">
-          <span className="text-ap-danger">⏰</span>
-          <span className="font-display text-xl font-semibold">Horarios</span>
+      {/* Desktop */}
+      <div className="hidden md:block">
+        <div className="flex flex-col gap-0">
+          <div className="border-b border-ap-border bg-ap-s2 px-4 py-4">
+            <p className="text-xs font-semibold uppercase tracking-widest text-ap-accent">Config</p>
+            <h1 className="mt-0.5 text-xl font-bold text-ap-text">Horarios de atención</h1>
+            <p className="mt-0.5 text-sm text-ap-sub">Configurá tu disponibilidad semanal en 3 capas.</p>
+          </div>
+          <div className="overflow-auto px-4 py-4">
+            <ConfigPageClient horarios={horariosData} bloqueos={bloqueosData} />
+          </div>
         </div>
-        <p className="mt-1 text-xs text-ap-sub">Configurá tu disponibilidad semanal.</p>
       </div>
-
-      {/* Shared config component — works on both mobile and desktop */}
-      <div className="overflow-auto px-4 py-4 pb-20 md:pb-4">
-        <ConfigPageClient
-          horarios={horariosData}
-          bloqueos={bloqueosData}
-        />
-      </div>
-    </div>
+    </>
   );
 }
