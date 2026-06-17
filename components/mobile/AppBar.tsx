@@ -29,7 +29,7 @@ export function MobileAppBar({ businessName }: { businessName: string }) {
         </Link>
       </div>
 
-      <ConfigDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <ConfigDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} businessName={businessName} />
     </>
   );
 }

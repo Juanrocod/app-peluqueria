@@ -47,7 +47,10 @@
       "WebFetch(domain:app-peluqueria-sand.vercel.app)",
       "Skill(impeccable)",
       "Bash(python3 .claude/skills/ui-ux-pro-max/scripts/search.py \"admin dashboard dark mode premium elegant hair salon\" --design-system -p \"Peluqueria Admin\" -f markdown)",
-      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"admin dashboard dark mode premium elegant hair salon\" --design-system -p \"Peluqueria Admin\" -f markdown)"
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"admin dashboard dark mode premium elegant hair salon\" --design-system -p \"Peluqueria Admin\" -f markdown)",
+      "Bash(npx next *)",
+      "Bash(timeout 10)",
+      "Bash(findstr /i \"localhost ready\")"
     ]
   }
 }

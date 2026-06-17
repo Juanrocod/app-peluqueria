@@ -17,10 +17,28 @@ export default async function HorariosPage() {
     }),
   ]);
 
+  const horariosData = horarios.map((h) => ({
+    id: h.id,
+    diaSemana: h.diaSemana,
+    horaApertura: h.horaApertura,
+    horaCierre: h.horaCierre,
+    tipoFranja: h.tipoFranja,
+    motivo: h.motivo,
+  }));
+
+  const bloqueosData = bloqueos.map((b) => ({
+    id: b.id,
+    fecha: format(b.fecha, "yyyy-MM-dd"),
+    horaInicio: b.horaInicio,
+    horaFin: b.horaFin,
+    todoElDia: b.todoElDia,
+    motivo: b.motivo,
+  }));
+
   return (
     <div className="flex flex-col gap-0">
-      {/* Header */}
-      <div className="border-b border-ap-border bg-ap-s2 px-4 py-4">
+      {/* Header — hidden on mobile, the AppBar handles it */}
+      <div className="hidden border-b border-ap-border bg-ap-s2 px-4 py-4 md:block">
         <p className="text-xs font-semibold uppercase tracking-widest text-ap-accent">
           Config
         </p>
@@ -30,25 +48,20 @@ export default async function HorariosPage() {
         </p>
       </div>
 
-      {/* Accordion */}
-      <div className="overflow-auto px-4 py-4">
+      {/* Mobile header */}
+      <div className="px-4 pt-1 pb-2 md:hidden">
+        <div className="flex items-center gap-2.5">
+          <span className="text-ap-danger">⏰</span>
+          <span className="font-display text-xl font-semibold">Horarios</span>
+        </div>
+        <p className="mt-1 text-xs text-ap-sub">Configurá tu disponibilidad semanal.</p>
+      </div>
+
+      {/* Shared config component — works on both mobile and desktop */}
+      <div className="overflow-auto px-4 py-4 pb-20 md:pb-4">
         <ConfigPageClient
-          horarios={horarios.map((h) => ({
-            id: h.id,
-            diaSemana: h.diaSemana,
-            horaApertura: h.horaApertura,
-            horaCierre: h.horaCierre,
-            tipoFranja: h.tipoFranja,
-            motivo: h.motivo,
-          }))}
-          bloqueos={bloqueos.map((b) => ({
-            id: b.id,
-            fecha: format(b.fecha, "yyyy-MM-dd"),
-            horaInicio: b.horaInicio,
-            horaFin: b.horaFin,
-            todoElDia: b.todoElDia,
-            motivo: b.motivo,
-          }))}
+          horarios={horariosData}
+          bloqueos={bloqueosData}
         />
       </div>
     </div>

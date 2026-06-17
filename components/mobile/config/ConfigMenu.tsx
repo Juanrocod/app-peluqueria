@@ -1,12 +1,13 @@
 "use client";
 
-import { Settings, Scissors, Box, Clock, ChevronRight } from "lucide-react";
+import { Settings, Scissors, Box, Clock, Users, ChevronRight } from "lucide-react";
 
 const ITEMS = [
-  { key: "config",    label: "Configuración", sub: "Perfil y negocio",       Icon: Settings, color: "#2F6BFF" },
-  { key: "servicios", label: "Servicios",     sub: "Precios y duración",     Icon: Scissors, color: "#B79CFF" },
-  { key: "productos", label: "Productos",     sub: "Stock y precios",        Icon: Box,      color: "#E8A33D" },
-  { key: "horarios",  label: "Horarios",      sub: "Días y disponibilidad",  Icon: Clock,    color: "#F26157" },
+  { key: "config",     label: "Configuración", sub: "Perfil y negocio",       Icon: Settings, color: "#2F6BFF" },
+  { key: "servicios",  label: "Servicios",     sub: "Precios y duración",     Icon: Scissors, color: "#B79CFF" },
+  { key: "peluqueros", label: "Peluqueros",    sub: "Equipo de trabajo",      Icon: Users,    color: "#34D399" },
+  { key: "productos",  label: "Productos",     sub: "Stock y precios",        Icon: Box,      color: "#E8A33D" },
+  { key: "horarios",   label: "Horarios",      sub: "Días y disponibilidad",  Icon: Clock,    color: "#F26157" },
 ] as const;
 
 interface ConfigMenuProps {
