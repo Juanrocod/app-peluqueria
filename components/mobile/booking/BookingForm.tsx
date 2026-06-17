@@ -586,7 +586,7 @@ function DateTimeStep({
         `/api/disponibilidad?fecha=${dateStr}&servicioId=${servicioId}&modalidad=${modalidad}`,
       );
       const data = await res.json();
-      setSlots(data);
+      setSlots(Array.isArray(data) ? data : data.slots ?? []);
     } catch {
       setSlots([]);
     }
