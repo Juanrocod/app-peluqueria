@@ -633,30 +633,43 @@ function DateTimeStep({
   const [nightMode, setNightMode] = useState(false);
 
   const today = new Date();
-  const year = today.getFullYear();
-  const month = today.getMonth();
-  const daysIn = new Date(year, month + 1, 0).getDate();
-  const firstWd = (new Date(year, month, 1).getDay() + 6) % 7;
+  const [viewYear, setViewYear] = useState(today.getFullYear());
+  const [viewMonth, setViewMonth] = useState(today.getMonth());
+
+  const isCurrentMonth =
+    viewYear === today.getFullYear() && viewMonth === today.getMonth();
+
+  const daysIn = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const firstWd = (new Date(viewYear, viewMonth, 1).getDay() + 6) % 7;
   const WD = ["L", "M", "M", "J", "V", "S", "D"];
   const MONTHS = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
   ];
 
   const cells: (number | null)[] = [];
   for (let i = 0; i < firstWd; i++) cells.push(null);
   for (let d = 1; d <= daysIn; d++) cells.push(d);
   while (cells.length % 7) cells.push(null);
+
+  function handlePrevMonth() {
+    if (isCurrentMonth) return;
+    if (viewMonth === 0) {
+      setViewMonth(11);
+      setViewYear(viewYear - 1);
+    } else {
+      setViewMonth(viewMonth - 1);
+    }
+  }
+
+  function handleNextMonth() {
+    if (viewMonth === 11) {
+      setViewMonth(0);
+      setViewYear(viewYear + 1);
+    } else {
+      setViewMonth(viewMonth + 1);
+    }
+  }
 
   async function loadSlots(dateStr: string) {
     setLoading(true);
@@ -673,7 +686,7 @@ function DateTimeStep({
   }
 
   function handleDayClick(d: number) {
-    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
     onSelectDay(dateStr);
     loadSlots(dateStr);
     setNightMode(false);
@@ -682,6 +695,10 @@ function DateTimeStep({
   const selectedDayNum = selectedDay
     ? parseInt(selectedDay.split("-")[2])
     : null;
+  const selectedInCurrentView = selectedDay
+    ? parseInt(selectedDay.split("-")[1]) - 1 === viewMonth &&
+      parseInt(selectedDay.split("-")[0]) === viewYear
+    : false;
   const selectedDow = selectedDay ? new Date(selectedDay).getDay() : null;
   const isSaturday = selectedDow === 6;
 
@@ -689,22 +706,39 @@ function DateTimeStep({
     ? slots.filter((s) => parseInt(s) >= 20)
     : slots.filter((s) => parseInt(s) < 20);
 
+  function isDayPast(d: number) {
+    if (viewYear < today.getFullYear()) return true;
+    if (viewYear === today.getFullYear() && viewMonth < today.getMonth()) return true;
+    if (isCurrentMonth && d < today.getDate()) return true;
+    return false;
+  }
+
   return (
     <div>
-      {/* Month header */}
+      {/* Month header with navigation */}
       <div className="mb-2.5 flex items-center justify-between">
+        <button
+          onClick={handlePrevMonth}
+          disabled={isCurrentMonth}
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-[#5F6B85] disabled:opacity-30"
+        >
+          &lsaquo;
+        </button>
         <span className="text-[15px] font-bold">
-          {MONTHS[month]} {year}
+          {MONTHS[viewMonth]} {viewYear}
         </span>
+        <button
+          onClick={handleNextMonth}
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-[#5F6B85]"
+        >
+          &rsaquo;
+        </button>
       </div>
 
       {/* Weekday headers */}
       <div className="mb-1 grid grid-cols-7 gap-0.5">
         {WD.map((w, i) => (
-          <div
-            key={i}
-            className="text-center text-[11px] font-bold text-[#5F6B85]"
-          >
+          <div key={i} className="text-center text-[11px] font-bold text-[#5F6B85]">
             {w}
           </div>
         ))}
@@ -714,9 +748,9 @@ function DateTimeStep({
       <div className="mb-3.5 grid grid-cols-7 gap-0.5">
         {cells.map((d, i) => {
           if (!d) return <div key={i} className="h-[38px]" />;
-          const past = d < today.getDate();
-          const on = d === selectedDayNum;
-          const isToday = d === today.getDate();
+          const past = isDayPast(d);
+          const on = selectedInCurrentView && d === selectedDayNum;
+          const isToday = isCurrentMonth && d === today.getDate();
           return (
             <button
               key={i}
@@ -756,17 +790,11 @@ function DateTimeStep({
         >
           <span className="text-base">🌙</span>
           <div className="flex-1">
-            <div
-              className="text-[13px] font-bold"
-              style={{ color: nightMode ? "#C4B0FF" : "#F4F4F2" }}
-            >
+            <div className="text-[13px] font-bold" style={{ color: nightMode ? "#C4B0FF" : "#F4F4F2" }}>
               Horario nocturno especial
             </div>
-            <div
-              className="text-[11px]"
-              style={{ color: nightMode ? "#9B85D6" : "#5F6B85" }}
-            >
-              20:00 – 23:00
+            <div className="text-[11px]" style={{ color: nightMode ? "#9B85D6" : "#5F6B85" }}>
+              20:00 - 23:00
             </div>
           </div>
           <span
@@ -786,7 +814,7 @@ function DateTimeStep({
       )}
 
       {/* Slots */}
-      {selectedDay && (
+      {selectedDay && selectedInCurrentView && (
         <>
           <div className="mb-2.5 text-xs font-semibold text-[#9DA9C0]">
             Horarios disponibles
