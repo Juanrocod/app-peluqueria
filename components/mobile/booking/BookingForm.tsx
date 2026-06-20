@@ -39,6 +39,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const selectedSvc = servicios.find((s) => s.id === servicioId);
   const selectedProducts = productos.filter((p) => selectedProductIds.includes(p.id));
@@ -63,6 +64,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   async function handleConfirm() {
     if (!selectedSvc || !day || !time) return;
     setSubmitting(true);
+    setError("");
     try {
       const [y, m, d] = day.split("-").map(Number);
       const [h, min] = time.split(":").map(Number);
@@ -82,7 +84,8 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
       });
       setDone(true);
     } catch (err) {
-      console.error(err);
+      const msg = err instanceof Error ? err.message : "Error al confirmar el turno";
+      setError(msg);
     }
     setSubmitting(false);
   }
@@ -572,6 +575,11 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                 </span>
               </div>
             </div>
+            {error && (
+              <div className="mt-3 rounded-xl border border-[#6E3232] bg-[rgba(242,97,87,.1)] px-3.5 py-3 text-sm text-[#F26157]">
+                {error}
+              </div>
+            )}
           </div>
         )}
       </div>

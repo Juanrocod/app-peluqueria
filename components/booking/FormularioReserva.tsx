@@ -167,7 +167,6 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
       });
       setPaso("confirmado");
     } catch (e) {
-      console.error("[confirmarReserva]", e);
       const msg = e instanceof Error ? e.message : "Error desconocido";
       setErrorReserva(`No se pudo guardar el turno: ${msg}`);
     } finally {
@@ -484,7 +483,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
             {descuento && (
               <div className="flex justify-between text-sm text-green-400">
                 <span>Descuento ({descuento.porcentaje}%)</span>
-                <span>-${((servicio?.precio ?? 0 + [...productosSeleccionados].reduce((acc, id) => acc + (productos.find((p) => p.id === id)?.precio ?? 0), 0)) * descuento.porcentaje / 100).toLocaleString("es-AR")}</span>
+                <span>-${(((servicio?.precio ?? 0) + [...productosSeleccionados].reduce((acc, id) => acc + (productos.find((p) => p.id === id)?.precio ?? 0), 0)) * descuento.porcentaje / 100).toLocaleString("es-AR")}</span>
               </div>
             )}
             <div className="flex justify-between font-bold mt-1 text-slate-100">
