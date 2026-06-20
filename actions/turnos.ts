@@ -23,8 +23,11 @@ export async function crearTurno(data: {
   const servicio = await prisma.servicio.findUnique({ where: { id: data.servicioId } });
   if (!servicio) throw new Error("Servicio no encontrado");
 
-  const fecha = new Date(data.fechaHora.getFullYear(), data.fechaHora.getMonth(), data.fechaHora.getDate());
-  const horaStr = `${String(data.fechaHora.getHours()).padStart(2, "0")}:${String(data.fechaHora.getMinutes()).padStart(2, "0")}`;
+  const iso = data.fechaHora.toISOString();
+  const [datePart, timePart] = iso.split("T");
+  const [yearStr, monthStr, dayStr] = datePart.split("-").map(Number);
+  const fecha = new Date(Date.UTC(yearStr, monthStr - 1, dayStr));
+  const horaStr = timePart.slice(0, 5);
   const modalidad = data.modalidad ?? "PRESENCIAL";
 
   const { getSlotDisponibles } = await import("@/lib/disponibilidad");
