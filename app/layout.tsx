@@ -30,6 +30,11 @@ export default function RootLayout({
     <html lang="es" className={`${playfair.variable} ${manrope.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-screen font-[family-name:var(--font-manrope)] antialiased">
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js")`,
+          }}
+        />
       </body>
     </html>
   );
