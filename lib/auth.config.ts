@@ -9,12 +9,17 @@ export const authConfig: NextAuthConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isAdminRoute = nextUrl.pathname.startsWith("/admin");
+      const isAdminRoute =
+        nextUrl.pathname.startsWith("/admin") ||
+        nextUrl.pathname.startsWith("/api/admin");
       const isLoginPage = nextUrl.pathname === "/login";
       const isRegistroPage = nextUrl.pathname === "/registro";
 
-      if (isAdminRoute && !isLoggedIn) {
-        return Response.redirect(new URL("/login", nextUrl));
+      if (isAdminRoute) {
+        if (!isLoggedIn) return Response.redirect(new URL("/login", nextUrl));
+        const role = (auth?.user as { role?: string })?.role;
+        if (role !== "ADMIN") return Response.redirect(new URL("/login", nextUrl));
+        return true;
       }
       if ((isLoginPage || isRegistroPage) && isLoggedIn) {
         return Response.redirect(new URL("/admin", nextUrl));
