@@ -20,35 +20,44 @@ export async function crearTurno(data: {
   descuentoAplicado?: number;
   productoIds?: string[];
 }) {
-  try {
-    const turno = await prisma.turno.create({
-      data: {
-        fechaHora: data.fechaHora,
-        clienteNombre: data.clienteNombre,
-        clienteTelefono: data.clienteTelefono,
-        clienteEmail: data.clienteEmail ?? null,
-        observaciones: data.observaciones ?? null,
-        modalidad: data.modalidad ?? "PRESENCIAL",
-        direccion: data.direccion ?? null,
-        servicioId: data.servicioId,
-        peluqueroId: data.peluqueroId ?? null,
-        notas: data.notas ?? null,
-        origen: data.origen ?? "ONLINE",
-        descuentoAplicado: data.descuentoAplicado ?? null,
-        ...(data.productoIds?.length
-          ? { productos: { create: data.productoIds.map((id) => ({ productoId: id })) } }
-          : {}),
-      },
-    });
+  const servicio = await prisma.servicio.findUnique({ where: { id: data.servicioId } });
+  if (!servicio) throw new Error("Servicio no encontrado");
 
-    revalidatePath("/admin");
-    revalidatePath("/admin/turnos");
-    return { ok: true, id: turno.id };
-  } catch (err) {
-    console.error("[crearTurno] Error:", err);
-    const msg = err instanceof Error ? err.message : "Error desconocido";
-    throw new Error(msg);
+  const fecha = new Date(data.fechaHora.getFullYear(), data.fechaHora.getMonth(), data.fechaHora.getDate());
+  const horaStr = `${String(data.fechaHora.getHours()).padStart(2, "0")}:${String(data.fechaHora.getMinutes()).padStart(2, "0")}`;
+  const modalidad = data.modalidad ?? "PRESENCIAL";
+
+  const { getSlotDisponibles } = await import("@/lib/disponibilidad");
+  const slotsDisponibles = await getSlotDisponibles(fecha, servicio.duracion, false, modalidad);
+
+  if (!slotsDisponibles.includes(horaStr)) {
+    throw new Error("El horario seleccionado ya no está disponible. Por favor elegí otro.");
   }
+
+  const turno = await prisma.turno.create({
+    data: {
+      fechaHora: data.fechaHora,
+      clienteNombre: data.clienteNombre,
+      clienteTelefono: data.clienteTelefono,
+      clienteEmail: data.clienteEmail ?? null,
+      observaciones: data.observaciones ?? null,
+      modalidad,
+      direccion: data.direccion ?? null,
+      servicioId: data.servicioId,
+      peluqueroId: data.peluqueroId ?? null,
+      notas: data.notas ?? null,
+      origen: data.origen ?? "ONLINE",
+      descuentoAplicado: data.descuentoAplicado ?? null,
+      duracionSnapshot: servicio.duracion,
+      ...(data.productoIds?.length
+        ? { productos: { create: data.productoIds.map((id) => ({ productoId: id })) } }
+        : {}),
+    },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/turnos");
+  return { ok: true, id: turno.id };
 }
 
 export async function actualizarEstadoTurno(id: string, estado: EstadoTurno) {
