@@ -28,6 +28,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className={`${playfair.variable} ${manrope.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+      </head>
       <body className="min-h-screen font-[family-name:var(--font-manrope)] antialiased">
         {children}
         <script
