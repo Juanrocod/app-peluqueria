@@ -72,6 +72,8 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
 
       await crearTurno({
         fechaHora,
+        fechaStr: day,
+        horaSlot: time,
         clienteNombre: name,
         clienteTelefono: phone,
         clienteEmail: email || undefined,

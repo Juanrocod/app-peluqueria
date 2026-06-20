@@ -50,6 +50,8 @@ export default function FormularioTurnoManual({
 
       await crearTurno({
         fechaHora,
+        fechaStr: fecha,
+        horaSlot: hora,
         clienteNombre: nombre,
         clienteTelefono: telefono,
         servicioId,

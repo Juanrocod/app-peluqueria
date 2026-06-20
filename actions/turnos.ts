@@ -7,6 +7,8 @@ import { requireAdmin } from "@/lib/auth-guard";
 
 export async function crearTurno(data: {
   fechaHora: Date;
+  fechaStr?: string;
+  horaSlot?: string;
   clienteNombre: string;
   clienteTelefono: string;
   clienteEmail?: string;
@@ -23,25 +25,22 @@ export async function crearTurno(data: {
   const servicio = await prisma.servicio.findUnique({ where: { id: data.servicioId } });
   if (!servicio) throw new Error("Servicio no encontrado");
 
-  const fecha = new Date(data.fechaHora.getFullYear(), data.fechaHora.getMonth(), data.fechaHora.getDate());
-  const horaStr = `${String(data.fechaHora.getHours()).padStart(2, "0")}:${String(data.fechaHora.getMinutes()).padStart(2, "0")}`;
+  let fecha: Date;
+  let horaStr: string;
+
+  if (data.fechaStr && data.horaSlot) {
+    const [y, m, d] = data.fechaStr.split("-").map(Number);
+    fecha = new Date(y, m - 1, d);
+    horaStr = data.horaSlot;
+  } else {
+    fecha = new Date(data.fechaHora.getFullYear(), data.fechaHora.getMonth(), data.fechaHora.getDate());
+    horaStr = `${String(data.fechaHora.getHours()).padStart(2, "0")}:${String(data.fechaHora.getMinutes()).padStart(2, "0")}`;
+  }
+
   const modalidad = data.modalidad ?? "PRESENCIAL";
 
   const { getSlotDisponibles } = await import("@/lib/disponibilidad");
   const slotsDisponibles = await getSlotDisponibles(fecha, servicio.duracion, false, modalidad);
-
-  console.log("[DEBUG crearTurno]", JSON.stringify({
-    fechaHoraISO: data.fechaHora.toISOString(),
-    fechaISO: fecha.toISOString(),
-    horaStr,
-    diaSemana: fecha.getDay(),
-    slotsCount: slotsDisponibles.length,
-    slotsFirst5: slotsDisponibles.slice(0, 5),
-    slotsLast5: slotsDisponibles.slice(-5),
-    match: slotsDisponibles.includes(horaStr),
-    serverTZ: process.env.TZ,
-    serverDate: new Date().toString(),
-  }));
 
   if (!slotsDisponibles.includes(horaStr)) {
     throw new Error("El horario seleccionado ya no está disponible. Por favor elegí otro.");

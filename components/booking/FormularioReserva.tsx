@@ -155,6 +155,8 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
       const [hh, mm] = hora.split(":").map(Number);
       await crearTurno({
         fechaHora: new Date(a, m - 1, d, hh, mm),
+        fechaStr: fecha,
+        horaSlot: hora,
         clienteNombre: nombre,
         clienteTelefono: telefono,
         clienteEmail: email || undefined,
