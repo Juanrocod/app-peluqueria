@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { EstadoTurno, OrigenTurno } from "@prisma/client";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function crearTurno(data: {
   fechaHora: Date;
@@ -51,6 +52,7 @@ export async function crearTurno(data: {
 }
 
 export async function actualizarEstadoTurno(id: string, estado: EstadoTurno) {
+  await requireAdmin();
   if (estado === "COMPLETADO") {
     // Capturar snapshot de precios actuales antes de que puedan cambiar
     const turno = await prisma.turno.findUnique({
@@ -97,6 +99,7 @@ export async function actualizarEstadoTurno(id: string, estado: EstadoTurno) {
 }
 
 export async function eliminarTurno(id: string) {
+  await requireAdmin();
   await prisma.turno.update({ where: { id }, data: { estado: "CANCELADO" } });
   revalidatePath("/admin");
   revalidatePath("/admin/turnos");

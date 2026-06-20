@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function crearFranja(data: {
   diaSemana: number;
@@ -10,6 +11,7 @@ export async function crearFranja(data: {
   etiqueta?: string;
   esBloqueo?: boolean;
 }) {
+  await requireAdmin();
   await prisma.horarioAtencion.create({ data: { ...data, activo: true } });
   revalidatePath("/admin/horarios");
 }
@@ -21,6 +23,7 @@ export async function crearFranjaAdmin(data: {
   tipoFranja: "POSITIVA" | "NEGATIVA";
   motivo?: string;
 }) {
+  await requireAdmin();
   await prisma.horarioAtencion.create({
     data: {
       diaSemana: data.diaSemana,
@@ -36,6 +39,7 @@ export async function crearFranjaAdmin(data: {
 }
 
 export async function eliminarFranjaAdmin(id: string) {
+  await requireAdmin();
   await prisma.horarioAtencion.delete({ where: { id } });
   revalidatePath("/admin/horarios");
 }
@@ -44,16 +48,19 @@ export async function actualizarFranja(
   id: string,
   data: { horaApertura?: string; horaCierre?: string; etiqueta?: string; activo?: boolean }
 ) {
+  await requireAdmin();
   await prisma.horarioAtencion.update({ where: { id }, data });
   revalidatePath("/admin/horarios");
 }
 
 export async function eliminarFranja(id: string) {
+  await requireAdmin();
   await prisma.horarioAtencion.delete({ where: { id } });
   revalidatePath("/admin/horarios");
 }
 
 export async function toggleFranja(id: string, activo: boolean) {
+  await requireAdmin();
   await prisma.horarioAtencion.update({ where: { id }, data: { activo } });
   revalidatePath("/admin/horarios");
 }
