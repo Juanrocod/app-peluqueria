@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { Clock, ChevronRight, ChevronDown, Edit, Trash2, Plus, Info } from "lucide-react";
+import { Clock, ChevronRight, ChevronDown, Trash2, Plus, Info } from "lucide-react";
 import { crearFranjaAdmin, eliminarFranjaAdmin } from "@/actions/horarios";
 import { crearBloqueoAdmin, eliminarBloqueo } from "@/actions/bloqueos";
 
@@ -33,14 +32,14 @@ interface HorariosMobileProps {
   bloqueos: Bloqueo[];
 }
 
-export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
+export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBloqueos }: HorariosMobileProps) {
+  const [horarios, setHorarios] = useState(initialHorarios);
+  const [bloqueosList, setBloqueosList] = useState(initialBloqueos);
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
   const [addingFranjaDay, setAddingFranjaDay] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
-  const router = useRouter();
 
   const positivas = horarios.filter((h) => h.tipoFranja === "POSITIVA");
-
   const dayFranjas = (dia: number) => positivas.filter((h) => h.diaSemana === dia);
   const dayHasSchedule = (dia: number) => dayFranjas(dia).length > 0;
 
@@ -51,31 +50,62 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
   };
 
   function handleDeleteFranja(id: string) {
+    setHorarios((prev) => prev.filter((h) => h.id !== id));
     startTransition(async () => {
       await eliminarFranjaAdmin(id);
-      router.refresh();
     });
   }
 
   function handleAddFranja(form: FormData, dia: number) {
+    const desde = form.get("desde") as string;
+    const hasta = form.get("hasta") as string;
+    const tempId = `temp-${Date.now()}`;
+    setHorarios((prev) => [
+      ...prev,
+      { id: tempId, diaSemana: dia, horaApertura: desde, horaCierre: hasta, tipoFranja: "POSITIVA", motivo: null },
+    ]);
+    setAddingFranjaDay(null);
     startTransition(async () => {
-      await crearFranjaAdmin({
-        diaSemana: dia,
-        horaApertura: form.get("desde") as string,
-        horaCierre: form.get("hasta") as string,
-        tipoFranja: "POSITIVA",
-      });
-      setAddingFranjaDay(null);
-      router.refresh();
+      await crearFranjaAdmin({ diaSemana: dia, horaApertura: desde, horaCierre: hasta, tipoFranja: "POSITIVA" });
     });
   }
 
+  function handleToggleDay(dia: number) {
+    const franjas = dayFranjas(dia);
+    if (franjas.length > 0) {
+      setHorarios((prev) => prev.filter((h) => !(h.diaSemana === dia && h.tipoFranja === "POSITIVA")));
+      startTransition(async () => {
+        for (const fr of franjas) {
+          await eliminarFranjaAdmin(fr.id);
+        }
+      });
+    } else {
+      const tempId = `temp-${Date.now()}`;
+      setHorarios((prev) => [
+        ...prev,
+        { id: tempId, diaSemana: dia, horaApertura: "09:00", horaCierre: "18:00", tipoFranja: "POSITIVA", motivo: null },
+      ]);
+      setExpandedDay(dia);
+      startTransition(async () => {
+        await crearFranjaAdmin({ diaSemana: dia, horaApertura: "09:00", horaCierre: "18:00", tipoFranja: "POSITIVA" });
+      });
+    }
+  }
+
   function handleToggleBloqueo(dateStr: string) {
-    const existing = bloqueos.find((b) => b.fecha === dateStr);
-    startTransition(async () => {
-      if (existing) {
+    const existing = bloqueosList.find((b) => b.fecha === dateStr);
+    if (existing) {
+      setBloqueosList((prev) => prev.filter((b) => b.id !== existing.id));
+      startTransition(async () => {
         await eliminarBloqueo(existing.id);
-      } else {
+      });
+    } else {
+      const tempId = `temp-${Date.now()}`;
+      setBloqueosList((prev) => [
+        ...prev,
+        { id: tempId, fecha: dateStr, horaInicio: "00:00", horaFin: "23:59", todoElDia: true, motivo: null },
+      ]);
+      startTransition(async () => {
         const [y, m, d] = dateStr.split("-").map(Number);
         await crearBloqueoAdmin({
           fecha: new Date(y, m - 1, d),
@@ -83,12 +113,10 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
           horaInicio: "00:00",
           horaFin: "23:59",
         });
-      }
-      router.refresh();
-    });
+      });
+    }
   }
 
-  // Mini calendar for blocked days
   const today = new Date();
   const [calYear, setCalYear] = useState(today.getFullYear());
   const [calMonth, setCalMonth] = useState(today.getMonth());
@@ -102,14 +130,13 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
   const MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
   return (
-    <div className="pb-20">
+    <div className="pb-4">
       <div className="mb-4 flex items-center gap-2.5 px-4">
         <Clock size={19} color="#F26157" />
         <span className="font-display text-xl font-semibold">Horarios</span>
       </div>
 
       <div className="px-4">
-        {/* Days and schedules */}
         <div className="mb-4 rounded-2xl border border-ap-border-soft bg-ap-s1 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#1E1E20]">
             <span className="text-[11px] font-bold uppercase tracking-wider text-ap-muted">Días y horarios</span>
@@ -123,7 +150,6 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
 
             return (
               <div key={dia} className="border-b border-[#1E1E20] last:border-b-0">
-                {/* Day row */}
                 <div className="flex w-full items-center gap-3 px-4 py-3">
                   <span
                     className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold"
@@ -135,32 +161,14 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
                     <div className={`text-sm font-semibold ${active ? "text-ap-text" : "text-ap-muted"}`}>{DAYS[dia]}</div>
                     <div className="text-[11px] text-ap-muted">{dayRange(dia)}</div>
                   </div>
-                  {/* Toggle: activar/desactivar día */}
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (active) {
-                        franjas.forEach((fr) => {
-                          startTransition(async () => {
-                            await eliminarFranjaAdmin(fr.id);
-                            router.refresh();
-                          });
-                        });
-                      } else {
-                        startTransition(async () => {
-                          await crearFranjaAdmin({ diaSemana: dia, horaApertura: "09:00", horaCierre: "18:00", tipoFranja: "POSITIVA" });
-                          router.refresh();
-                        });
-                        setExpandedDay(dia);
-                      }
-                    }}
+                    onClick={(e) => { e.stopPropagation(); handleToggleDay(dia); }}
                     disabled={isPending}
                     className="relative h-[26px] w-[44px] shrink-0 rounded-full transition-colors duration-150"
                     style={{ background: active ? "#22D366" : "#2A2A2C" }}
                   >
                     <span className="absolute top-[3px] h-5 w-5 rounded-full bg-white transition-[left] duration-150" style={{ left: active ? 21 : 3 }} />
                   </button>
-                  {/* Chevron: expandir/colapsar (solo si hay franjas) */}
                   <button
                     onClick={() => setExpandedDay(expanded ? null : dia)}
                     className="flex shrink-0"
@@ -173,7 +181,6 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
                   </button>
                 </div>
 
-                {/* Expanded franjas */}
                 {expanded && (
                   <div className="border-t border-[#1E1E20] bg-[#161618] px-4 py-3">
                     {franjas.map((fr) => (
@@ -217,7 +224,6 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
           })}
         </div>
 
-        {/* Servicio a domicilio */}
         <div className="mb-4 rounded-2xl border border-ap-border-soft bg-ap-s1 p-4">
           <div className="mb-2.5 flex items-center justify-between">
             <div>
@@ -236,7 +242,6 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
           </div>
         </div>
 
-        {/* Blocked dates calendar */}
         <div className="rounded-2xl border border-ap-border-soft bg-ap-s1 p-4">
           <div className="mb-3 text-[11px] font-bold uppercase tracking-wider text-ap-muted">Días bloqueados</div>
           <div className="mb-3 flex items-center justify-between">
@@ -253,8 +258,8 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
             {calCells.map((d, i) => {
               if (!d) return <div key={i} className="h-9" />;
               const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-              const isBlocked = bloqueos.some((b) => b.fecha === dateStr);
-              const isToday = calYear === today.getFullYear() && calMonth === today.getMonth() && d === today.getDate();
+              const isBlocked = bloqueosList.some((b) => b.fecha === dateStr);
+              const isTodayCell = calYear === today.getFullYear() && calMonth === today.getMonth() && d === today.getDate();
               const isPast = new Date(calYear, calMonth, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
               return (
@@ -265,9 +270,9 @@ export function HorariosMobile({ horarios, bloqueos }: HorariosMobileProps) {
                   className="flex h-9 items-center justify-center rounded-lg font-mono-num text-xs transition-colors"
                   style={{
                     background: isBlocked ? "rgba(242,97,87,.2)" : "transparent",
-                    color: isPast ? "#3A3A3D" : isBlocked ? "#F26157" : isToday ? "#2F6BFF" : "#D9D9DB",
-                    border: isToday ? "1px solid #2F6BFF" : "1px solid transparent",
-                    fontWeight: isToday || isBlocked ? 700 : 400,
+                    color: isPast ? "#3A3A3D" : isBlocked ? "#F26157" : isTodayCell ? "#2F6BFF" : "#D9D9DB",
+                    border: isTodayCell ? "1px solid #2F6BFF" : "1px solid transparent",
+                    fontWeight: isTodayCell || isBlocked ? 700 : 400,
                   }}
                 >
                   {d}
