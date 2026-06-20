@@ -27,14 +27,18 @@ export async function crearTurno(data: {
 
   let fecha: Date;
   let horaStr: string;
+  let fechaHoraDB: Date;
 
   if (data.fechaStr && data.horaSlot) {
     const [y, m, d] = data.fechaStr.split("-").map(Number);
+    const [h, min] = data.horaSlot.split(":").map(Number);
     fecha = new Date(y, m - 1, d);
     horaStr = data.horaSlot;
+    fechaHoraDB = new Date(y, m - 1, d, h, min);
   } else {
     fecha = new Date(data.fechaHora.getFullYear(), data.fechaHora.getMonth(), data.fechaHora.getDate());
     horaStr = `${String(data.fechaHora.getHours()).padStart(2, "0")}:${String(data.fechaHora.getMinutes()).padStart(2, "0")}`;
+    fechaHoraDB = data.fechaHora;
   }
 
   const modalidad = data.modalidad ?? "PRESENCIAL";
@@ -48,7 +52,7 @@ export async function crearTurno(data: {
 
   const turno = await prisma.turno.create({
     data: {
-      fechaHora: data.fechaHora,
+      fechaHora: fechaHoraDB,
       clienteNombre: data.clienteNombre,
       clienteTelefono: data.clienteTelefono,
       clienteEmail: data.clienteEmail ?? null,
