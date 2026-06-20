@@ -52,7 +52,11 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
   function handleDeleteFranja(id: string) {
     setHorarios((prev) => prev.filter((h) => h.id !== id));
     startTransition(async () => {
-      await eliminarFranjaAdmin(id);
+      try {
+        await eliminarFranjaAdmin(id);
+      } catch (err) {
+        console.error("Error al eliminar franja:", err);
+      }
     });
   }
 
@@ -66,7 +70,12 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
     ]);
     setAddingFranjaDay(null);
     startTransition(async () => {
-      await crearFranjaAdmin({ diaSemana: dia, horaApertura: desde, horaCierre: hasta, tipoFranja: "POSITIVA" });
+      try {
+        const creada = await crearFranjaAdmin({ diaSemana: dia, horaApertura: desde, horaCierre: hasta, tipoFranja: "POSITIVA" });
+        setHorarios((prev) => prev.map((h) => h.id === tempId ? { ...h, id: creada.id } : h));
+      } catch (err) {
+        console.error("Error al crear franja:", err);
+      }
     });
   }
 
@@ -75,8 +84,12 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
     if (franjas.length > 0) {
       setHorarios((prev) => prev.filter((h) => !(h.diaSemana === dia && h.tipoFranja === "POSITIVA")));
       startTransition(async () => {
-        for (const fr of franjas) {
-          await eliminarFranjaAdmin(fr.id);
+        try {
+          for (const fr of franjas) {
+            await eliminarFranjaAdmin(fr.id);
+          }
+        } catch (err) {
+          console.error("Error al eliminar franjas del día:", err);
         }
       });
     } else {
@@ -87,7 +100,12 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
       ]);
       setExpandedDay(dia);
       startTransition(async () => {
-        await crearFranjaAdmin({ diaSemana: dia, horaApertura: "09:00", horaCierre: "18:00", tipoFranja: "POSITIVA" });
+        try {
+          const creada = await crearFranjaAdmin({ diaSemana: dia, horaApertura: "09:00", horaCierre: "18:00", tipoFranja: "POSITIVA" });
+          setHorarios((prev) => prev.map((h) => h.id === tempId ? { ...h, id: creada.id } : h));
+        } catch (err) {
+          console.error("Error al crear franja del día:", err);
+        }
       });
     }
   }
@@ -97,7 +115,11 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
     if (existing) {
       setBloqueosList((prev) => prev.filter((b) => b.id !== existing.id));
       startTransition(async () => {
-        await eliminarBloqueo(existing.id);
+        try {
+          await eliminarBloqueo(existing.id);
+        } catch (err) {
+          console.error("Error al eliminar bloqueo:", err);
+        }
       });
     } else {
       const tempId = `temp-${Date.now()}`;
@@ -106,13 +128,18 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
         { id: tempId, fecha: dateStr, horaInicio: "00:00", horaFin: "23:59", todoElDia: true, motivo: null },
       ]);
       startTransition(async () => {
-        const [y, m, d] = dateStr.split("-").map(Number);
-        await crearBloqueoAdmin({
-          fecha: new Date(y, m - 1, d),
-          todoElDia: true,
-          horaInicio: "00:00",
-          horaFin: "23:59",
-        });
+        try {
+          const [y, m, d] = dateStr.split("-").map(Number);
+          const creado = await crearBloqueoAdmin({
+            fecha: new Date(y, m - 1, d),
+            todoElDia: true,
+            horaInicio: "00:00",
+            horaFin: "23:59",
+          });
+          setBloqueosList((prev) => prev.map((b) => b.id === tempId ? { ...b, id: creado.id } : b));
+        } catch (err) {
+          console.error("Error al crear bloqueo:", err);
+        }
       });
     }
   }

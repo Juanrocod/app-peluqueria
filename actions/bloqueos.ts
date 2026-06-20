@@ -15,7 +15,7 @@ export async function crearBloqueoAdmin(data: {
   const fechaUTC = new Date(
     Date.UTC(data.fecha.getFullYear(), data.fecha.getMonth(), data.fecha.getDate())
   );
-  await prisma.bloqueoHorario.create({
+  const creado = await prisma.bloqueoHorario.create({
     data: {
       fecha: fechaUTC,
       todoElDia: data.todoElDia,
@@ -25,6 +25,7 @@ export async function crearBloqueoAdmin(data: {
     },
   });
   revalidatePath("/admin/horarios");
+  return creado;
 }
 
 export async function crearBloqueo(data: {

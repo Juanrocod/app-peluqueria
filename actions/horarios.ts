@@ -24,7 +24,7 @@ export async function crearFranjaAdmin(data: {
   motivo?: string;
 }) {
   await requireAdmin();
-  await prisma.horarioAtencion.create({
+  const creada = await prisma.horarioAtencion.create({
     data: {
       diaSemana: data.diaSemana,
       horaApertura: data.horaApertura,
@@ -36,6 +36,7 @@ export async function crearFranjaAdmin(data: {
     },
   });
   revalidatePath("/admin/horarios");
+  return creada;
 }
 
 export async function eliminarFranjaAdmin(id: string) {

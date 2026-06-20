@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { TipoFranja } from "@prisma/client";
+import { auth } from "@/lib/auth";
 
 const HORA_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 
@@ -37,6 +38,11 @@ function validarBody(body: unknown): { cambios: Cambio[]; granularidad: 30 | 60 
 // Persiste los cambios de la grilla en HorarioAtencion.
 // Cada cambio corresponde a una celda (diaSemana + hora de inicio del slot).
 export async function POST(req: NextRequest) {
+  const session = await auth();
+  if ((session?.user as { role?: string })?.role !== "ADMIN") {
+    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+  }
+
   let body: unknown;
   try {
     body = await req.json();
