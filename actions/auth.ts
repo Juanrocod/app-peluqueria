@@ -3,12 +3,18 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
+// FASE 2: Migrar a sistema de código de invitación cuando se escale a multi-tenant
 export async function registrarPeluquero(data: {
   nombreNegocio: string;
   nombre: string;
   email: string;
   password: string;
 }) {
+  const adminExists = await prisma.user.findFirst({ where: { rol: "ADMIN" } });
+  if (adminExists) {
+    return { ok: false, error: "Ya existe una cuenta de administrador registrada." };
+  }
+
   const existing = await prisma.user.findUnique({ where: { email: data.email } });
   if (existing) {
     return { ok: false, error: "Ya existe una cuenta con ese email." };
