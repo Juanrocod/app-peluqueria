@@ -1,12 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, Scissors, Plus } from "lucide-react";
+import { Menu, Scissors, Plus, Share2 } from "lucide-react";
 import Link from "next/link";
 import { ConfigDrawer } from "./ConfigDrawer";
 
 export function MobileAppBar({ businessName }: { businessName: string }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  async function handleShare() {
+    const url = `${window.location.origin}/reservar`;
+    const shareData = {
+      title: businessName,
+      text: `Reservá tu turno en ${businessName}`,
+      url,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch {
+        // User cancelled share
+      }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }
 
   return (
     <>
@@ -20,6 +42,13 @@ export function MobileAppBar({ businessName }: { businessName: string }) {
         <span className="flex-1 truncate font-display text-base font-semibold">
           {businessName}
         </span>
+        <button
+          onClick={handleShare}
+          className="flex items-center justify-center rounded-[10px] border border-ap-border bg-ap-s1 p-1.5"
+          title={copied ? "Link copiado" : "Compartir link de reservas"}
+        >
+          <Share2 size={17} color={copied ? "#22D366" : "#ADADB0"} />
+        </button>
         <Link
           href="/admin/turnos/nuevo"
           className="flex items-center gap-1.5 rounded-[10px] bg-ap-primary px-3 py-1.5 text-xs font-bold text-white"
