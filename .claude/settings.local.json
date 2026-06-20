@@ -50,7 +50,19 @@
       "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"admin dashboard dark mode premium elegant hair salon\" --design-system -p \"Peluqueria Admin\" -f markdown)",
       "Bash(npx next *)",
       "Bash(timeout 10)",
-      "Bash(findstr /i \"localhost ready\")"
+      "Bash(findstr /i \"localhost ready\")",
+      "Bash(bash __TRACKED_VAR__/review-package 0147a98 925f8c5)",
+      "Bash(bash __TRACKED_VAR__/task-brief docs/superpowers/plans/2026-06-20-fase1-produccion.md 2)",
+      "Bash(bash __TRACKED_VAR__/review-package 925f8c5 3997a1b)",
+      "Bash(bash __TRACKED_VAR__/task-brief docs/superpowers/plans/2026-06-20-fase1-produccion.md 7)",
+      "Bash(bash __TRACKED_VAR__/review-package 3be6032 aa3e5ac)",
+      "Bash(bash __TRACKED_VAR__/task-brief docs/superpowers/plans/2026-06-20-fase1-produccion.md 8)",
+      "Bash(bash __TRACKED_VAR__/review-package aa3e5ac 42f8634)",
+      "Bash(git rev-list *)",
+      "Bash(git log *)",
+      "WebFetch(domain:app-peluqueria-git-desarrollo-juanrocod-s-projects.vercel.app)",
+      "Bash(rm app/api/debug-session/route.ts)",
+      "Bash(rmdir app/api/debug-session)"
     ]
   }
 }
