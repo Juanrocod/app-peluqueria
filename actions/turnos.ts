@@ -30,6 +30,19 @@ export async function crearTurno(data: {
   const { getSlotDisponibles } = await import("@/lib/disponibilidad");
   const slotsDisponibles = await getSlotDisponibles(fecha, servicio.duracion, false, modalidad);
 
+  console.log("[DEBUG crearTurno]", JSON.stringify({
+    fechaHoraISO: data.fechaHora.toISOString(),
+    fechaISO: fecha.toISOString(),
+    horaStr,
+    diaSemana: fecha.getDay(),
+    slotsCount: slotsDisponibles.length,
+    slotsFirst5: slotsDisponibles.slice(0, 5),
+    slotsLast5: slotsDisponibles.slice(-5),
+    match: slotsDisponibles.includes(horaStr),
+    serverTZ: process.env.TZ,
+    serverDate: new Date().toString(),
+  }));
+
   if (!slotsDisponibles.includes(horaStr)) {
     throw new Error("El horario seleccionado ya no está disponible. Por favor elegí otro.");
   }
