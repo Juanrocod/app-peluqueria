@@ -12,8 +12,6 @@ export default async function AdminLayout({
 }) {
   const session = await auth();
   if (!session?.user) redirect("/login");
-  const role = (session.user as { role?: string }).role;
-  if (role !== "ADMIN") redirect("/reservar");
 
   const marcaNombre = await prisma.configuracionApp
     .findUnique({ where: { clave: "marca_nombre" } })
