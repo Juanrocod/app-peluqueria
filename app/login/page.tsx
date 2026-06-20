@@ -1,20 +1,41 @@
 import { signIn } from "@/lib/auth";
+import { AuthError } from "next-auth";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-export default function LoginPage() {
+export default function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   async function handleLogin(formData: FormData) {
     "use server";
-    await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
-      redirectTo: "/admin",
-    });
+    try {
+      await signIn("credentials", {
+        email: formData.get("email"),
+        password: formData.get("password"),
+        redirectTo: "/admin",
+      });
+    } catch (error) {
+      if (error instanceof AuthError) {
+        redirect("/login?error=credentials");
+      }
+      throw error;
+    }
   }
+
+  return <LoginContent action={handleLogin} searchParams={searchParams} />;
+}
+
+async function LoginContent({
+  action,
+  searchParams,
+}: {
+  action: (formData: FormData) => Promise<void>;
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const params = await searchParams;
+  const hasError = params.error === "credentials";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-ap-bg px-6">
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="mb-8 flex flex-col items-center">
           <div className="mb-3.5 flex h-[58px] w-[58px] items-center justify-center rounded-[18px] border-[1.5px] border-[#233556] bg-[#16203A]">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2F6BFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -25,12 +46,17 @@ export default function LoginPage() {
               <path d="M8.12 8.12 12 12" />
             </svg>
           </div>
-          <div className="font-display text-[26px] font-semibold tracking-tight">BarberFras</div>
+          <div className="font-display text-[26px] font-semibold tracking-tight">Agenda Turnos</div>
           <div className="mt-1 text-[13px] text-ap-muted">Bienvenido de vuelta</div>
         </div>
 
-        {/* Form */}
-        <form action={handleLogin} className="flex flex-col gap-3.5">
+        {hasError && (
+          <div className="mb-4 rounded-xl border border-ap-danger/30 bg-ap-danger/10 px-4 py-3 text-center text-sm text-ap-danger">
+            Email o contraseña incorrectos.
+          </div>
+        )}
+
+        <form action={action} className="flex flex-col gap-3.5">
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-ap-sub">
               Email
@@ -56,13 +82,6 @@ export default function LoginPage() {
             />
           </div>
 
-          <Link
-            href="#"
-            className="-mt-1 self-end text-[13px] font-semibold text-ap-primary"
-          >
-            ¿Olvidaste tu contraseña?
-          </Link>
-
           <button
             type="submit"
             className="mt-1 w-full rounded-[14px] bg-ap-primary py-[15px] text-[15px] font-bold text-white transition-colors hover:bg-ap-primary-dk"
@@ -71,7 +90,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Register link */}
         <div className="mt-7 text-center text-sm">
           <span className="text-ap-muted">¿No tenés cuenta? </span>
           <Link href="/registro" className="font-bold text-ap-primary">

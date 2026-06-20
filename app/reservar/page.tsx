@@ -1,6 +1,25 @@
+import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import FormularioReserva from "@/components/booking/FormularioReserva";
 import { BookingForm } from "@/components/mobile/booking/BookingForm";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { prisma } = await import("@/lib/prisma");
+  const config = await prisma.configuracionApp.findMany();
+  const configMap = Object.fromEntries(config.map((r) => [r.clave, r.valor]));
+  const nombre = configMap.marca_nombre || "Tu Peluquería";
+  const descripcion = configMap.marca_descripcion || "Reservá tu turno de forma rápida y sencilla.";
+
+  return {
+    title: `Reservar turno | ${nombre}`,
+    description: descripcion,
+    openGraph: {
+      title: `Reservar turno | ${nombre}`,
+      description: descripcion,
+      type: "website",
+    },
+  };
+}
 
 export default async function ReservarPage() {
   const [servicios, productos, configRows] = await Promise.all([
