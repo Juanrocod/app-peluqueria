@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { X, Settings, Scissors, Users, Box, Clock, ChevronRight } from "lucide-react";
+import { X, Settings, Scissors, Users, Box, Clock, ChevronRight, LogOut } from "lucide-react";
+import { logout } from "@/app/actions/auth-actions";
 
 const MENU_ITEMS = [
   { href: "/admin/configuracion", label: "Configuración", sub: "Perfil y negocio",       Icon: Settings, color: "#2F6BFF" },
@@ -68,6 +69,23 @@ export function ConfigDrawer({ open, onClose, businessName }: { open: boolean; o
             </button>
           ))}
         </nav>
+
+        {/* Logout */}
+        <div className="border-t border-[#161618] px-5 py-4">
+          <form action={logout}>
+            <button
+              type="submit"
+              className="flex w-full items-center gap-3 rounded-[10px] px-2 py-2.5 text-left transition-colors hover:bg-ap-s1"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-[10px]" style={{ background: "rgba(242,97,87,.1)", border: "1px solid rgba(242,97,87,.2)" }}>
+                <LogOut size={18} color="#F26157" />
+              </span>
+              <div className="flex-1">
+                <div className="text-sm font-semibold text-ap-danger">Cerrar sesión</div>
+              </div>
+            </button>
+          </form>
+        </div>
       </div>
     </>
   );
