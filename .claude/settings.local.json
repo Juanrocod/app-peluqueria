@@ -62,7 +62,8 @@
       "Bash(git log *)",
       "WebFetch(domain:app-peluqueria-git-desarrollo-juanrocod-s-projects.vercel.app)",
       "Bash(rm app/api/debug-session/route.ts)",
-      "Bash(rmdir app/api/debug-session)"
+      "Bash(rmdir app/api/debug-session)",
+      "Bash(npx prisma *)"
     ]
   }
 }

@@ -32,8 +32,8 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
   const money = (n: number) => "$" + n.toLocaleString("es-AR");
 
   function handleAction(estado: "CONFIRMADO" | "CANCELADO" | "COMPLETADO") {
-    startTransition(() => {
-      actualizarEstadoTurno(turno.id, estado);
+    startTransition(async () => {
+      await actualizarEstadoTurno(turno.id, estado);
     });
   }
 
