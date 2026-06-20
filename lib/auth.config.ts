@@ -17,8 +17,6 @@ export const authConfig: NextAuthConfig = {
 
       if (isAdminRoute) {
         if (!isLoggedIn) return Response.redirect(new URL("/login", nextUrl));
-        const role = (auth?.user as { role?: string })?.role;
-        if (role !== "ADMIN") return Response.redirect(new URL("/reservar", nextUrl));
         return true;
       }
       if ((isLoginPage || isRegistroPage) && isLoggedIn) {
