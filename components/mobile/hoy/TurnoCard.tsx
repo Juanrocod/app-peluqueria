@@ -27,8 +27,8 @@ export function TurnoCard(props: TurnoCardProps) {
   function handleComplete(e: React.MouseEvent) {
     e.stopPropagation();
     if (isDone) return;
-    startTransition(() => {
-      actualizarEstadoTurno(props.id, "COMPLETADO");
+    startTransition(async () => {
+      await actualizarEstadoTurno(props.id, "COMPLETADO");
     });
   }
 

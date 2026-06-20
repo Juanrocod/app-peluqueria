@@ -105,6 +105,7 @@ export async function actualizarEstadoTurno(id: string, estado: EstadoTurno) {
   revalidatePath("/admin");
   revalidatePath("/admin/turnos");
   revalidatePath("/admin/ganancias");
+  revalidatePath("/admin/hoy");
 }
 
 export async function eliminarTurno(id: string) {
