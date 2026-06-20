@@ -76,7 +76,7 @@ export default function AdminSidebar({
       </aside>
 
       {/* ── Main content ────────────────────────────────── */}
-      <main className="flex-1 overflow-auto bg-ap-bg p-0 md:p-6">
+      <main className="flex-1 overflow-x-hidden overflow-y-auto bg-ap-bg p-0 pb-20 md:p-6 md:pb-6">
         {children}
       </main>
 

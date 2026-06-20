@@ -39,6 +39,8 @@ body {
   background-color: var(--color-ap-bg);
   color: var(--color-ap-text);
   min-height: 100dvh;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 @media (prefers-reduced-motion: reduce) {
