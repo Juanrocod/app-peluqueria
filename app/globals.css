@@ -57,3 +57,9 @@ body {
 .font-mono-num {
   font-family: var(--font-mono), monospace;
 }
+
+@keyframes spring {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
