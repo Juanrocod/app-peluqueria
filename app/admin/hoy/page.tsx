@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { format, startOfDay, endOfDay } from "date-fns";
 import TodayView from "@/components/admin/today/TodayView";
 import { HoyScreen } from "@/components/mobile/hoy/HoyScreen";
+import { PullToRefresh } from "@/components/ui/PullToRefresh";
 import { getSlotDisponibles } from "@/lib/disponibilidad";
 
 export default async function HoyPage() {
@@ -49,8 +50,10 @@ export default async function HoyPage() {
       </div>
 
       {/* Mobile view */}
-      <div className="md:hidden">
-        <HoyScreen turnos={serializedTurnos} slotsTotal={slotsTotal} />
+      <div className="flex flex-1 flex-col md:hidden">
+        <PullToRefresh>
+          <HoyScreen turnos={serializedTurnos} slotsTotal={slotsTotal} />
+        </PullToRefresh>
       </div>
     </div>
   );

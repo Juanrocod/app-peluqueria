@@ -97,7 +97,7 @@ export function HoyScreen({ turnos, slotsTotal }: HoyScreenProps) {
       </div>
 
       {/* Turno list */}
-      <div className="mt-3 flex-1 overflow-y-auto px-4">
+      <div data-scroll className="mt-3 flex-1 overflow-y-auto px-4">
         <div className="mb-2.5 text-[11px] font-bold uppercase tracking-wider text-ap-muted">
           Turnos del día
         </div>
