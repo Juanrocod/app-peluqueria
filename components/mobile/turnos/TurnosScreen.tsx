@@ -57,10 +57,10 @@ export function TurnosScreen({ turnos }: TurnosScreenProps) {
     <div className="flex flex-1 flex-col pb-16">
       <div className="px-4 pt-2">
         {/* Title */}
-        <div className="mb-1 flex items-end justify-between">
+        <div className="mb-0.5 flex items-end justify-between">
           <div>
-            <div className="font-display text-[26px] font-semibold">Turnos</div>
-            <div className="font-mono-num text-xs text-ap-muted">
+            <div className="font-display text-[28px] font-bold">Turnos</div>
+            <div className="mt-1.5 font-mono-num text-xs text-ap-muted">
               {filtered.length} turno{filtered.length !== 1 ? "s" : ""}
             </div>
           </div>
@@ -70,7 +70,7 @@ export function TurnosScreen({ turnos }: TurnosScreenProps) {
         </div>
 
         {/* Tabs */}
-        <div className="mb-3 flex gap-0 rounded-[11px] border border-ap-border-soft bg-ap-s1 p-[3px]">
+        <div className="mt-2.5 mb-3 flex gap-0 rounded-[11px] border border-ap-border-soft bg-ap-s1 p-[3px]">
           {(["prox", "hist"] as const).map((t) => (
             <button
               key={t}
