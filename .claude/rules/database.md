@@ -6,19 +6,24 @@ paths:
 
 # Base de Datos y Seguridad
 
-## Ciberseguridad y Blindaje de Datos
-- Aplicar **máxima compartimentación** en el diseño de endpoints, APIs, middleware y esquemas.
-- Los datos sensibles (información de clientes, turnos, ganancias) deben estar **completamente cegados** ante intentos de extracción externa o scraping.
-- Nunca exponer IDs internos, relaciones ni campos sensibles en respuestas de API públicas.
-- Validar y sanitizar toda entrada en el servidor. No confiar en validaciones de cliente solamente.
+## Neon DB (PostgreSQL Serverless)
+- Conexión via connection pooler. El pooler no soporta `prisma migrate deploy` — las migraciones se corren con `prisma migrate dev` en local o desde el dashboard de Neon.
+- `prisma generate` debe estar en `postinstall` o `build` para que Vercel genere el cliente.
+
+## Zona Horaria en Base de Datos
+- Los campos `DateTime` de Prisma se almacenan como UTC en Neon.
+- El servidor fuerza `TZ=America/Argentina/Buenos_Aires` (ver `next.config.mjs`), por lo que al leer un `Date` de Prisma y usar `getHours()`, se obtiene hora argentina.
+- **NO** convertir manualmente a UTC al comparar slots — el sistema ya es consistente con el TZ forzado del servidor.
+
+## Seguridad de Datos
+- Aplicar máxima compartimentación en endpoints y APIs.
+- Nunca exponer IDs internos ni campos sensibles en respuestas de API públicas.
+- Validar y sanitizar toda entrada en el servidor. No confiar en validaciones de cliente.
 - Usar variables de entorno para credenciales. Nunca hardcodear strings de conexión.
 
-## Manejo de Timezone en Base de Datos
-- Todos los campos de fecha/hora se almacenan en **UTC**.
-- La conversión a timezone local del negocio ocurre exclusivamente en la capa de presentación.
-- Al leer timestamps de la DB, siempre convertir a `Date` con UTC explícito antes de operar.
-
 ## Concurrencia y Transacciones
-- Las operaciones de reserva de turnos deben ejecutarse dentro de una **transacción atómica**.
-- Usar `SELECT FOR UPDATE` o bloqueo optimista para prevenir double-booking en slots.
-- En caso de conflicto, la transacción falla limpiamente y retorna un error manejable por el cliente.
+- Las operaciones de reserva de turnos usan check-then-create con `duracionSnapshot` dentro de la server action.
+- En caso de conflicto, retornar error manejable por el cliente con mensaje claro para elegir otro horario.
+
+## Regla: No Migrar Sin Aprobación
+Cualquier cambio al schema de Prisma debe ser propuesto y aprobado por el usuario antes de ejecutar `prisma migrate`.
