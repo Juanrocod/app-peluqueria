@@ -21,7 +21,7 @@ export function ProximoBanner({ nombre, hora }: ProximoBannerProps) {
           {nombre} · {hora}
         </div>
       </div>
-      <span className="font-mono-num text-[13px] font-bold text-ap-primary">
+      <span className="rounded-lg bg-[rgba(34,211,102,.12)] px-2.5 py-1 font-mono-num text-[13px] font-bold text-[#34D399]">
         {hora}
       </span>
     </div>

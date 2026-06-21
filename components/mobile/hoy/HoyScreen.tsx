@@ -50,7 +50,7 @@ export function HoyScreen({ turnos, slotsTotal }: HoyScreenProps) {
         <div className="mb-0.5 flex items-end justify-between">
           <div>
             <div className="font-display text-2xl font-bold">Hoy</div>
-            <div className="mt-0.5 font-mono-num text-xs text-ap-muted">
+            <div className="mt-0.5 font-mono-num text-xs capitalize text-ap-muted">
               {format(today, "EEEE d 'de' MMMM", { locale: es })}
             </div>
           </div>
@@ -74,7 +74,7 @@ export function HoyScreen({ turnos, slotsTotal }: HoyScreenProps) {
 
         {/* Stats */}
         <div className="mb-3 grid grid-cols-3 gap-1.5">
-          <StatChip label="Libres" value={free} color="#6F6F73" />
+          <StatChip label="Libres" value={free} color="#F4F4F2" />
           <StatChip label="Ganancia est." value={money(gTotal)} color="#22D366" />
           <StatChip label="Realizado" value={money(gDone)} color="#2F6BFF" />
         </div>
