@@ -91,9 +91,8 @@ async function LoginContent({
         </form>
 
         <div className="mt-7 text-center text-sm">
-          <span className="text-ap-muted">¿No tenés cuenta? </span>
-          <Link href="/registro" className="font-bold text-ap-primary">
-            Registrate
+          <Link href="/forgot-password" className="font-semibold text-ap-primary">
+            ¿Olvidaste tu contraseña?
           </Link>
         </div>
       </div>
