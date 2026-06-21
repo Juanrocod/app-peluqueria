@@ -14,7 +14,7 @@ export default async function HoyPage() {
       fechaHora: { gte: desde, lte: hasta },
       estado: { notIn: ["CANCELADO"] },
     },
-    include: { servicio: true },
+    include: { servicio: true, productos: { include: { producto: true } } },
     orderBy: { fechaHora: "asc" },
   });
 
@@ -30,6 +30,9 @@ export default async function HoyPage() {
       ...t.servicio,
       precio: Number(t.servicio.precio),
     },
+    productos: t.productos.map((tp) => ({
+      nombre: tp.producto.nombre,
+    })),
   }));
 
   const slotsTotal = turnos.length + slotsLibres;

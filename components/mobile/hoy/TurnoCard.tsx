@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ChevronRight, MapPin, Scissors, Phone, Tag, Check } from "lucide-react";
+import { ChevronRight, MapPin, Scissors, Phone, Tag, Check, ShoppingBag } from "lucide-react";
 import { actualizarEstadoTurno } from "@/actions/turnos";
 
 interface TurnoCardProps {
@@ -16,6 +16,7 @@ interface TurnoCardProps {
   direccion?: string | null;
   telefono: string;
   observaciones?: string | null;
+  productos?: { nombre: string }[];
 }
 
 export function TurnoCard(props: TurnoCardProps) {
@@ -124,6 +125,25 @@ export function TurnoCard(props: TurnoCardProps) {
             <div>
               <div className="text-[10px] font-bold uppercase tracking-wider text-ap-muted">Teléfono</div>
               <div className="mt-0.5 text-[13px] font-semibold text-ap-text">{props.telefono}</div>
+            </div>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[rgba(34,211,102,.08)]">
+              <ShoppingBag size={15} color="#34D399" />
+            </span>
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-ap-muted">Productos</div>
+              {props.productos && props.productos.length > 0 ? (
+                <div className="mt-1 flex flex-wrap gap-1.5">
+                  {props.productos.map((p, i) => (
+                    <span key={i} className="rounded-md bg-[rgba(34,211,102,.12)] px-2 py-0.5 text-[11px] font-semibold text-[#34D399]">
+                      {p.nombre}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-0.5 text-[13px] text-ap-muted">—</div>
+              )}
             </div>
           </div>
           {props.observaciones && (
