@@ -49,8 +49,8 @@ export function HoyScreen({ turnos, slotsTotal }: HoyScreenProps) {
       <div className="px-4 pt-5">
         <div className="mb-0.5 flex items-end justify-between">
           <div>
-            <div className="font-display text-2xl font-bold">Hoy</div>
-            <div className="mt-0.5 font-mono-num text-xs capitalize text-ap-muted">
+            <div className="font-display text-[28px] font-bold">Hoy</div>
+            <div className="mt-1.5 font-mono-num text-xs capitalize text-ap-muted">
               {format(today, "EEEE d 'de' MMMM", { locale: es })}
             </div>
           </div>

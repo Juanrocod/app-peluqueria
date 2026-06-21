@@ -27,7 +27,7 @@ export function MobileBottomNav() {
             href={href}
             className="flex flex-1 flex-col items-center gap-1 pb-2 pt-2"
           >
-            <Icon size={24} color={color} strokeWidth={2} />
+            <Icon size={26} color={color} strokeWidth={2} />
             <span
               className="text-[10px]"
               style={{ color, fontWeight: isActive ? 700 : 600 }}
