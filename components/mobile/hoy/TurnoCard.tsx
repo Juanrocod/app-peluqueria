@@ -71,7 +71,7 @@ export function TurnoCard(props: TurnoCardProps) {
           </div>
         </div>
 
-        <div className={`font-mono-num text-sm font-bold ${isDone ? "text-ap-muted" : "text-ap-text"}`}>
+        <div className={`font-mono-num text-[15px] font-bold ${isDone ? "text-ap-muted" : "text-ap-text"}`}>
           {props.hora}
         </div>
 
@@ -97,7 +97,7 @@ export function TurnoCard(props: TurnoCardProps) {
 
       {/* Accordion */}
       {expanded && (
-        <div className="flex flex-col gap-2.5 border-t border-[#1E2A1E] bg-[#161E16] px-3.5 py-3">
+        <div className="flex flex-col gap-2.5 border-t border-[#2A2A2C] bg-[#1A1A1C] px-3.5 py-3">
           <div className="flex items-start gap-2.5">
             <span className={`flex h-7 w-7 items-center justify-center rounded-lg ${isHome ? "bg-[rgba(232,163,61,.1)]" : "bg-[rgba(34,211,102,.08)]"}`}>
               <MapPin size={15} color={isHome ? "#E8A33D" : "#34D399"} />
