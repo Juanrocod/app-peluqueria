@@ -2,6 +2,7 @@
 
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { Sun, Moon } from "lucide-react";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StatChip } from "@/components/ui/StatChip";
 import { ProximoBanner } from "./ProximoBanner";
@@ -98,30 +99,57 @@ export function HoyScreen({ turnos, slotsTotal }: HoyScreenProps) {
 
       {/* Turno list */}
       <div data-scroll className="mt-3 flex-1 overflow-y-auto px-4">
-        <div className="mb-2.5 text-[11px] font-bold uppercase tracking-wider text-ap-muted">
-          Turnos del día
-        </div>
-        {turnos.map((t) => (
-          <TurnoCard
-            key={t.id}
-            id={t.id}
-            nombre={t.clienteNombre}
-            servicio={t.servicio.nombre}
-            duracion={t.servicio.duracion}
-            precio={Number(t.servicio.precio)}
-            hora={format(new Date(t.fechaHora), "HH:mm")}
-            estado={t.estado}
-            modalidad={t.modalidad}
-            direccion={t.direccion}
-            telefono={t.clienteTelefono}
-            observaciones={t.observaciones}
-            productos={t.productos}
-          />
-        ))}
-        {turnos.length === 0 && (
+        {turnos.length === 0 ? (
           <div className="py-10 text-center text-sm text-ap-muted">
             No hay turnos para hoy
           </div>
+        ) : (
+          (() => {
+            const morning = turnos.filter((t) => new Date(t.fechaHora).getHours() < 13);
+            const afternoon = turnos.filter((t) => new Date(t.fechaHora).getHours() >= 13);
+
+            const renderTurnos = (items: typeof turnos) =>
+              items.map((t) => (
+                <TurnoCard
+                  key={t.id}
+                  id={t.id}
+                  nombre={t.clienteNombre}
+                  servicio={t.servicio.nombre}
+                  duracion={t.servicio.duracion}
+                  precio={Number(t.servicio.precio)}
+                  hora={format(new Date(t.fechaHora), "HH:mm")}
+                  estado={t.estado}
+                  modalidad={t.modalidad}
+                  direccion={t.direccion}
+                  telefono={t.clienteTelefono}
+                  observaciones={t.observaciones}
+                  productos={t.productos}
+                />
+              ));
+
+            return (
+              <>
+                {morning.length > 0 && (
+                  <div>
+                    <div className="mb-2 flex items-center gap-2">
+                      <Sun size={14} color="#6F6F73" />
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-ap-muted">Mañana</span>
+                    </div>
+                    {renderTurnos(morning)}
+                  </div>
+                )}
+                {afternoon.length > 0 && (
+                  <div className={morning.length > 0 ? "mt-3" : ""}>
+                    <div className="mb-2 flex items-center gap-2">
+                      <Moon size={14} color="#6F6F73" />
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-ap-muted">Tarde</span>
+                    </div>
+                    {renderTurnos(afternoon)}
+                  </div>
+                )}
+              </>
+            );
+          })()
         )}
       </div>
     </div>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Sun, Moon } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { FilterChips } from "./FilterChips";
 import { TurnoDetailView } from "./TurnoDetailView";
 import { Avatar } from "@/components/ui/Avatar";
@@ -102,9 +102,19 @@ export function TurnosScreen({ turnos }: TurnosScreenProps) {
           </div>
         ) : (
           (() => {
-            const morning = filtered.filter((t) => new Date(t.fechaHora).getHours() < 13);
-            const afternoon = filtered.filter((t) => new Date(t.fechaHora).getHours() >= 13);
             const money = (n: number) => "$" + n.toLocaleString("es-AR");
+
+            const groups = new Map<string, { label: string; items: Turno[] }>();
+            for (const t of filtered) {
+              const key = format(new Date(t.fechaHora), "yyyy-MM-dd");
+              if (!groups.has(key)) {
+                groups.set(key, {
+                  label: format(new Date(t.fechaHora), "EEEE d 'de' MMMM", { locale: es }),
+                  items: [],
+                });
+              }
+              groups.get(key)!.items.push(t);
+            }
 
             const renderCard = (t: Turno) => {
               const sc = STATUS_COLOR[t.estado] ?? "#6F6F73";
@@ -140,25 +150,19 @@ export function TurnosScreen({ turnos }: TurnosScreenProps) {
               );
             };
 
-            const renderGroup = (label: string, IconComp: typeof Sun, items: Turno[]) => {
-              if (items.length === 0) return null;
-              return (
-                <div key={label}>
-                  <div className="mb-2 mt-3 flex items-center gap-2 first:mt-0">
-                    <IconComp size={14} color="#6F6F73" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-ap-muted">{label}</span>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    {items.map(renderCard)}
-                  </div>
-                </div>
-              );
-            };
-
             return (
               <div className="flex flex-col gap-1">
-                {renderGroup("Mañana", Sun, morning)}
-                {renderGroup("Tarde", Moon, afternoon)}
+                {Array.from(groups.entries()).map(([key, { label, items }], i) => (
+                  <div key={key}>
+                    <div className={`mb-2 flex items-center gap-2 capitalize ${i > 0 ? "mt-3" : ""}`}>
+                      <CalendarDays size={14} color="#6F6F73" />
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-ap-muted">{label}</span>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      {items.map(renderCard)}
+                    </div>
+                  </div>
+                ))}
               </div>
             );
           })()
