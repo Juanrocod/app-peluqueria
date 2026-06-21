@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import CalendarioAdmin from "@/components/admin/CalendarioAdmin";
 import { AgendaScreen } from "@/components/mobile/agenda/AgendaScreen";
+import { PullToRefresh } from "@/components/ui/PullToRefresh";
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns";
 
 export default async function AdminDashboard({
@@ -69,8 +70,10 @@ export default async function AdminDashboard({
       </div>
 
       {/* Mobile: agenda with Year/Month/Day navigation */}
-      <div className="md:hidden flex flex-col min-h-[calc(100dvh-120px)]">
-        <AgendaScreen turnos={serializedTurnos} />
+      <div className="md:hidden flex flex-1 flex-col min-h-[calc(100dvh-120px)]">
+        <PullToRefresh>
+          <AgendaScreen turnos={serializedTurnos} />
+        </PullToRefresh>
       </div>
     </div>
   );

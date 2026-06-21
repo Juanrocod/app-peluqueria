@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { GananciasScreen } from "@/components/mobile/ganancias/GananciasScreen";
+import { PullToRefresh } from "@/components/ui/PullToRefresh";
 
 export default async function GananciasPage() {
   const turnos = await prisma.turno.findMany({
@@ -93,8 +94,10 @@ export default async function GananciasPage() {
   return (
     <div>
       {/* Mobile view */}
-      <div className="md:hidden">
-        <GananciasScreen turnos={serializedForMobile} />
+      <div className="flex flex-1 flex-col md:hidden">
+        <PullToRefresh>
+          <GananciasScreen turnos={serializedForMobile} />
+        </PullToRefresh>
       </div>
 
       {/* Desktop view */}

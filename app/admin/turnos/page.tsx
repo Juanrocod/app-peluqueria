@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import AccionesturnoRow from "@/components/admin/AccionesTurnoRow";
 import { TurnosScreen } from "@/components/mobile/turnos/TurnosScreen";
+import { PullToRefresh } from "@/components/ui/PullToRefresh";
 
 export default async function TurnosPage() {
   const turnos = await prisma.turno.findMany({
@@ -31,8 +32,10 @@ export default async function TurnosPage() {
   return (
     <div>
       {/* Mobile view */}
-      <div className="md:hidden">
-        <TurnosScreen turnos={serializedTurnos} />
+      <div className="flex flex-1 flex-col md:hidden">
+        <PullToRefresh>
+          <TurnosScreen turnos={serializedTurnos} />
+        </PullToRefresh>
       </div>
 
       {/* Desktop view */}
