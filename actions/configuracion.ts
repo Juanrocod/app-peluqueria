@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth-guard";
-import { setConfigSchema, crearCodigoSchema } from "@/lib/validations";
+import { setConfigSchema, crearCodigoSchema, sanitizeUrl } from "@/lib/validations";
 
 export async function getConfiguracion() {
   const rows = await prisma.configuracionApp.findMany();
@@ -13,10 +13,11 @@ export async function getConfiguracion() {
 export async function setConfiguracion(clave: string, valor: string) {
   const validated = setConfigSchema.parse({ clave, valor });
   await requireAdmin();
+  const finalValue = validated.clave.includes("imagen") ? sanitizeUrl(validated.valor) : validated.valor;
   await prisma.configuracionApp.upsert({
     where: { clave: validated.clave },
-    update: { valor: validated.valor },
-    create: { clave: validated.clave, valor: validated.valor },
+    update: { valor: finalValue },
+    create: { clave: validated.clave, valor: finalValue },
   });
   revalidatePath("/admin/configuracion");
   revalidatePath("/reservar");

@@ -1,6 +1,13 @@
 import { z } from "zod";
 
 const phoneRegex = /^[\d\s+\-]{10,30}$/;
+
+export function sanitizeUrl(url: string): string {
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("https://") || trimmed.startsWith("http://localhost")) return trimmed;
+  return "";
+}
 const horaRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 export const crearTurnoSchema = z.object({
