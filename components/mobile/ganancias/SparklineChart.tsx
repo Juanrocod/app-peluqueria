@@ -1,15 +1,15 @@
 interface SparklineChartProps {
   data: number[];
-  width?: number;
   height?: number;
 }
 
-export function SparklineChart({ data, width = 266, height = 48 }: SparklineChartProps) {
+export function SparklineChart({ data, height = 48 }: SparklineChartProps) {
+  const vw = 300;
   const filtered = data.filter((d) => d > 0);
   if (filtered.length < 2) return null;
   const max = Math.max(...filtered);
   const chartH = height - 4;
-  const stepX = (width - 10) / (filtered.length - 1);
+  const stepX = (vw - 10) / (filtered.length - 1);
   const pts = filtered.map((d, i) => ({
     x: 5 + i * stepX,
     y: chartH - Math.round((d / max) * (chartH - 4)),
@@ -18,7 +18,7 @@ export function SparklineChart({ data, width = 266, height = 48 }: SparklineChar
   const area = `M ${pts[0].x} ${chartH + 2} L ${pts.map((p) => `${p.x} ${p.y}`).join(" L ")} L ${pts[pts.length - 1].x} ${chartH + 2} Z`;
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="block">
+    <svg width="100%" height={height} viewBox={`0 0 ${vw} ${height}`} preserveAspectRatio="none" className="block">
       <defs>
         <linearGradient id="spArea" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#22D366" stopOpacity={0.28} />

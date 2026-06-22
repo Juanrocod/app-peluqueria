@@ -1,17 +1,17 @@
 interface BarChartProps {
   data: { label: string; value: number; isCurrent?: boolean }[];
-  width?: number;
   height?: number;
 }
 
-export function BarChart({ data, width = 266, height = 82 }: BarChartProps) {
+export function BarChart({ data, height = 82 }: BarChartProps) {
+  const vw = 300;
   const max = Math.max(...data.map((d) => d.value)) || 1;
   const chartH = height - 14;
-  const slot = Math.floor(width / data.length);
+  const slot = Math.floor(vw / data.length);
   const barW = Math.max(6, slot - 4);
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="block overflow-visible">
+    <svg width="100%" height={height} viewBox={`0 0 ${vw} ${height}`} preserveAspectRatio="xMidYMid meet" className="block overflow-visible">
       <defs>
         <linearGradient id="mBarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#22D366" />

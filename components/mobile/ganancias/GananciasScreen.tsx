@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { TrendingUp } from "lucide-react";
 import { StatChip } from "@/components/ui/StatChip";
 import { SparklineChart } from "./SparklineChart";
 import { BarChart } from "./BarChart";
@@ -95,7 +94,7 @@ export function GananciasScreen({ turnos }: GananciasScreenProps) {
       <div className="px-4 pt-2">
         {/* Title */}
         <div className="mb-2.5 flex items-center justify-between">
-          <div className="font-display text-2xl font-semibold">Ganancias</div>
+          <div className="font-display text-[28px] font-bold">Ganancias</div>
           <span className="font-mono-num text-xs text-ap-muted">{new Date().getFullYear()}</span>
         </div>
 
@@ -122,12 +121,8 @@ export function GananciasScreen({ turnos }: GananciasScreenProps) {
 
         {/* Hero card */}
         <div className="mb-3 rounded-[18px] border border-[#253450] p-3.5" style={{ background: "linear-gradient(145deg, #182238, #0F1827)" }}>
-          <div className="mb-0.5 flex items-center justify-between">
+          <div className="mb-0.5">
             <div className="text-[10px] font-bold tracking-wider text-[#5F7BAD]">{periodLabels[period]}</div>
-            <div className="flex items-center gap-1">
-              <TrendingUp size={12} color="#22D366" />
-              <span className="font-mono-num text-[11px] font-bold text-[#22D366]">+12%</span>
-            </div>
           </div>
           <div className="mb-2.5 font-mono-num text-[26px] font-extrabold leading-none text-white">
             {money(stats.total)}

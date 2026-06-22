@@ -6,19 +6,19 @@ interface ServiceData {
 
 interface ServiceBarsProps {
   data: ServiceData[];
-  width?: number;
   height?: number;
 }
 
-export function ServiceBars({ data, width = 266, height = 96 }: ServiceBarsProps) {
+export function ServiceBars({ data, height = 96 }: ServiceBarsProps) {
+  const vw = 300;
   const max = Math.max(...data.map((d) => d.total)) || 1;
   const chartH = height - 22;
-  const slot = Math.floor(width / data.length);
+  const slot = data.length > 0 ? Math.floor(vw / data.length) : vw;
   const barW = slot - 6;
   const moneyK = (n: number) => (n >= 1000 ? `$${(n / 1000).toFixed(0)}K` : `$${n}`);
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="block overflow-visible">
+    <svg width="100%" height={height} viewBox={`0 0 ${vw} ${height}`} preserveAspectRatio="xMidYMid meet" className="block overflow-visible">
       {data.map((d, i) => {
         const barH = Math.max(3, Math.round((d.total / max) * chartH));
         const x = i * slot + 3;
