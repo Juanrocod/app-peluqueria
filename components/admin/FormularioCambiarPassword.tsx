@@ -17,6 +17,11 @@ export default function FormularioCambiarPassword() {
     e.preventDefault();
     setMensaje(null);
 
+    if (nueva.length < 8 || !/[A-Z]/.test(nueva) || !/[0-9]/.test(nueva) || !/[^A-Za-z0-9]/.test(nueva)) {
+      setMensaje({ ok: false, text: "Mínimo 8 caracteres, una mayúscula, un número y un carácter especial." });
+      return;
+    }
+
     if (nueva !== confirmar) {
       setMensaje({ ok: false, text: "Las contraseñas no coinciden." });
       return;
