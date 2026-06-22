@@ -1,6 +1,7 @@
 "use client";
 
-import { Settings, Image, User, Tag, Phone, MapPin } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Settings, ChevronLeft } from "lucide-react";
 import FormularioMarca from "@/components/admin/FormularioMarca";
 import FormularioDescuento from "@/components/admin/FormularioDescuento";
 
@@ -14,9 +15,13 @@ interface PerfilMobileProps {
 }
 
 export function PerfilMobile({ nombre, descripcion, imagenUrl, telefono, direccion, codigoActivo }: PerfilMobileProps) {
+  const router = useRouter();
   return (
     <div className="pb-20">
       <div className="mb-4 flex items-center gap-2.5 px-4">
+        <button onClick={() => router.back()} className="flex h-[34px] w-[34px] items-center justify-center rounded-[9px] border border-ap-border-soft bg-ap-s1">
+          <ChevronLeft size={17} color="#ADADB0" />
+        </button>
         <Settings size={19} color="#2F6BFF" />
         <span className="font-display text-[28px] font-bold">Configuración</span>
       </div>
