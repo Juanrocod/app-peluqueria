@@ -165,7 +165,7 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
             <button
               onClick={() => handleAction("CONFIRMADO")}
               disabled={isPending}
-              className="w-full rounded-[13px] bg-[#22D366] py-3.5 text-[15px] font-bold text-[#08130D] transition-[filter] hover:brightness-110 disabled:opacity-50"
+              className="w-full rounded-[13px] bg-ap-primary py-3.5 text-[15px] font-bold text-white transition-[filter] hover:brightness-110 disabled:opacity-50"
             >
               <span className="flex items-center justify-center gap-2">
                 <Check size={17} />
@@ -177,7 +177,7 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
             <button
               onClick={() => handleAction("COMPLETADO")}
               disabled={isPending}
-              className="w-full rounded-[13px] bg-ap-primary py-3.5 text-[15px] font-bold text-white transition-[filter] hover:brightness-110 disabled:opacity-50"
+              className="w-full rounded-[13px] bg-[#22D366] py-3.5 text-[15px] font-bold text-[#08130D] transition-[filter] hover:brightness-110 disabled:opacity-50"
             >
               Marcar como realizado
             </button>

@@ -14,9 +14,9 @@ const HISTORIAL_FILTERS = [
 
 const FILTER_COLORS: Record<string, string> = {
   PENDIENTE: "#E8A33D",
-  CONFIRMADO: "#22D366",
+  CONFIRMADO: "#2F6BFF",
   CANCELADO: "#F26157",
-  COMPLETADO: "#2F6BFF",
+  COMPLETADO: "#22D366",
 };
 
 export function FilterChips({
