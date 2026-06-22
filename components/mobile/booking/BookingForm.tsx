@@ -125,7 +125,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
 
   if (done) {
     return (
-      <div className="flex min-h-screen flex-col bg-cl-bg px-4 py-6">
+      <div className="flex h-screen flex-col items-center justify-center overflow-hidden bg-cl-bg px-4">
         <div
           className="mx-auto w-full max-w-md overflow-hidden rounded-3xl border border-cl-border bg-cl-card"
           style={{ boxShadow: "0 24px 60px -28px rgba(0,0,0,.8)" }}
