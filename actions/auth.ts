@@ -10,33 +10,40 @@ export async function registrarPeluquero(data: {
   email: string;
   password: string;
 }) {
-  const adminExists = await prisma.user.findFirst({ where: { rol: "ADMIN" } });
-  if (adminExists) {
-    return { ok: false, error: "Ya existe una cuenta de administrador registrada." };
-  }
-
-  const existing = await prisma.user.findUnique({ where: { email: data.email } });
-  if (existing) {
-    return { ok: false, error: "Ya existe una cuenta con ese email." };
+  if (data.password.length < 8) {
+    return { ok: false, error: "La contraseña debe tener al menos 8 caracteres." };
   }
 
   const hashed = await bcrypt.hash(data.password, 10);
 
-  await prisma.$transaction([
-    prisma.user.create({
-      data: {
-        email: data.email,
-        password: hashed,
-        nombre: data.nombre,
-        rol: "ADMIN",
-      },
-    }),
-    prisma.configuracionApp.upsert({
-      where: { clave: "marca_nombre" },
-      update: { valor: data.nombreNegocio },
-      create: { clave: "marca_nombre", valor: data.nombreNegocio },
-    }),
-  ]);
+  try {
+    await prisma.$transaction(async (tx) => {
+      const adminExists = await tx.user.findFirst({ where: { rol: "ADMIN" } });
+      if (adminExists) throw new Error("ADMIN_EXISTS");
+
+      const existing = await tx.user.findUnique({ where: { email: data.email } });
+      if (existing) throw new Error("EMAIL_EXISTS");
+
+      await tx.user.create({
+        data: {
+          email: data.email.slice(0, 100),
+          password: hashed,
+          nombre: data.nombre.slice(0, 100),
+          rol: "ADMIN",
+        },
+      });
+      await tx.configuracionApp.upsert({
+        where: { clave: "marca_nombre" },
+        update: { valor: data.nombreNegocio.slice(0, 100) },
+        create: { clave: "marca_nombre", valor: data.nombreNegocio.slice(0, 100) },
+      });
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "";
+    if (msg === "ADMIN_EXISTS") return { ok: false, error: "Ya existe una cuenta de administrador registrada." };
+    if (msg === "EMAIL_EXISTS") return { ok: false, error: "Ya existe una cuenta con ese email." };
+    throw err;
+  }
 
   return { ok: true };
 }

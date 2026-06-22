@@ -49,31 +49,34 @@ export async function crearTurno(data: {
   const modalidad = data.modalidad ?? "PRESENCIAL";
 
   const { getSlotDisponibles } = await import("@/lib/disponibilidad");
-  const slotsDisponibles = await getSlotDisponibles(fecha, servicio.duracion, false, modalidad);
 
-  if (!slotsDisponibles.includes(horaStr)) {
-    throw new Error("El horario seleccionado ya no está disponible. Por favor elegí otro.");
-  }
+  const turno = await prisma.$transaction(async (tx) => {
+    const slotsDisponibles = await getSlotDisponibles(fecha, servicio.duracion, false, modalidad);
 
-  const turno = await prisma.turno.create({
-    data: {
-      fechaHora: fechaHoraDB,
-      clienteNombre: data.clienteNombre,
-      clienteTelefono: data.clienteTelefono,
-      clienteEmail: data.clienteEmail ?? null,
-      observaciones: data.observaciones ?? null,
-      modalidad,
-      direccion: data.direccion ?? null,
-      servicioId: data.servicioId,
-      peluqueroId: data.peluqueroId ?? null,
-      notas: data.notas ?? null,
-      origen: data.origen ?? "ONLINE",
-      descuentoAplicado: data.descuentoAplicado ?? null,
-      duracionSnapshot: servicio.duracion,
-      ...(data.productoIds?.length
-        ? { productos: { create: data.productoIds.map((id) => ({ productoId: id })) } }
-        : {}),
-    },
+    if (!slotsDisponibles.includes(horaStr)) {
+      throw new Error("El horario seleccionado ya no está disponible. Por favor elegí otro.");
+    }
+
+    return tx.turno.create({
+      data: {
+        fechaHora: fechaHoraDB,
+        clienteNombre: data.clienteNombre.slice(0, 100),
+        clienteTelefono: data.clienteTelefono.slice(0, 30),
+        clienteEmail: data.clienteEmail?.slice(0, 100) ?? null,
+        observaciones: data.observaciones?.slice(0, 500) ?? null,
+        modalidad,
+        direccion: data.direccion?.slice(0, 200) ?? null,
+        servicioId: data.servicioId,
+        peluqueroId: data.peluqueroId ?? null,
+        notas: data.notas?.slice(0, 500) ?? null,
+        origen: data.origen ?? "ONLINE",
+        descuentoAplicado: data.descuentoAplicado != null ? Math.max(0, Math.min(100, data.descuentoAplicado)) : null,
+        duracionSnapshot: servicio.duracion,
+        ...(data.productoIds?.length && data.productoIds.length <= 10
+          ? { productos: { create: data.productoIds.map((id) => ({ productoId: id })) } }
+          : {}),
+      },
+    });
   });
 
   revalidatePath("/admin");

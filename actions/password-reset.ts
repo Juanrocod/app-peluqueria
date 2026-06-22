@@ -28,7 +28,9 @@ export async function requestPasswordReset(email: string): Promise<{ ok: true }>
     const baseUrl = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : process.env.NEXTAUTH_URL || "http://localhost:3000";
-    console.log(`[RESET] ${baseUrl}/reset-password?token=${rawToken}`);
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[RESET] ${baseUrl}/reset-password?token=${rawToken}`);
+    }
   }
 
   return { ok: true };
