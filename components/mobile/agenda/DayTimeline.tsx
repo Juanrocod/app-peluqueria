@@ -115,17 +115,19 @@ export function DayTimeline({ year, month, day, appointments, onBack, onSelectDa
     return (
       <div
         key={k}
-        className="absolute left-[56px] right-[10px] overflow-hidden rounded-[9px] px-2.5 py-1.5"
+        className="absolute left-[56px] right-[10px] flex items-center overflow-hidden rounded-[9px] px-2.5"
         style={{
           top,
-          height: Math.max(height, 24),
+          height: Math.max(height, 22),
           background: svc.bg,
           borderLeft: `3px solid ${svc.c}`,
         }}
       >
-        <div className="font-mono-num text-[10px] font-bold" style={{ color: svc.c }}>{a.start}</div>
-        <div className="truncate text-[13px] font-bold text-ap-text">{a.clienteNombre}</div>
-        {height > 38 && <div className="text-[11px] text-ap-sub">{a.servicioNombre}</div>}
+        <div className="flex min-w-0 items-center gap-1.5">
+          <span className="shrink-0 font-mono-num text-[10px] font-bold" style={{ color: svc.c }}>{a.start}</span>
+          <span className="truncate text-[12px] font-bold text-ap-text">{a.clienteNombre}</span>
+          <span className="hidden truncate text-[11px] text-ap-sub xs:inline">· {a.servicioNombre}</span>
+        </div>
       </div>
     );
   });
