@@ -1,5 +1,7 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
 function daysInMonth(y: number, m: number) { return new Date(y, m + 1, 0).getDate(); }
@@ -8,9 +10,11 @@ function firstWdMon(y: number, m: number) { return (new Date(y, m, 1).getDay() +
 interface YearViewProps {
   year: number;
   onSelectMonth: (m: number) => void;
+  onPrevYear: () => void;
+  onNextYear: () => void;
 }
 
-export function YearView({ year, onSelectMonth }: YearViewProps) {
+export function YearView({ year, onSelectMonth, onPrevYear, onNextYear }: YearViewProps) {
   const today = new Date();
   const todayM = today.getMonth();
   const todayD = today.getDate();
@@ -64,8 +68,16 @@ export function YearView({ year, onSelectMonth }: YearViewProps) {
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="px-4 pb-2">
+      <div className="flex items-center justify-between px-4 pb-2">
         <div className="font-display text-[28px] font-bold">{year}</div>
+        <div className="flex gap-1">
+          <button onClick={onPrevYear} className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-ap-border-soft bg-ap-s1">
+            <ChevronLeft size={16} color="#ADADB0" />
+          </button>
+          <button onClick={onNextYear} className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-ap-border-soft bg-ap-s1">
+            <ChevronRight size={16} color="#ADADB0" />
+          </button>
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto px-3.5 pb-4">
         <div className="grid grid-cols-3 gap-2.5">

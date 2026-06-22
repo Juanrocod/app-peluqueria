@@ -51,6 +51,8 @@ export function AgendaScreen({ turnos }: AgendaScreenProps) {
             setSelMonth(m);
             setView("month");
           }}
+          onPrevYear={() => setSelYear(selYear - 1)}
+          onNextYear={() => setSelYear(selYear + 1)}
         />
       </div>
     );
