@@ -8,10 +8,12 @@ interface PerfilMobileProps {
   nombre: string;
   descripcion: string;
   imagenUrl: string;
+  telefono: string;
+  direccion: string;
   codigoActivo: { codigo: string; descuento: number } | null;
 }
 
-export function PerfilMobile({ nombre, descripcion, imagenUrl, codigoActivo }: PerfilMobileProps) {
+export function PerfilMobile({ nombre, descripcion, imagenUrl, telefono, direccion, codigoActivo }: PerfilMobileProps) {
   return (
     <div className="pb-20">
       <div className="mb-4 flex items-center gap-2.5 px-4">
@@ -26,6 +28,8 @@ export function PerfilMobile({ nombre, descripcion, imagenUrl, codigoActivo }: P
             nombreInicial={nombre}
             descripcionInicial={descripcion}
             imagenUrlInicial={imagenUrl}
+            telefonoInicial={telefono}
+            direccionInicial={direccion}
           />
         </div>
 

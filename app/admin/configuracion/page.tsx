@@ -19,6 +19,8 @@ export default async function ConfiguracionPage() {
           nombre={config.marca_nombre ?? ""}
           descripcion={config.marca_descripcion ?? ""}
           imagenUrl={config.marca_imagen_fondo ?? ""}
+          telefono={config.marca_telefono ?? ""}
+          direccion={config.marca_direccion ?? ""}
           codigoActivo={codigoActivo ? { codigo: codigoActivo.codigo, descuento: codigoActivo.descuento } : null}
         />
       </div>
