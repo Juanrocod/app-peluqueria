@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Settings, ChevronLeft } from "lucide-react";
 import FormularioMarca from "@/components/admin/FormularioMarca";
 import FormularioDescuento from "@/components/admin/FormularioDescuento";
+import FormularioCambiarPassword from "@/components/admin/FormularioCambiarPassword";
 
 interface PerfilMobileProps {
   nombre: string;
@@ -36,6 +37,12 @@ export function PerfilMobile({ nombre, descripcion, imagenUrl, telefono, direcci
             telefonoInicial={telefono}
             direccionInicial={direccion}
           />
+        </div>
+
+        {/* Cambiar contraseña */}
+        <div className="mb-6 rounded-2xl border border-ap-border-soft bg-ap-s1 p-4">
+          <h3 className="mb-3 text-sm font-semibold">Cambiar contraseña</h3>
+          <FormularioCambiarPassword />
         </div>
 
         {/* Descuento — reuse existing component (user likes this UI) */}
