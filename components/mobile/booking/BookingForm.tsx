@@ -480,7 +480,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                 />
               </div>
               {triedNext && !isPhoneValid && (
-                <div className="mt-1 text-xs font-semibold text-[#F26157]">Ingresá un número válido</div>
+                <div className="mt-1 text-xs font-semibold text-[#F26157]">Ingresá un número válido (ej: 11 2345 6789)</div>
               )}
             </div>
             <div>
