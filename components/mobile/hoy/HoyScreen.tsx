@@ -77,8 +77,8 @@ export function HoyScreen({ turnos, slotsTotal }: HoyScreenProps) {
         {/* Stats */}
         <div className="mb-3 grid grid-cols-3 gap-1.5">
           <StatChip label="Libres" value={free} color="#F4F4F2" />
-          <StatChip label="Ganancia est." value={money(gTotal)} color="#22D366" />
-          <StatChip label="Realizado" value={money(gDone)} color="#2F6BFF" />
+          <StatChip label="Ganancia est." value={money(gTotal)} color="#2F6BFF" />
+          <StatChip label="Realizado" value={money(gDone)} color="#22D366" />
         </div>
 
         {/* Próximo turno */}
