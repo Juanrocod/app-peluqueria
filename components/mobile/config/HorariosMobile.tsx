@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, ChevronLeft, ChevronRight, ChevronDown, Trash2, Plus, Info, Copy, Edit } from "lucide-react";
-import { crearFranjaAdmin, eliminarFranjaAdmin, actualizarFranja } from "@/actions/horarios";
+import { crearFranjaAdmin, eliminarFranjaAdmin, actualizarFranja, copiarFranjasATodos } from "@/actions/horarios";
 import { crearBloqueoAdmin, eliminarBloqueo } from "@/actions/bloqueos";
 
 const DAYS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -128,20 +128,13 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
   }
 
   function handleCopyToAll(fromDia: number) {
-    const sourceFranjas = dayFranjas(fromDia);
-    if (sourceFranjas.length === 0) return;
-    const targetDays = [1, 2, 3, 4, 5, 6, 0].filter((d) => d !== fromDia && dayHasSchedule(d));
     startTransition(async () => {
-      for (const dia of targetDays) {
-        const existing = dayFranjas(dia);
-        for (const fr of existing) {
-          await eliminarFranjaAdmin(fr.id);
-        }
-        for (const fr of sourceFranjas) {
-          await crearFranjaAdmin({ diaSemana: dia, horaApertura: fr.horaApertura, horaCierre: fr.horaCierre, tipoFranja: "POSITIVA" });
-        }
+      try {
+        await copiarFranjasATodos(fromDia);
+        router.refresh();
+      } catch (err) {
+        console.error("Error al copiar franjas:", err);
       }
-      router.refresh();
     });
   }
 

@@ -60,6 +60,36 @@ export async function eliminarFranja(id: string) {
   revalidatePath("/admin/horarios");
 }
 
+export async function copiarFranjasATodos(fromDia: number) {
+  await requireAdmin();
+  const source = await prisma.horarioAtencion.findMany({
+    where: { diaSemana: fromDia, tipoFranja: "POSITIVA", activo: true },
+  });
+  if (source.length === 0) return;
+
+  const activeDays = await prisma.horarioAtencion.findMany({
+    where: { tipoFranja: "POSITIVA", activo: true, diaSemana: { not: fromDia } },
+    select: { diaSemana: true },
+  });
+  const targetDays = [...new Set(activeDays.map((d) => d.diaSemana))];
+
+  for (const dia of targetDays) {
+    await prisma.horarioAtencion.deleteMany({
+      where: { diaSemana: dia, tipoFranja: "POSITIVA" },
+    });
+    await prisma.horarioAtencion.createMany({
+      data: source.map((fr) => ({
+        diaSemana: dia,
+        horaApertura: fr.horaApertura,
+        horaCierre: fr.horaCierre,
+        tipoFranja: "POSITIVA" as const,
+        activo: true,
+      })),
+    });
+  }
+  revalidatePath("/admin/horarios");
+}
+
 export async function toggleFranja(id: string, activo: boolean) {
   await requireAdmin();
   await prisma.horarioAtencion.update({ where: { id }, data: { activo } });
