@@ -43,7 +43,23 @@ export async function requestPasswordReset(email: string): Promise<{ ok: true }>
         from: process.env.RESEND_FROM || "BarberFras <onboarding@resend.dev>",
         to: email,
         subject: "Recuperá tu contraseña",
-        text: `Recuperar contraseña\n\nRecibimos tu solicitud para restablecer la contraseña.\n\nCopiá y pegá este link en tu navegador:\n${resetUrl}\n\nEste link expira en 1 hora. Si no pediste esto, ignorá este email.`,
+        html: `
+          <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#ffffff;">
+            <div style="text-align:center;margin-bottom:24px;">
+              <div style="display:inline-block;background:#131313;padding:10px 20px;border-radius:12px;">
+                <span style="font-size:20px;font-weight:bold;color:#ffffff;">✂ BarberFras</span>
+              </div>
+            </div>
+            <h2 style="color:#1a1a1a;font-size:22px;margin:0 0 12px;text-align:center;">Recuperá tu contraseña</h2>
+            <p style="color:#555;font-size:15px;line-height:1.6;text-align:center;">Recibimos tu solicitud para restablecer la contraseña. Usá el siguiente link para crear una nueva:</p>
+            <div style="background:#f0f4ff;border:1px solid #d0dbf0;border-radius:10px;padding:16px;margin:20px 0;word-break:break-all;text-align:center;">
+              <span style="font-size:13px;color:#2F6BFF;font-weight:bold;">${resetUrl}</span>
+            </div>
+            <p style="color:#555;font-size:14px;line-height:1.6;text-align:center;">Copiá y pegá el link en tu navegador si no se abre automáticamente.</p>
+            <hr style="border:none;border-top:1px solid #eee;margin:24px 0;" />
+            <p style="color:#999;font-size:12px;text-align:center;">Este link expira en 1 hora. Si no pediste esto, ignorá este email.</p>
+          </div>
+        `,
       });
     } else if (process.env.NODE_ENV !== "production") {
       console.log(`[RESET] ${resetUrl}`);
