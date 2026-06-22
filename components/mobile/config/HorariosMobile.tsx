@@ -130,7 +130,7 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
   function handleCopyToAll(fromDia: number) {
     const sourceFranjas = dayFranjas(fromDia);
     if (sourceFranjas.length === 0) return;
-    const targetDays = [1, 2, 3, 4, 5, 6, 0].filter((d) => d !== fromDia);
+    const targetDays = [1, 2, 3, 4, 5, 6, 0].filter((d) => d !== fromDia && dayHasSchedule(d));
     startTransition(async () => {
       for (const dia of targetDays) {
         const existing = dayFranjas(dia);
