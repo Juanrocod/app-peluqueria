@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import ProductoEditable from "@/components/admin/ProductoEditable";
 import FormularioProducto from "@/components/admin/FormularioProducto";
