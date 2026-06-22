@@ -52,14 +52,17 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
     );
   }
 
+  const phoneDigits = phone.replace(/\D/g, "");
+  const isPhoneValid = phoneDigits.length >= 8;
+
   const canNext = useCallback(() => {
     if (step === 0) return !!servicioId;
     if (step === 1) return !!time;
     if (step === 2)
       return place === "salon" || (place === "home" && address.trim() !== "");
-    if (step === 3) return name.trim() !== "" && phone.trim() !== "";
+    if (step === 3) return name.trim().length >= 2 && isPhoneValid;
     return true;
-  }, [step, servicioId, time, place, address, name, phone]);
+  }, [step, servicioId, time, place, address, name, isPhoneValid]);
 
   async function handleConfirm() {
     if (!selectedSvc || !day || !time) return;
@@ -446,16 +449,20 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
                 Teléfono / WhatsApp *
               </div>
-              <div className="flex items-center gap-2.5 rounded-xl border border-cl-border bg-cl-slot px-3.5 py-3 transition-all focus-within:border-[#3B6EF5] focus-within:ring-[3px] focus-within:ring-[rgba(59,110,245,.2)]">
-                <PhoneIcon size={16} color="#5F6B85" className="shrink-0" />
+              <div className={`flex items-center gap-2.5 rounded-xl border bg-cl-slot px-3.5 py-3 transition-all focus-within:ring-[3px] ${phone && !isPhoneValid ? "border-[#F26157] focus-within:border-[#F26157] focus-within:ring-[rgba(242,97,87,.2)]" : "border-cl-border focus-within:border-[#3B6EF5] focus-within:ring-[rgba(59,110,245,.2)]"}`}>
+                <PhoneIcon size={16} color={phone && !isPhoneValid ? "#F26157" : "#5F6B85"} className="shrink-0" />
                 <input
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(e.target.value.replace(/[^0-9\s+\-]/g, ""))}
                   placeholder="Ej: 11 2345 6789"
                   type="tel"
+                  inputMode="numeric"
                   className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"
                 />
               </div>
+              {phone && !isPhoneValid && (
+                <div className="mt-1 text-xs font-semibold text-[#F26157]">Poné un número válido (mínimo 8 dígitos)</div>
+              )}
             </div>
             <div>
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
