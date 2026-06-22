@@ -61,14 +61,15 @@ model Peluquero {
 }
 
 model Servicio {
-  id        String   @id @default(cuid())
-  nombre    String
-  duracion  Int      // minutos
-  precio    Decimal  @db.Decimal(10, 2)
-  activo    Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  turnos    Turno[]
+  id             String          @id @default(cuid())
+  nombre         String
+  duracion       Int             // minutos
+  precio         Decimal         @db.Decimal(10, 2)
+  activo         Boolean         @default(true)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  turnos         Turno[]
+  turnoServicios TurnoServicio[]
 }
 
 model Turno {
@@ -96,6 +97,7 @@ model Turno {
   servicio  Servicio       @relation(fields: [servicioId], references: [id])
   peluquero Peluquero?     @relation(fields: [peluqueroId], references: [id])
   productos TurnoProducto[]
+  servicios TurnoServicio[]
 
   @@index([fechaHora, estado])
 }
@@ -123,6 +125,18 @@ model TurnoProducto {
 
   turno    Turno    @relation(fields: [turnoId], references: [id])
   producto Producto @relation(fields: [productoId], references: [id])
+}
+
+model TurnoServicio {
+  id                String   @id @default(cuid())
+  turnoId           String
+  servicioId        String
+  duracionSnapshot  Int
+  precioSnapshot    Decimal? @db.Decimal(10, 2)
+  nombreSnapshot    String?
+
+  turno    Turno    @relation(fields: [turnoId], references: [id])
+  servicio Servicio @relation(fields: [servicioId], references: [id])
 }
 
 model HorarioAtencion {
