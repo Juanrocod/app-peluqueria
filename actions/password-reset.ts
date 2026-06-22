@@ -43,14 +43,7 @@ export async function requestPasswordReset(email: string): Promise<{ ok: true }>
         from: process.env.RESEND_FROM || "BarberFras <onboarding@resend.dev>",
         to: email,
         subject: "Recuperá tu contraseña",
-        html: `
-          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;">
-            <h2 style="color:#1a1a1a;">Recuperar contraseña</h2>
-            <p style="color:#555;line-height:1.6;">Recibimos tu solicitud para restablecer la contraseña. Hacé click en el botón para crear una nueva:</p>
-            <a href="${resetUrl}" style="display:inline-block;background:#2F6BFF;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:bold;margin:16px 0;">Restablecer contraseña</a>
-            <p style="color:#999;font-size:13px;margin-top:24px;">Este link expira en 1 hora. Si no pediste esto, ignorá este email.</p>
-          </div>
-        `,
+        text: `Recuperar contraseña\n\nRecibimos tu solicitud para restablecer la contraseña.\n\nCopiá y pegá este link en tu navegador:\n${resetUrl}\n\nEste link expira en 1 hora. Si no pediste esto, ignorá este email.`,
       });
     } else if (process.env.NODE_ENV !== "production") {
       console.log(`[RESET] ${resetUrl}`);
