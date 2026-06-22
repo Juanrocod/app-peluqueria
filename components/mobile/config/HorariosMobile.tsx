@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, ChevronLeft, ChevronRight, ChevronDown, Trash2, Plus, Info } from "lucide-react";
+import { Clock, ChevronLeft, ChevronRight, ChevronDown, Trash2, Plus, Info, Copy } from "lucide-react";
 import { crearFranjaAdmin, eliminarFranjaAdmin } from "@/actions/horarios";
 import { crearBloqueoAdmin, eliminarBloqueo } from "@/actions/bloqueos";
 
@@ -110,6 +110,24 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
         }
       });
     }
+  }
+
+  function handleCopyToAll(fromDia: number) {
+    const sourceFranjas = dayFranjas(fromDia);
+    if (sourceFranjas.length === 0) return;
+    const targetDays = [1, 2, 3, 4, 5, 6, 0].filter((d) => d !== fromDia);
+    startTransition(async () => {
+      for (const dia of targetDays) {
+        const existing = dayFranjas(dia);
+        for (const fr of existing) {
+          await eliminarFranjaAdmin(fr.id);
+        }
+        for (const fr of sourceFranjas) {
+          await crearFranjaAdmin({ diaSemana: dia, horaApertura: fr.horaApertura, horaCierre: fr.horaCierre, tipoFranja: "POSITIVA" });
+        }
+      }
+      router.refresh();
+    });
   }
 
   function handleToggleBloqueo(dateStr: string) {
@@ -242,12 +260,23 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
                         <button type="button" onClick={() => setAddingFranjaDay(null)} className="text-xs text-ap-muted">✕</button>
                       </form>
                     ) : (
-                      <button
-                        onClick={() => setAddingFranjaDay(dia)}
-                        className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-ap-sub"
-                      >
-                        <Plus size={14} /> Agregar franja
-                      </button>
+                      <div className="mt-1 flex items-center gap-3">
+                        <button
+                          onClick={() => setAddingFranjaDay(dia)}
+                          className="flex items-center gap-1.5 text-xs font-semibold text-ap-sub"
+                        >
+                          <Plus size={14} /> Agregar franja
+                        </button>
+                        {franjas.length > 0 && (
+                          <button
+                            onClick={() => handleCopyToAll(dia)}
+                            disabled={isPending}
+                            className="flex items-center gap-1.5 rounded-lg border border-ap-border-soft px-2.5 py-1 text-xs font-semibold text-ap-muted disabled:opacity-50"
+                          >
+                            <Copy size={12} /> Todos
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 )}
