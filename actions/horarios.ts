@@ -67,11 +67,7 @@ export async function copiarFranjasATodos(fromDia: number) {
   });
   if (source.length === 0) return;
 
-  const activeDays = await prisma.horarioAtencion.findMany({
-    where: { tipoFranja: "POSITIVA", activo: true, diaSemana: { not: fromDia } },
-    select: { diaSemana: true },
-  });
-  const targetDays = [...new Set(activeDays.map((d) => d.diaSemana))];
+  const targetDays = [0, 1, 2, 3, 4, 5, 6].filter((d) => d !== fromDia);
 
   for (const dia of targetDays) {
     await prisma.horarioAtencion.deleteMany({
