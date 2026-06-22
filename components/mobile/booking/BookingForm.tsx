@@ -552,7 +552,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                     Aplicar
                   </button>
                 </div>
-              )
+              )}
             </div>
           </div>
         )}
