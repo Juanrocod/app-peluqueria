@@ -65,7 +65,7 @@ export function YearView({ year, onSelectMonth }: YearViewProps) {
   return (
     <div className="flex flex-1 flex-col">
       <div className="px-4 pb-2">
-        <div className="font-display text-[30px] font-semibold">{year}</div>
+        <div className="font-display text-[28px] font-bold">{year}</div>
       </div>
       <div className="flex-1 overflow-y-auto px-3.5 pb-4">
         <div className="grid grid-cols-3 gap-2.5">

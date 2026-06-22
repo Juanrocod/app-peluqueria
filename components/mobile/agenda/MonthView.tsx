@@ -54,7 +54,7 @@ export function MonthView({ year, month, daysWithTurnos, onSelectDay, onGoYear, 
       {/* Header */}
       <div className="flex items-center justify-between px-4 pb-2.5">
         <button onClick={onGoYear} className="flex items-baseline gap-1.5 p-0">
-          <span className="font-display text-[26px] font-semibold text-white">{MONTHS_FULL[month]}</span>
+          <span className="font-display text-[28px] font-bold text-white">{MONTHS_FULL[month]}</span>
           <span className="font-mono-num text-[13px] text-ap-muted">{year}</span>
         </button>
         <div className="flex gap-1">
@@ -78,7 +78,7 @@ export function MonthView({ year, month, daysWithTurnos, onSelectDay, onGoYear, 
       <div className="flex-1 overflow-y-auto px-3.5 pb-4">
         <div className="grid grid-cols-7">
           {cells.map((d, i) => {
-            if (!d) return <div key={i} className="h-[46px]" />;
+            if (!d) return <div key={i} className="h-[52px]" />;
             const isToday = year === todayY && month === todayM && d === todayD;
             const services = turnoMap.get(d) ?? [];
             const hasTurnos = services.length > 0;
@@ -86,9 +86,8 @@ export function MonthView({ year, month, daysWithTurnos, onSelectDay, onGoYear, 
             return (
               <button
                 key={i}
-                onClick={() => hasTurnos && onSelectDay(d)}
-                className="flex h-[46px] flex-col items-center gap-0.5 pt-1"
-                style={{ cursor: hasTurnos ? "pointer" : "default" }}
+                onClick={() => onSelectDay(d)}
+                className="flex h-[52px] flex-col items-center gap-0.5 pt-1"
               >
                 <span
                   className="flex h-6 w-6 items-center justify-center rounded-full font-mono-num text-[13px]"

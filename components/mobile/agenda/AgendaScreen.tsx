@@ -105,6 +105,7 @@ export function AgendaScreen({ turnos }: AgendaScreenProps) {
         day={selDay}
         appointments={dayAppointments}
         onBack={() => setView("month")}
+        onSelectDay={(d) => setSelDay(d)}
       />
     </div>
   );

@@ -28,11 +28,12 @@ interface DayTimelineProps {
   day: number;
   appointments: Appointment[];
   onBack: () => void;
+  onSelectDay?: (d: number) => void;
 }
 
 function daysInMonth(y: number, m: number) { return new Date(y, m + 1, 0).getDate(); }
 
-export function DayTimeline({ year, month, day, appointments, onBack }: DayTimelineProps) {
+export function DayTimeline({ year, month, day, appointments, onBack, onSelectDay }: DayTimelineProps) {
   const START_H = 9;
   const END_H = 20;
   const HOUR_PX = 52;
@@ -61,12 +62,14 @@ export function DayTimeline({ year, month, day, appointments, onBack }: DayTimel
         const hasAppts = valid && appointments.length > 0 && dd === day;
 
         return (
-          <div
+          <button
             key={i}
+            onClick={() => valid && onSelectDay?.(dd)}
             className="flex flex-1 flex-col items-center gap-0.5 rounded-xl py-1.5"
             style={{
               background: sel ? "#16203A" : "transparent",
               border: sel ? "1px solid #2A3A5E" : "1px solid transparent",
+              cursor: valid ? "pointer" : "default",
             }}
           >
             <span className="text-[10px] font-bold" style={{ color: sel ? "#7FA9FF" : "#6F6F73" }}>
@@ -85,7 +88,7 @@ export function DayTimeline({ year, month, day, appointments, onBack }: DayTimel
               className="h-[5px] w-[5px] rounded-full"
               style={{ background: hasAppts ? "#7FA9FF" : "transparent" }}
             />
-          </div>
+          </button>
         );
       })}
     </div>
@@ -142,7 +145,7 @@ export function DayTimeline({ year, month, day, appointments, onBack }: DayTimel
             <ChevronLeft size={16} color="#ADADB0" />
           </button>
           <div>
-            <div className="font-display text-2xl font-semibold leading-tight text-white">
+            <div className="font-display text-[28px] font-bold leading-tight text-white">
               {isToday ? "Hoy · " : ""}{day} {MONTHS_ABBR[month]}
             </div>
             <div className="text-xs text-ap-muted">
@@ -157,7 +160,7 @@ export function DayTimeline({ year, month, day, appointments, onBack }: DayTimel
 
       {/* Timeline */}
       <div className="flex-1 overflow-y-auto px-3.5 pb-5">
-        <div className="relative" style={{ height: (END_H - START_H) * HOUR_PX }}>
+        <div className="relative pt-3" style={{ height: (END_H - START_H) * HOUR_PX + 12 }}>
           {hours}
           {emptyMsg}
           {blocks}
