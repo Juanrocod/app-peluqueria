@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSlotDisponibles } from "@/lib/disponibilidad";
+import { getSlotDisponibles, getSlotBase } from "@/lib/disponibilidad";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(req: NextRequest) {
@@ -23,5 +23,6 @@ export async function GET(req: NextRequest) {
   const modalidad = searchParams.get("modalidad") === "DOMICILIO" ? "DOMICILIO" : "PRESENCIAL";
 
   const slots = await getSlotDisponibles(fechaLocal, servicio.duracion, especial, modalidad);
-  return NextResponse.json({ slots });
+  const allSlots = await getSlotBase(fechaLocal, especial);
+  return NextResponse.json({ slots, allSlots });
 }

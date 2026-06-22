@@ -116,3 +116,38 @@ export async function getSlotDisponibles(
 
   return slotsLibres.map((s) => format(s, "HH:mm"));
 }
+
+export async function getSlotBase(
+  fecha: Date,
+  incluirEspecial = false,
+): Promise<string[]> {
+  const diaSemana = fecha.getDay();
+  const franjas = await prisma.horarioAtencion.findMany({
+    where: {
+      diaSemana,
+      activo: true,
+      tipoFranja: "POSITIVA",
+      ...(incluirEspecial ? {} : { etiqueta: null }),
+    },
+    orderBy: { horaApertura: "asc" },
+  });
+  const base = startOfDay(fecha);
+  const seen = new Set<number>();
+  const slots: Date[] = [];
+  for (const franja of franjas) {
+    const [aH, aM] = franja.horaApertura.split(":").map(Number);
+    const [cH, cM] = franja.horaCierre.split(":").map(Number);
+    const inicio = setMinutes(setHours(base, aH), aM);
+    const fin = setMinutes(setHours(base, cH), cM);
+    let cursor = inicio;
+    while (cursor < fin) {
+      const ts = cursor.getTime();
+      if (!seen.has(ts)) {
+        seen.add(ts);
+        slots.push(cursor);
+      }
+      cursor = addMinutes(cursor, 30);
+    }
+  }
+  return slots.map((s) => format(s, "HH:mm"));
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Scissors, Check } from "lucide-react";
+import { Scissors, Check, User, Phone as PhoneIcon, Mail, MessageSquare } from "lucide-react";
 import { crearTurno } from "@/actions/turnos";
 
 interface Servicio {
@@ -303,13 +303,15 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
         {/* Step 0: Service selection */}
         {step === 0 && (
           <div className="flex flex-col gap-2.5">
-            {servicios.map((s) => {
+            {servicios.map((s, i) => {
               const on = servicioId === s.id;
+              const dotColors = ["#22D366", "#2F6BFF", "#B79CFF", "#E8A33D", "#F26157", "#34D399"];
+              const dotColor = dotColors[i % dotColors.length];
               return (
                 <button
                   key={s.id}
                   onClick={() => setServicioId(s.id)}
-                  className="w-full rounded-[14px] border-2 px-3.5 py-3 text-left transition-all"
+                  className="flex w-full items-center gap-3 rounded-[14px] border-2 px-3.5 py-3 text-left transition-all"
                   style={{
                     background: on ? "rgba(34,211,102,.07)" : "#16213A",
                     borderColor: on ? "#22D366" : "#223052",
@@ -318,11 +320,14 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                       : "none",
                   }}
                 >
-                  <div className="text-[14.5px] font-bold text-white">
-                    {s.nombre}
-                  </div>
-                  <div className="mt-0.5 font-mono-num text-xs text-[#C7D0E0]">
-                    {s.duracion} min · {money(s.precio)}
+                  <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: dotColor }} />
+                  <div>
+                    <div className="text-[14.5px] font-bold text-white">
+                      {s.nombre}
+                    </div>
+                    <div className="mt-0.5 font-mono-num text-xs text-[#C7D0E0]">
+                      {s.duracion} min · {money(s.precio)}
+                    </div>
                   </div>
                 </button>
               );
@@ -427,36 +432,45 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
                 Nombre completo *
               </div>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Ej: Juan Pérez"
-                className={inputClass}
-              />
+              <div className="flex items-center gap-2.5 rounded-xl border border-cl-border bg-cl-slot px-3.5 py-3 transition-all focus-within:border-[#3B6EF5] focus-within:ring-[3px] focus-within:ring-[rgba(59,110,245,.2)]">
+                <User size={16} color="#5F6B85" className="shrink-0" />
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ej: Juan Pérez"
+                  className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"
+                />
+              </div>
             </div>
             <div>
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
                 Teléfono / WhatsApp *
               </div>
-              <input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Ej: 11 2345 6789"
-                type="tel"
-                className={inputClass}
-              />
+              <div className="flex items-center gap-2.5 rounded-xl border border-cl-border bg-cl-slot px-3.5 py-3 transition-all focus-within:border-[#3B6EF5] focus-within:ring-[3px] focus-within:ring-[rgba(59,110,245,.2)]">
+                <PhoneIcon size={16} color="#5F6B85" className="shrink-0" />
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Ej: 11 2345 6789"
+                  type="tel"
+                  className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"
+                />
+              </div>
             </div>
             <div>
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
                 Email (opcional)
               </div>
-              <input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tucorreo@mail.com"
-                type="email"
-                className={inputClass}
-              />
+              <div className="flex items-center gap-2.5 rounded-xl border border-cl-border bg-cl-slot px-3.5 py-3 transition-all focus-within:border-[#3B6EF5] focus-within:ring-[3px] focus-within:ring-[rgba(59,110,245,.2)]">
+                <Mail size={16} color="#5F6B85" className="shrink-0" />
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="tucorreo@mail.com"
+                  type="email"
+                  className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"
+                />
+              </div>
             </div>
             <div>
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
@@ -631,6 +645,7 @@ function DateTimeStep({
   onSelectTime: (t: string) => void;
 }) {
   const [slots, setSlots] = useState<string[]>([]);
+  const [allSlots, setAllSlots] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [nightMode, setNightMode] = useState(false);
 
@@ -681,6 +696,7 @@ function DateTimeStep({
       );
       const data = await res.json();
       setSlots(Array.isArray(data) ? data : data.slots ?? []);
+      setAllSlots(data.allSlots ?? []);
     } catch {
       setSlots([]);
     }
@@ -704,9 +720,9 @@ function DateTimeStep({
   const selectedDow = selectedDay ? new Date(selectedDay).getDay() : null;
   const isSaturday = selectedDow === 6;
 
-  const daySlots = nightMode
-    ? slots.filter((s) => parseInt(s) >= 20)
-    : slots.filter((s) => parseInt(s) < 20);
+  const displaySlots = nightMode
+    ? allSlots.filter((s) => parseInt(s) >= 20)
+    : allSlots.filter((s) => parseInt(s) < 20);
 
   function isDayPast(d: number) {
     if (viewYear < today.getFullYear()) return true;
@@ -781,7 +797,7 @@ function DateTimeStep({
       </div>
 
       {/* Saturday night toggle */}
-      {isSaturday && slots.some((s) => parseInt(s) >= 20) && (
+      {isSaturday && allSlots.some((s) => parseInt(s) >= 20) && (
         <button
           onClick={() => setNightMode(!nightMode)}
           className="mb-4 flex w-full items-center gap-2.5 rounded-[13px] border px-3.5 py-3 text-left"
@@ -825,28 +841,32 @@ function DateTimeStep({
             <div className="py-6 text-center text-sm text-[#5F6B85]">
               Cargando horarios...
             </div>
-          ) : daySlots.length === 0 ? (
+          ) : displaySlots.length === 0 ? (
             <div className="py-6 text-center text-sm text-[#5F6B85]">
               No hay horarios disponibles
             </div>
           ) : (
             <div className="grid grid-cols-4 gap-2">
-              {daySlots.map((t) => {
+              {displaySlots.map((t) => {
+                const isFree = slots.includes(t);
                 const on = selectedTime === t;
                 return (
                   <button
                     key={t}
-                    onClick={() => onSelectTime(t)}
+                    disabled={!isFree}
+                    onClick={() => isFree && onSelectTime(t)}
                     className="rounded-[11px] border py-3 text-center font-mono-num text-[13px] font-semibold transition-all"
                     style={{
                       background: on
                         ? "linear-gradient(135deg, #3B6EF5, #8B5CF6)"
                         : "#1A2742",
                       borderColor: on ? "transparent" : "#2A3A5E",
-                      color: on ? "#fff" : "#E4E8F0",
+                      color: !isFree ? "#39455E" : on ? "#fff" : "#E4E8F0",
+                      textDecoration: !isFree ? "line-through" : "none",
                       boxShadow: on
                         ? "0 6px 18px -4px rgba(124,92,246,.55)"
                         : "none",
+                      cursor: isFree ? "pointer" : "not-allowed",
                     }}
                   >
                     {t}
