@@ -74,14 +74,23 @@ export function ServiciosMobile({ servicios }: { servicios: Servicio[] }) {
             className="mb-3 rounded-2xl border border-[rgba(47,107,255,.35)] bg-ap-s1 p-3.5"
           >
             <div className="mb-3 text-[11px] font-bold uppercase tracking-wider text-ap-primary">+ Nuevo servicio</div>
-            <input name="nombre" placeholder="Ej: Corte + diseño" required className="mb-2 w-full rounded-[10px] border border-ap-border-soft bg-[#232325] px-3 py-2.5 text-sm text-ap-text outline-none placeholder-ap-muted focus:border-ap-primary" />
+            <div className="mb-2">
+              <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-ap-muted">Nombre</div>
+              <input name="nombre" placeholder="Ej: Corte + diseño" required className="w-full rounded-[10px] border border-ap-border-soft bg-[#232325] px-3 py-2.5 text-sm text-ap-text outline-none placeholder-ap-muted focus:border-ap-primary" />
+            </div>
             <div className="mb-3 grid grid-cols-2 gap-2">
-              <input name="precio" type="number" placeholder="Precio" required className="rounded-[10px] border border-ap-border-soft bg-[#232325] px-3 py-2.5 font-mono-num text-sm text-ap-text outline-none placeholder-ap-muted focus:border-ap-primary" />
-              <input name="duracion" type="number" placeholder="Min" required className="rounded-[10px] border border-ap-border-soft bg-[#232325] px-3 py-2.5 font-mono-num text-sm text-ap-text outline-none placeholder-ap-muted focus:border-ap-primary" />
+              <div>
+                <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-ap-muted">Precio</div>
+                <input name="precio" type="number" placeholder="$0" required className="w-full rounded-[10px] border border-ap-border-soft bg-[#232325] px-3 py-2.5 font-mono-num text-sm text-ap-text outline-none placeholder-ap-muted focus:border-ap-primary" />
+              </div>
+              <div>
+                <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-ap-muted">Duración (min)</div>
+                <input name="duracion" type="number" placeholder="30" required className="w-full rounded-[10px] border border-ap-border-soft bg-[#232325] px-3 py-2.5 font-mono-num text-sm text-ap-text outline-none placeholder-ap-muted focus:border-ap-primary" />
+              </div>
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={() => setShowAdd(false)} className="flex-1 rounded-[10px] border border-ap-border-soft py-2.5 text-[13px] font-semibold text-ap-sub">Cancelar</button>
-              <button type="submit" disabled={isPending} className="flex-[2] rounded-[10px] bg-[#22D366] py-2.5 text-[13px] font-bold text-[#08130D] disabled:opacity-50">✓ Guardar</button>
+              <button type="submit" disabled={isPending} className="flex-[2] rounded-[10px] bg-[#22D366] py-2.5 text-[13px] font-bold text-[#08130D] disabled:opacity-50">✓ Guardar servicio</button>
             </div>
           </form>
         )}
