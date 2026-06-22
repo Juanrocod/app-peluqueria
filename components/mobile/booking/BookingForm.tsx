@@ -57,6 +57,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   const nameLetters = name.replace(/[^a-záéíóúñü]/gi, "");
   const uniqueChars = new Set(nameLetters.toLowerCase()).size;
   const isNameValid = nameLetters.length >= 4 && uniqueChars >= 2 && /^[a-záéíóúñüA-ZÁÉÍÓÚÑÜ\s]+$/.test(name.trim());
+  const isEmailValid = !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   function formatPhone(value: string) {
     const digits = value.replace(/\D/g, "").slice(0, 10);
@@ -71,9 +72,9 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
     if (step === 1) return !!time;
     if (step === 2)
       return place === "salon" || (place === "home" && address.trim() !== "");
-    if (step === 3) return isNameValid && isPhoneValid;
+    if (step === 3) return isNameValid && isPhoneValid && isEmailValid;
     return true;
-  }, [step, servicioId, time, place, address, isNameValid, isPhoneValid]);
+  }, [step, servicioId, time, place, address, isNameValid, isPhoneValid, isEmailValid]);
 
   async function handleConfirm() {
     if (!selectedSvc || !day || !time) return;
@@ -487,8 +488,8 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
                 Email (opcional)
               </div>
-              <div className="flex items-center gap-2.5 rounded-xl border border-cl-border bg-cl-slot px-3.5 py-3 transition-all focus-within:border-[#3B6EF5] focus-within:ring-[3px] focus-within:ring-[rgba(59,110,245,.2)]">
-                <Mail size={16} color="#5F6B85" className="shrink-0" />
+              <div className={`flex items-center gap-2.5 rounded-xl border bg-cl-slot px-3.5 py-3 transition-all focus-within:ring-[3px] ${triedNext && !isEmailValid ? "border-[#F26157] focus-within:border-[#F26157] focus-within:ring-[rgba(242,97,87,.2)]" : "border-cl-border focus-within:border-[#3B6EF5] focus-within:ring-[rgba(59,110,245,.2)]"}`}>
+                <Mail size={16} color={triedNext && !isEmailValid ? "#F26157" : "#5F6B85"} className="shrink-0" />
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -497,6 +498,9 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                   className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"
                 />
               </div>
+              {triedNext && !isEmailValid && (
+                <div className="mt-1 text-xs font-semibold text-[#F26157]">Ingresá un email válido (ej: nombre@mail.com)</div>
+              )}
             </div>
             <div>
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
