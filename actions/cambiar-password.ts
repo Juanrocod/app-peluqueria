@@ -12,8 +12,8 @@ export async function cambiarPassword(data: {
   const email = session.user?.email;
   if (!email) throw new Error("No autenticado");
 
-  if (data.nueva.length < 8) {
-    return { ok: false, error: "La contraseña nueva debe tener al menos 8 caracteres." };
+  if (data.nueva.length < 8 || !/[A-Z]/.test(data.nueva) || !/[0-9]/.test(data.nueva) || !/[^A-Za-z0-9]/.test(data.nueva)) {
+    return { ok: false, error: "La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial." };
   }
 
   const user = await prisma.user.findUnique({ where: { email } });
