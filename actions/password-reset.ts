@@ -9,6 +9,12 @@ function hashToken(token: string): string {
 }
 
 export async function requestPasswordReset(email: string): Promise<{ ok: true }> {
+  try {
+    const { resetLimiter } = await import("@/lib/rate-limit");
+    const { success } = await resetLimiter.limit(email);
+    if (!success) return { ok: true };
+  } catch {}
+
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (user) {

@@ -22,6 +22,12 @@ export async function crearTurno(data: {
   descuentoAplicado?: number;
   productoIds?: string[];
 }) {
+  try {
+    const { bookingLimiter } = await import("@/lib/rate-limit");
+    const { success } = await bookingLimiter.limit(data.clienteTelefono || "anon");
+    if (!success) throw new Error("Demasiados intentos. Esperá un momento.");
+  } catch (e) { if (e instanceof Error && e.message.includes("Demasiados")) throw e; }
+
   const servicio = await prisma.servicio.findUnique({ where: { id: data.servicioId } });
   if (!servicio) throw new Error("Servicio no encontrado");
 

@@ -15,8 +15,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
+        const email = credentials.email as string;
+
+        try {
+          const { loginLimiter } = await import("@/lib/rate-limit");
+          const { success } = await loginLimiter.limit(email);
+          if (!success) return null;
+        } catch {}
+
         const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
+          where: { email },
         });
 
         if (!user) return null;
