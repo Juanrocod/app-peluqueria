@@ -34,8 +34,26 @@ export async function requestPasswordReset(email: string): Promise<{ ok: true }>
     const baseUrl = process.env.VERCEL_URL
       ? `https://${process.env.VERCEL_URL}`
       : process.env.NEXTAUTH_URL || "http://localhost:3000";
-    if (process.env.NODE_ENV !== "production") {
-      console.log(`[RESET] ${baseUrl}/reset-password?token=${rawToken}`);
+    const resetUrl = `${baseUrl}/reset-password?token=${rawToken}`;
+
+    if (process.env.RESEND_API_KEY) {
+      const { Resend } = await import("resend");
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      await resend.emails.send({
+        from: process.env.RESEND_FROM || "BarberFras <onboarding@resend.dev>",
+        to: email,
+        subject: "Recuperá tu contraseña",
+        html: `
+          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;">
+            <h2 style="color:#1a1a1a;">Recuperar contraseña</h2>
+            <p style="color:#555;line-height:1.6;">Recibimos tu solicitud para restablecer la contraseña. Hacé click en el botón para crear una nueva:</p>
+            <a href="${resetUrl}" style="display:inline-block;background:#2F6BFF;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:bold;margin:16px 0;">Restablecer contraseña</a>
+            <p style="color:#999;font-size:13px;margin-top:24px;">Este link expira en 1 hora. Si no pediste esto, ignorá este email.</p>
+          </div>
+        `,
+      });
+    } else if (process.env.NODE_ENV !== "production") {
+      console.log(`[RESET] ${resetUrl}`);
     }
   }
 
