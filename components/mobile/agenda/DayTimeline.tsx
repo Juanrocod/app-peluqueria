@@ -124,11 +124,11 @@ export function DayTimeline({ year, month, day, appointments, onBack, onSelectDa
         }}
       >
         <div className="flex min-w-0 items-center gap-1">
-          <span className="shrink-0 rounded-md px-1.5 py-0.5 font-mono-num text-[9px] font-bold" style={{ background: `${svc.c}20`, color: svc.c }}>
+          <span className="shrink-0 rounded-md bg-[#2A2A2C] px-1.5 py-0.5 font-mono-num text-[9px] font-bold text-white">
             {a.start}–{(() => { const m = parseMin(a.start) + a.duracion; return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`; })()}
           </span>
-          <span className="truncate rounded-md bg-[rgba(244,244,242,.07)] px-1.5 py-0.5 text-[10px] font-bold text-ap-text">{a.clienteNombre}</span>
-          <span className="shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: `${svc.c}15`, color: svc.c }}>{a.servicioNombre}</span>
+          <span className="truncate rounded-md bg-[#2A2A2C] px-1.5 py-0.5 text-[10px] font-bold text-white">{a.clienteNombre}</span>
+          <span className="shrink-0 rounded-md bg-[#2A2A2C] px-1.5 py-0.5 text-[10px] font-semibold text-white">{a.servicioNombre}</span>
         </div>
       </div>
     );
