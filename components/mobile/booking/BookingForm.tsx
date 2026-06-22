@@ -257,7 +257,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-3.5">
+      <div className="flex-1 overflow-y-auto px-4 pb-24 pt-3.5">
         {/* Completed steps */}
         {Array.from({ length: step }).map((_, i) => (
           <div
@@ -600,8 +600,8 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
         )}
       </div>
 
-      {/* Footer CTA */}
-      <div className="border-t border-[#16203A] bg-cl-bg px-4 py-3">
+      {/* Footer CTA — fixed at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#16203A] bg-cl-bg px-4 py-3" style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}>
         <button
           onClick={next}
           disabled={!canNext() || submitting}
