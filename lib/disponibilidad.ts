@@ -79,7 +79,14 @@ export async function getSlotDisponibles(
     ? duracionMinutos + BUFFER_DOMICILIO * 2
     : duracionMinutos;
 
+  // Current time in server-local (UTC on Vercel). Compare against slot times (also UTC).
+  const ahora = new Date();
+  const esHoy = fecha.getFullYear() === ahora.getFullYear() && fecha.getMonth() === ahora.getMonth() && fecha.getDate() === ahora.getDate();
+
   const slotsLibres = todosLosSlots.filter((slot) => {
+    // Block past hours for today
+    if (esHoy && slot <= ahora) return false;
+
     const slotInicio = modalidad === "DOMICILIO" ? addMinutes(slot, -BUFFER_DOMICILIO) : slot;
     const slotFin = addMinutes(slotInicio, durEfectiva);
 
