@@ -52,7 +52,7 @@ export function MonthView({ year, month, daysWithTurnos, onSelectDay, onGoYear, 
   return (
     <div className="flex flex-1 flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pb-2.5">
+      <div className="flex items-center justify-between px-4 pt-3 pb-4">
         <button onClick={onGoYear} className="flex items-baseline gap-1.5 p-0">
           <span className="font-display text-[28px] font-bold text-white">{MONTHS_FULL[month]}</span>
           <span className="font-mono-num text-[13px] text-ap-muted">{year}</span>
