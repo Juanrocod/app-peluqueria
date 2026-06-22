@@ -353,16 +353,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                         : "none",
                     }}
                   >
-                    <span
-                      className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[7px]"
-                      style={{
-                        background: on ? "#22D366" : "transparent",
-                        border: on ? "none" : `2px solid ${dotColor}`,
-                        boxShadow: on ? "0 4px 12px -3px rgba(34,211,102,.5)" : "none",
-                      }}
-                    >
-                      {on && <Check size={13} color="#08130D" />}
-                    </span>
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: on ? "#22D366" : dotColor }} />
                     <div className="flex-1">
                       <div className="text-[14.5px] font-bold text-white">
                         {s.nombre}
