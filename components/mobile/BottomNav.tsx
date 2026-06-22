@@ -16,7 +16,7 @@ export function MobileBottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex border-t border-[#232325] bg-[#161617] md:hidden"
-         style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}>
+         style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 20px)" }}>
       {NAV_ITEMS.map(({ href, label, Icon }) => {
         const isActive =
           href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
