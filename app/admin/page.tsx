@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import CalendarioAdmin from "@/components/admin/CalendarioAdmin";
 import { AgendaScreen } from "@/components/mobile/agenda/AgendaScreen";

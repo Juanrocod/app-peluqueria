@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/prisma";
 import { format, startOfToday } from "date-fns";
 import ConfigPageClient from "@/components/admin/config/ConfigPageClient";
