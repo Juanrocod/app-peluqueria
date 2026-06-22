@@ -52,14 +52,19 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
     );
   }
 
+  const phoneDigits = phone.replace(/\D/g, "");
+  const isPhoneValid = phoneDigits.length >= 8;
+  const isNameValid = name.trim().length >= 2;
+  const [triedNext, setTriedNext] = useState(false);
+
   const canNext = useCallback(() => {
     if (step === 0) return !!servicioId;
     if (step === 1) return !!time;
     if (step === 2)
       return place === "salon" || (place === "home" && address.trim() !== "");
-    if (step === 3) return name.trim() !== "" && phone.trim() !== "";
+    if (step === 3) return isNameValid && isPhoneValid;
     return true;
-  }, [step, servicioId, time, place, address, name, phone]);
+  }, [step, servicioId, time, place, address, isNameValid, isPhoneValid]);
 
   async function handleConfirm() {
     if (!selectedSvc || !day || !time) return;
@@ -93,7 +98,12 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   }
 
   function next() {
+    if (step === 3 && !canNext()) {
+      setTriedNext(true);
+      return;
+    }
     if (!canNext()) return;
+    setTriedNext(false);
     if (step === 4) {
       handleConfirm();
     } else {
@@ -125,7 +135,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
 
   if (done) {
     return (
-      <div className="flex min-h-screen flex-col bg-cl-bg px-4 py-6">
+      <div className="flex h-screen flex-col items-center justify-center overflow-hidden bg-cl-bg px-4">
         <div
           className="mx-auto w-full max-w-md overflow-hidden rounded-3xl border border-cl-border bg-cl-card"
           style={{ boxShadow: "0 24px 60px -28px rgba(0,0,0,.8)" }}
@@ -257,7 +267,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto px-4 py-3.5">
+      <div className="flex-1 overflow-y-auto px-4 pb-24 pt-3.5">
         {/* Completed steps */}
         {Array.from({ length: step }).map((_, i) => (
           <div
@@ -432,8 +442,8 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
                 Nombre completo *
               </div>
-              <div className="flex items-center gap-2.5 rounded-xl border border-cl-border bg-cl-slot px-3.5 py-3 transition-all focus-within:border-[#3B6EF5] focus-within:ring-[3px] focus-within:ring-[rgba(59,110,245,.2)]">
-                <User size={16} color="#5F6B85" className="shrink-0" />
+              <div className={`flex items-center gap-2.5 rounded-xl border bg-cl-slot px-3.5 py-3 transition-all focus-within:ring-[3px] ${triedNext && !isNameValid ? "border-[#F26157] focus-within:border-[#F26157] focus-within:ring-[rgba(242,97,87,.2)]" : "border-cl-border focus-within:border-[#3B6EF5] focus-within:ring-[rgba(59,110,245,.2)]"}`}>
+                <User size={16} color={triedNext && !isNameValid ? "#F26157" : "#5F6B85"} className="shrink-0" />
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -441,21 +451,28 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                   className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"
                 />
               </div>
+              {triedNext && !isNameValid && (
+                <div className="mt-1 text-xs font-semibold text-[#F26157]">Ingresá un nombre válido</div>
+              )}
             </div>
             <div>
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
                 Teléfono / WhatsApp *
               </div>
-              <div className="flex items-center gap-2.5 rounded-xl border border-cl-border bg-cl-slot px-3.5 py-3 transition-all focus-within:border-[#3B6EF5] focus-within:ring-[3px] focus-within:ring-[rgba(59,110,245,.2)]">
-                <PhoneIcon size={16} color="#5F6B85" className="shrink-0" />
+              <div className={`flex items-center gap-2.5 rounded-xl border bg-cl-slot px-3.5 py-3 transition-all focus-within:ring-[3px] ${triedNext && !isPhoneValid ? "border-[#F26157] focus-within:border-[#F26157] focus-within:ring-[rgba(242,97,87,.2)]" : "border-cl-border focus-within:border-[#3B6EF5] focus-within:ring-[rgba(59,110,245,.2)]"}`}>
+                <PhoneIcon size={16} color={triedNext && !isPhoneValid ? "#F26157" : "#5F6B85"} className="shrink-0" />
                 <input
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => setPhone(e.target.value.replace(/[^0-9\s+\-]/g, ""))}
                   placeholder="Ej: 11 2345 6789"
                   type="tel"
+                  inputMode="numeric"
                   className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"
                 />
               </div>
+              {triedNext && !isPhoneValid && (
+                <div className="mt-1 text-xs font-semibold text-[#F26157]">Ingresá un número válido</div>
+              )}
             </div>
             <div>
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
@@ -600,18 +617,18 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
         )}
       </div>
 
-      {/* Footer CTA */}
-      <div className="border-t border-[#16203A] bg-cl-bg px-4 py-3">
+      {/* Footer CTA — fixed at bottom */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#16203A] bg-cl-bg px-4 py-3" style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)" }}>
         <button
           onClick={next}
-          disabled={!canNext() || submitting}
+          disabled={(step !== 3 && !canNext()) || submitting}
           className="w-full rounded-[14px] py-[15px] text-[15px] font-bold text-white transition-all disabled:cursor-not-allowed"
           style={{
-            background: canNext()
+            background: (step === 3 || canNext())
               ? "linear-gradient(135deg, #3B6EF5, #8B5CF6)"
               : "#1A2742",
-            color: canNext() ? "#fff" : "#46557A",
-            boxShadow: canNext()
+            color: (step === 3 || canNext()) ? "#fff" : "#46557A",
+            boxShadow: (step === 3 || canNext())
               ? "0 6px 18px -4px rgba(124,92,246,.55)"
               : "none",
           }}
