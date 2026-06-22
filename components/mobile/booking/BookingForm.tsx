@@ -518,31 +518,41 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
                 Código de descuento (opcional)
               </div>
-              <div className="flex gap-2">
-                <input
-                  value={discountCode}
-                  onChange={(e) => setDiscountCode(e.target.value)}
-                  placeholder="XXXXX"
-                  className={`${inputClass} flex-1 tracking-wider`}
-                />
-                <button
-                  onClick={async () => {
-                    if (!discountCode.trim()) return;
-                    try {
-                      const res = await fetch(
-                        `/api/validar-descuento?codigo=${discountCode}`,
-                      );
-                      const data = await res.json();
-                      if (data.valido) setDiscountPct(data.porcentaje);
-                    } catch {
-                      /* ignore */
-                    }
-                  }}
-                  className="shrink-0 rounded-xl border border-cl-border bg-cl-card px-4 text-sm font-semibold text-white"
-                >
-                  Aplicar
-                </button>
-              </div>
+              {discountPct > 0 ? (
+                <div className="flex items-center gap-2.5 rounded-xl border border-[rgba(34,211,102,.3)] bg-[rgba(34,211,102,.08)] px-3.5 py-3">
+                  <span className="text-lg">🎉</span>
+                  <div className="flex-1">
+                    <div className="text-[13px] font-bold text-[#22D366]">¡Código aplicado!</div>
+                    <div className="text-[11px] text-[#22D366]/70">{discountCode.toUpperCase()} · {discountPct}% de descuento</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    value={discountCode}
+                    onChange={(e) => setDiscountCode(e.target.value)}
+                    placeholder="XXXXX"
+                    className={`${inputClass} flex-1 tracking-wider`}
+                  />
+                  <button
+                    onClick={async () => {
+                      if (!discountCode.trim()) return;
+                      try {
+                        const res = await fetch(
+                          `/api/validar-descuento?codigo=${discountCode}`,
+                        );
+                        const data = await res.json();
+                        if (data.valido) setDiscountPct(data.porcentaje);
+                      } catch {
+                        /* ignore */
+                      }
+                    }}
+                    className="shrink-0 rounded-xl border border-cl-border bg-cl-card px-4 text-sm font-semibold text-white"
+                  >
+                    Aplicar
+                  </button>
+                </div>
+              )
             </div>
           </div>
         )}
