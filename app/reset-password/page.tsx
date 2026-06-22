@@ -32,8 +32,8 @@ function ResetForm() {
     e.preventDefault();
     setError("");
 
-    if (password.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres.");
+    if (password.length < 8 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || !/[^A-Za-z0-9]/.test(password)) {
+      setError("Mínimo 8 caracteres, una mayúscula, un número y un carácter especial.");
       return;
     }
     if (password !== confirm) {

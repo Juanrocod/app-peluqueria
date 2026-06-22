@@ -56,7 +56,7 @@ export const cambiarPasswordSchema = z.object({
 
 export const executeResetSchema = z.object({
   token: z.string().length(64).regex(/^[a-f0-9]+$/),
-  password: z.string().min(8),
+  password: strongPassword,
 });
 
 export const crearFranjaSchema = z.object({
