@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Clock, ChevronRight, ChevronDown, Trash2, Plus, Info } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Clock, ChevronLeft, ChevronRight, ChevronDown, Trash2, Plus, Info } from "lucide-react";
 import { crearFranjaAdmin, eliminarFranjaAdmin } from "@/actions/horarios";
 import { crearBloqueoAdmin, eliminarBloqueo } from "@/actions/bloqueos";
 
@@ -33,6 +34,7 @@ interface HorariosMobileProps {
 }
 
 export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBloqueos }: HorariosMobileProps) {
+  const router = useRouter();
   const [horarios, setHorarios] = useState(initialHorarios);
   const [bloqueosList, setBloqueosList] = useState(initialBloqueos);
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
@@ -159,6 +161,9 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
   return (
     <div className="pb-4">
       <div className="mb-4 flex items-center gap-2.5 px-4">
+        <button onClick={() => router.back()} className="flex h-[34px] w-[34px] items-center justify-center rounded-[9px] border border-ap-border-soft bg-ap-s1">
+          <ChevronLeft size={17} color="#ADADB0" />
+        </button>
         <Clock size={19} color="#F26157" />
         <span className="font-display text-[28px] font-bold">Horarios</span>
       </div>

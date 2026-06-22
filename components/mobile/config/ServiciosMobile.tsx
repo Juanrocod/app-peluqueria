@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Scissors, Edit, ChevronRight, Plus } from "lucide-react";
+import { Scissors, Edit, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
 interface Servicio {
   id: string;
@@ -59,6 +59,9 @@ export function ServiciosMobile({ servicios }: { servicios: Servicio[] }) {
   return (
     <div className="pb-20">
       <div className="mb-4 flex items-center gap-2.5 px-4">
+        <button onClick={() => router.back()} className="flex h-[34px] w-[34px] items-center justify-center rounded-[9px] border border-ap-border-soft bg-ap-s1">
+          <ChevronLeft size={17} color="#ADADB0" />
+        </button>
         <Scissors size={19} color="#B79CFF" />
         <span className="font-display text-[28px] font-bold">Servicios</span>
       </div>

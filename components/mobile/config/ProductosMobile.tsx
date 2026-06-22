@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Edit, Plus } from "lucide-react";
+import { Box, Edit, Plus, ChevronLeft } from "lucide-react";
 import { crearProducto, actualizarProducto, eliminarProducto } from "@/actions/catalogo";
 
 interface Producto {
@@ -59,6 +59,9 @@ export function ProductosMobile({ productos }: { productos: Producto[] }) {
   return (
     <div className="pb-20">
       <div className="mb-4 flex items-center gap-2.5 px-4">
+        <button onClick={() => router.back()} className="flex h-[34px] w-[34px] items-center justify-center rounded-[9px] border border-ap-border-soft bg-ap-s1">
+          <ChevronLeft size={17} color="#ADADB0" />
+        </button>
         <Box size={19} color="#E8A33D" />
         <span className="font-display text-[28px] font-bold">Productos</span>
       </div>
