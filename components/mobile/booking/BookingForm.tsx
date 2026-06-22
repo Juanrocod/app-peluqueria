@@ -53,8 +53,17 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   }
 
   const phoneDigits = phone.replace(/\D/g, "");
-  const isPhoneValid = phoneDigits.length >= 8;
-  const isNameValid = name.trim().length >= 2;
+  const isPhoneValid = phoneDigits.length >= 10;
+  const nameLetters = name.replace(/[^a-záéíóúñü]/gi, "");
+  const uniqueChars = new Set(nameLetters.toLowerCase()).size;
+  const isNameValid = nameLetters.length >= 4 && uniqueChars >= 2 && /^[a-záéíóúñüA-ZÁÉÍÓÚÑÜ\s]+$/.test(name.trim());
+
+  function formatPhone(value: string) {
+    const digits = value.replace(/\D/g, "").slice(0, 10);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 2)} ${digits.slice(2)}`;
+    return `${digits.slice(0, 2)} ${digits.slice(2, 6)} ${digits.slice(6)}`;
+  }
   const [triedNext, setTriedNext] = useState(false);
 
   const canNext = useCallback(() => {
@@ -446,7 +455,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                 <User size={16} color={triedNext && !isNameValid ? "#F26157" : "#5F6B85"} className="shrink-0" />
                 <input
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setName(e.target.value.replace(/[^a-záéíóúñüA-ZÁÉÍÓÚÑÜ\s]/g, ""))}
                   placeholder="Ej: Juan Pérez"
                   className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"
                 />
@@ -463,8 +472,8 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                 <PhoneIcon size={16} color={triedNext && !isPhoneValid ? "#F26157" : "#5F6B85"} className="shrink-0" />
                 <input
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/[^0-9\s+\-]/g, ""))}
-                  placeholder="Ej: 11 2345 6789"
+                  onChange={(e) => setPhone(formatPhone(e.target.value))}
+                  placeholder="11 2345 6789"
                   type="tel"
                   inputMode="numeric"
                   className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"

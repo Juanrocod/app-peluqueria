@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-const phoneRegex = /^[\d\s+\-]{8,30}$/;
+const phoneRegex = /^[\d\s+\-]{10,30}$/;
 const horaRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 export const crearTurnoSchema = z.object({
   fechaHora: z.any(),
   fechaStr: z.string().optional(),
   horaSlot: z.string().regex(horaRegex).optional(),
-  clienteNombre: z.string().min(2).max(100),
+  clienteNombre: z.string().min(4).max(100).regex(/^[a-záéíóúñüA-ZÁÉÍÓÚÑÜ\s]+$/, "Solo letras y espacios"),
   clienteTelefono: z.string().regex(phoneRegex, "Número de teléfono inválido"),
   clienteEmail: z.string().email().max(100).optional().or(z.literal("")),
   observaciones: z.string().max(500).optional().or(z.literal("")),
