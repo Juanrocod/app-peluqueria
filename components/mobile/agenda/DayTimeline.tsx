@@ -159,8 +159,8 @@ export function DayTimeline({ year, month, day, appointments, onBack, onSelectDa
       {weekStrip}
 
       {/* Timeline */}
-      <div className="flex-1 overflow-y-auto px-3.5 pb-5">
-        <div className="relative pt-3" style={{ height: (END_H - START_H) * HOUR_PX + 12 }}>
+      <div className="flex-1 overflow-y-auto px-3.5 pb-5 pt-2">
+        <div className="relative" style={{ height: (END_H - START_H) * HOUR_PX + 16, marginTop: 10 }}>
           {hours}
           {emptyMsg}
           {blocks}
