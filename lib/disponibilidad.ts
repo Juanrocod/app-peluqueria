@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { addMinutes, format, parseISO, setHours, setMinutes, startOfDay, endOfDay } from "date-fns";
 
-const BUFFER_DOMICILIO = 40; // minutos de viaje antes y después
-const GRANULARIDAD_SLOT = 30; // alineado con la grilla admin
+const BUFFER_DOMICILIO = 40;
+const GRANULARIDAD_SLOT = 30;
+const AR_OFFSET_MS = 3 * 60 * 60 * 1000;
 
 export async function getSlotDisponibles(
   fecha: Date,
@@ -99,11 +100,14 @@ export async function getSlotDisponibles(
     if (bloqueadoPuntual) return false;
 
     // Verificar turnos existentes
+    // Turnos are stored with AR offset (9:00 AR = T12:00Z), slots are in server-local time.
+    // Subtract offset to align turno times with slot times for comparison.
     const ocupado = turnosDelDia.some((t) => {
       const tModalidad = t.modalidad ?? "PRESENCIAL";
       const bufferT = tModalidad === "DOMICILIO" ? BUFFER_DOMICILIO : 0;
-      const tInicio = addMinutes(t.fechaHora, -bufferT);
-      const tFin = addMinutes(t.fechaHora, t.servicio.duracion + bufferT);
+      const tLocal = new Date(t.fechaHora.getTime() - AR_OFFSET_MS);
+      const tInicio = addMinutes(tLocal, -bufferT);
+      const tFin = addMinutes(tLocal, t.servicio.duracion + bufferT);
       return slotInicio < tFin && slotFin > tInicio;
     });
 
