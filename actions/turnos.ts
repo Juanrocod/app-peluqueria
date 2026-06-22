@@ -79,7 +79,11 @@ export async function crearTurno(data: {
         peluqueroId: validated.peluqueroId ?? null,
         notas: validated.notas?.slice(0, 500) ?? null,
         origen: validated.origen ?? "ONLINE",
-        descuentoAplicado: validated.descuentoAplicado != null ? Math.max(0, Math.min(100, validated.descuentoAplicado)) : null,
+        descuentoAplicado: await (async () => {
+          if (!validated.descuentoAplicado) return null;
+          const codigo = await prisma.codigoDescuento.findFirst({ where: { activo: true, descuento: validated.descuentoAplicado } });
+          return codigo ? codigo.descuento : null;
+        })(),
         duracionSnapshot: servicio.duracion,
         ...(validated.productoIds?.length && validated.productoIds.length <= 10
           ? { productos: { create: validated.productoIds.map((id) => ({ productoId: id })) } }
