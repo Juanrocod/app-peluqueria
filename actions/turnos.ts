@@ -29,16 +29,21 @@ export async function crearTurno(data: {
   let horaStr: string;
   let fechaHoraDB: Date;
 
+  // Argentina is UTC-3: store 09:00 Argentina as T12:00:00.000Z in DB
+  // so browser in Argentina reads getHours()=9 correctly from the ISO string.
+  const AR_OFFSET = 3;
+
   if (data.fechaStr && data.horaSlot) {
     const [y, m, d] = data.fechaStr.split("-").map(Number);
     const [h, min] = data.horaSlot.split(":").map(Number);
     fecha = new Date(y, m - 1, d);
     horaStr = data.horaSlot;
-    fechaHoraDB = new Date(y, m - 1, d, h, min);
+    fechaHoraDB = new Date(Date.UTC(y, m - 1, d, h + AR_OFFSET, min));
   } else {
-    fecha = new Date(data.fechaHora.getFullYear(), data.fechaHora.getMonth(), data.fechaHora.getDate());
-    horaStr = `${String(data.fechaHora.getHours()).padStart(2, "0")}:${String(data.fechaHora.getMinutes()).padStart(2, "0")}`;
-    fechaHoraDB = data.fechaHora;
+    const fh = typeof data.fechaHora === "string" ? new Date(data.fechaHora) : data.fechaHora;
+    fecha = new Date(fh.getUTCFullYear(), fh.getUTCMonth(), fh.getUTCDate());
+    horaStr = `${String(fh.getUTCHours()).padStart(2, "0")}:${String(fh.getUTCMinutes()).padStart(2, "0")}`;
+    fechaHoraDB = fh;
   }
 
   const modalidad = data.modalidad ?? "PRESENCIAL";
