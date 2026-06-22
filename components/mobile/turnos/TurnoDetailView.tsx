@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { ChevronLeft, Scissors, CalendarDays, MapPin, Phone, DollarSign, Tag, Clock, Check } from "lucide-react";
+import { ChevronLeft, Scissors, CalendarDays, MapPin, Phone, DollarSign, Tag, Clock, Check, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Avatar } from "@/components/ui/Avatar";
@@ -127,9 +127,41 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
           </div>
         )}
 
+        {/* Expired banner */}
+        {(() => {
+          const isExpired = fecha < new Date() && (turno.estado === "PENDIENTE" || turno.estado === "CONFIRMADO");
+          if (!isExpired) return null;
+          return (
+            <div className="mt-4 rounded-[13px] border border-[rgba(232,163,61,.25)] bg-[rgba(232,163,61,.08)] p-3.5">
+              <div className="mb-3 flex items-center gap-2">
+                <AlertTriangle size={16} color="#E8A33D" />
+                <span className="text-[13px] font-semibold text-ap-warning">
+                  Este turno pasó y no fue confirmado
+                </span>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleAction("COMPLETADO")}
+                  disabled={isPending}
+                  className="flex-1 rounded-[11px] bg-[#22D366] py-2.5 text-[13px] font-bold text-[#08130D] transition-[filter] hover:brightness-110 disabled:opacity-50"
+                >
+                  Realizado
+                </button>
+                <button
+                  onClick={() => handleAction("CANCELADO")}
+                  disabled={isPending}
+                  className="flex-1 rounded-[11px] border border-ap-danger bg-transparent py-2.5 text-[13px] font-semibold text-ap-danger transition-[filter] hover:brightness-110 disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Actions */}
         <div className="mt-5 flex flex-col gap-2.5">
-          {turno.estado === "PENDIENTE" && (
+          {turno.estado === "PENDIENTE" && fecha >= new Date() && (
             <button
               onClick={() => handleAction("CONFIRMADO")}
               disabled={isPending}
@@ -141,7 +173,7 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
               </span>
             </button>
           )}
-          {turno.estado === "CONFIRMADO" && (
+          {turno.estado === "CONFIRMADO" && fecha >= new Date() && (
             <button
               onClick={() => handleAction("COMPLETADO")}
               disabled={isPending}
@@ -150,7 +182,7 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
               Marcar como realizado
             </button>
           )}
-          {(turno.estado === "PENDIENTE" || turno.estado === "CONFIRMADO") && (
+          {(turno.estado === "PENDIENTE" || turno.estado === "CONFIRMADO") && fecha >= new Date() && (
             <button
               onClick={() => handleAction("CANCELADO")}
               disabled={isPending}

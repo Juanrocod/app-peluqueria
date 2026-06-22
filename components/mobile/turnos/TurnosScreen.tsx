@@ -116,33 +116,39 @@ export function TurnosScreen({ turnos }: TurnosScreenProps) {
               groups.get(key)!.items.push(t);
             }
 
+            const now = new Date();
+
             const renderCard = (t: Turno) => {
               const sc = STATUS_COLOR[t.estado] ?? "#6F6F73";
               const fecha = new Date(t.fechaHora);
+              const isExpired = fecha < now && (t.estado === "PENDIENTE" || t.estado === "CONFIRMADO");
               return (
                 <button
                   key={t.id}
                   onClick={() => setSelectedId(t.id)}
                   className="flex items-center gap-3 rounded-[14px] border border-ap-border-soft bg-ap-s1 px-3 py-3 text-left transition-colors hover:bg-[#232325]"
-                  style={{ borderLeft: `3.5px solid ${sc}` }}
+                  style={{
+                    borderLeft: `3.5px solid ${isExpired ? "#6F6F73" : sc}`,
+                    opacity: isExpired ? 0.55 : 1,
+                  }}
                 >
                   <Avatar name={t.clienteNombre} size={40} />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-[14px] font-bold text-ap-text">{t.clienteNombre}</span>
+                      <span className={`text-[14px] font-bold ${isExpired ? "text-ap-muted line-through" : "text-ap-text"}`}>{t.clienteNombre}</span>
                       <StatusBadge estado={t.estado} />
                     </div>
-                    <div className="mt-0.5 flex items-center gap-1.5 text-xs text-ap-sub">
+                    <div className={`mt-0.5 flex items-center gap-1.5 text-xs text-ap-sub ${isExpired ? "line-through" : ""}`}>
                       <span>{t.servicio.nombre}</span>
                       <span className="text-ap-muted">&middot;</span>
                       <span>{t.servicio.duracion} min</span>
                     </div>
                   </div>
                   <div className="shrink-0 text-right">
-                    <div className="font-mono-num text-[15px] font-bold text-ap-text">
+                    <div className={`font-mono-num text-[15px] font-bold ${isExpired ? "text-ap-muted" : "text-ap-text"}`}>
                       {format(fecha, "HH:mm")}
                     </div>
-                    <div className="font-mono-num text-xs font-semibold text-[#22D366]">
+                    <div className={`font-mono-num text-xs font-semibold ${isExpired ? "text-ap-muted" : "text-[#22D366]"}`}>
                       {money(t.servicio.precio)}
                     </div>
                   </div>
