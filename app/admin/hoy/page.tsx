@@ -8,7 +8,8 @@ import { getSlotDisponibles } from "@/lib/disponibilidad";
 export default async function HoyPage() {
   const hoy   = new Date();
   const desde = startOfDay(hoy);
-  const hasta = endOfDay(hoy);
+  // Extend 3h past midnight to catch turnos stored with AR offset (21:00 AR = 00:00 UTC+1)
+  const hasta = new Date(endOfDay(hoy).getTime() + 3 * 60 * 60 * 1000);
 
   const turnos = await prisma.turno.findMany({
     where: {

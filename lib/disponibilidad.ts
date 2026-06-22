@@ -66,12 +66,13 @@ export async function getSlotDisponibles(
   });
 
   // Turnos confirmados o pendientes ese día
+  // Extend 3h past midnight to catch turnos stored with AR offset (21:00 AR = 00:00 UTC+1)
   const turnosDelDia = await prisma.turno.findMany({
     where: {
-      fechaHora: { gte: startOfDay(fecha), lte: endOfDay(fecha) },
+      fechaHora: { gte: startOfDay(fecha), lte: new Date(endOfDay(fecha).getTime() + 3 * 60 * 60 * 1000) },
       estado: { notIn: ["CANCELADO"] },
     },
-    include: { servicio: true },
+    select: { fechaHora: true, modalidad: true, duracionSnapshot: true, servicio: { select: { duracion: true } } },
   });
 
   const durEfectiva = modalidad === "DOMICILIO"
@@ -106,8 +107,9 @@ export async function getSlotDisponibles(
       const tModalidad = t.modalidad ?? "PRESENCIAL";
       const bufferT = tModalidad === "DOMICILIO" ? BUFFER_DOMICILIO : 0;
       const tLocal = new Date(t.fechaHora.getTime() - AR_OFFSET_MS);
+      const durReal = t.duracionSnapshot ?? t.servicio.duracion;
       const tInicio = addMinutes(tLocal, -bufferT);
-      const tFin = addMinutes(tLocal, t.servicio.duracion + bufferT);
+      const tFin = addMinutes(tLocal, durReal + bufferT);
       return slotInicio < tFin && slotFin > tInicio;
     });
 
