@@ -160,7 +160,7 @@ export function DayTimeline({ year, month, day, appointments, onBack, onSelectDa
 
       {/* Timeline */}
       <div className="flex-1 overflow-y-auto px-3.5 pb-5 pt-2">
-        <div className="relative" style={{ height: (END_H - START_H) * HOUR_PX + 16, marginTop: 10 }}>
+        <div className="relative" style={{ height: (END_H - START_H) * HOUR_PX + 24, marginTop: 18 }}>
           {hours}
           {emptyMsg}
           {blocks}
