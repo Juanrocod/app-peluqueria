@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, TrendingUp, TrendingDown } from "lucide-react";
 import { StatChip } from "@/components/ui/StatChip";
 import { SparklineChart } from "./SparklineChart";
 import { BarChart } from "./BarChart";
@@ -80,7 +80,13 @@ export function GananciasScreen({ turnos }: GananciasScreenProps) {
 
     const sparklineData = barData.map((d) => d.value);
 
-    return { total, count, ticket, barData, serviceData, sparklineData };
+    // Trend: compare with previous year
+    const prevYearTotal = turnos
+      .filter((t) => new Date(t.fechaHora).getFullYear() === selYear - 1)
+      .reduce((a, t) => a + t.precioFinal, 0);
+    const trendPct = prevYearTotal > 0 ? Math.round(((total - prevYearTotal) / prevYearTotal) * 100) : null;
+
+    return { total, count, ticket, barData, serviceData, sparklineData, trendPct };
   }, [turnos, period, selYear]);
 
   const periodLabels: Record<string, string> = {
@@ -129,8 +135,18 @@ export function GananciasScreen({ turnos }: GananciasScreenProps) {
 
         {/* Hero card */}
         <div className="mb-3 rounded-[18px] border border-[#253450] p-3.5" style={{ background: "linear-gradient(145deg, #182238, #0F1827)" }}>
-          <div className="mb-0.5">
+          <div className="mb-0.5 flex items-center justify-between">
             <div className="text-[10px] font-bold tracking-wider text-[#5F7BAD]">{periodLabels[period]}</div>
+            {stats.trendPct !== null && (
+              <div className="flex items-center gap-1">
+                {stats.trendPct >= 0
+                  ? <TrendingUp size={12} color="#22D366" />
+                  : <TrendingDown size={12} color="#F26157" />}
+                <span className={`font-mono-num text-[11px] font-bold ${stats.trendPct >= 0 ? "text-[#22D366]" : "text-[#F26157]"}`}>
+                  {stats.trendPct >= 0 ? "+" : ""}{stats.trendPct}% vs {selYear - 1}
+                </span>
+              </div>
+            )}
           </div>
           <div className="mb-2.5 font-mono-num text-[26px] font-extrabold leading-none text-white">
             {money(stats.total)}

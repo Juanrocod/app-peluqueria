@@ -62,8 +62,8 @@ export default async function ReservarPage() {
           <div
             className="relative flex flex-col items-center justify-center text-center px-6 py-20 min-h-[420px]"
             style={
-              imagenFondo
-                ? { backgroundImage: `url(${imagenFondo})`, backgroundSize: "cover", backgroundPosition: "center" }
+              imagenFondo && imagenFondo.startsWith("https://")
+                ? { backgroundImage: `url(${encodeURI(imagenFondo)})`, backgroundSize: "cover", backgroundPosition: "center" }
                 : { background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)" }
             }
           >

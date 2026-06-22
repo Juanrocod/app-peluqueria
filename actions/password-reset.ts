@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { randomBytes, createHash } from "crypto";
 import bcrypt from "bcryptjs";
+import { executeResetSchema } from "@/lib/validations";
 
 function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
@@ -73,11 +74,13 @@ export async function executePasswordReset(data: {
   token: string;
   password: string;
 }): Promise<{ ok: boolean; error?: string }> {
-  if (data.password.length < 8) {
+  const validated = executeResetSchema.parse(data);
+
+  if (validated.password.length < 8) {
     return { ok: false, error: "La contraseña debe tener al menos 8 caracteres." };
   }
 
-  const hashed = hashToken(data.token);
+  const hashed = hashToken(validated.token);
 
   const record = await prisma.passwordResetToken.findUnique({
     where: { hashedToken: hashed },
@@ -90,7 +93,7 @@ export async function executePasswordReset(data: {
     return { ok: false, error: "El link expiró o ya fue usado. Pedí uno nuevo." };
   }
 
-  const passwordHash = await bcrypt.hash(data.password, 10);
+  const passwordHash = await bcrypt.hash(validated.password, 10);
 
   await prisma.$transaction([
     prisma.user.update({

@@ -53,8 +53,18 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   }
 
   const phoneDigits = phone.replace(/\D/g, "");
-  const isPhoneValid = phoneDigits.length >= 8;
-  const isNameValid = name.trim().length >= 2;
+  const isPhoneValid = phoneDigits.length >= 10;
+  const nameLetters = name.replace(/[^a-záéíóúñü]/gi, "");
+  const uniqueChars = new Set(nameLetters.toLowerCase()).size;
+  const isNameValid = nameLetters.length >= 4 && uniqueChars >= 2 && /^[a-záéíóúñüA-ZÁÉÍÓÚÑÜ\s]+$/.test(name.trim());
+  const isEmailValid = !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  function formatPhone(value: string) {
+    const digits = value.replace(/\D/g, "").slice(0, 10);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 2)} ${digits.slice(2)}`;
+    return `${digits.slice(0, 2)} ${digits.slice(2, 6)} ${digits.slice(6)}`;
+  }
   const [triedNext, setTriedNext] = useState(false);
 
   const canNext = useCallback(() => {
@@ -62,9 +72,9 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
     if (step === 1) return !!time;
     if (step === 2)
       return place === "salon" || (place === "home" && address.trim() !== "");
-    if (step === 3) return isNameValid && isPhoneValid;
+    if (step === 3) return isNameValid && isPhoneValid && isEmailValid;
     return true;
-  }, [step, servicioId, time, place, address, isNameValid, isPhoneValid]);
+  }, [step, servicioId, time, place, address, isNameValid, isPhoneValid, isEmailValid]);
 
   async function handleConfirm() {
     if (!selectedSvc || !day || !time) return;
@@ -446,7 +456,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                 <User size={16} color={triedNext && !isNameValid ? "#F26157" : "#5F6B85"} className="shrink-0" />
                 <input
                   value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  onChange={(e) => setName(e.target.value.replace(/[^a-záéíóúñüA-ZÁÉÍÓÚÑÜ\s]/g, ""))}
                   placeholder="Ej: Juan Pérez"
                   className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"
                 />
@@ -463,23 +473,23 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                 <PhoneIcon size={16} color={triedNext && !isPhoneValid ? "#F26157" : "#5F6B85"} className="shrink-0" />
                 <input
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/[^0-9\s+\-]/g, ""))}
-                  placeholder="Ej: 11 2345 6789"
+                  onChange={(e) => setPhone(formatPhone(e.target.value))}
+                  placeholder="11 2345 6789"
                   type="tel"
                   inputMode="numeric"
                   className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"
                 />
               </div>
               {triedNext && !isPhoneValid && (
-                <div className="mt-1 text-xs font-semibold text-[#F26157]">Ingresá un número válido</div>
+                <div className="mt-1 text-xs font-semibold text-[#F26157]">Ingresá un número válido (ej: 11 2345 6789)</div>
               )}
             </div>
             <div>
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
                 Email (opcional)
               </div>
-              <div className="flex items-center gap-2.5 rounded-xl border border-cl-border bg-cl-slot px-3.5 py-3 transition-all focus-within:border-[#3B6EF5] focus-within:ring-[3px] focus-within:ring-[rgba(59,110,245,.2)]">
-                <Mail size={16} color="#5F6B85" className="shrink-0" />
+              <div className={`flex items-center gap-2.5 rounded-xl border bg-cl-slot px-3.5 py-3 transition-all focus-within:ring-[3px] ${triedNext && !isEmailValid ? "border-[#F26157] focus-within:border-[#F26157] focus-within:ring-[rgba(242,97,87,.2)]" : "border-cl-border focus-within:border-[#3B6EF5] focus-within:ring-[rgba(59,110,245,.2)]"}`}>
+                <Mail size={16} color={triedNext && !isEmailValid ? "#F26157" : "#5F6B85"} className="shrink-0" />
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -488,6 +498,9 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                   className="w-full bg-transparent text-[15px] text-white placeholder-[#46557A] outline-none"
                 />
               </div>
+              {triedNext && !isEmailValid && (
+                <div className="mt-1 text-xs font-semibold text-[#F26157]">Ingresá un email válido (ej: nombre@mail.com)</div>
+              )}
             </div>
             <div>
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
@@ -505,31 +518,41 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
               <div className="mb-1.5 text-xs font-semibold text-[#9DA9C0]">
                 Código de descuento (opcional)
               </div>
-              <div className="flex gap-2">
-                <input
-                  value={discountCode}
-                  onChange={(e) => setDiscountCode(e.target.value)}
-                  placeholder="XXXXX"
-                  className={`${inputClass} flex-1 tracking-wider`}
-                />
-                <button
-                  onClick={async () => {
-                    if (!discountCode.trim()) return;
-                    try {
-                      const res = await fetch(
-                        `/api/validar-descuento?codigo=${discountCode}`,
-                      );
-                      const data = await res.json();
-                      if (data.valido) setDiscountPct(data.porcentaje);
-                    } catch {
-                      /* ignore */
-                    }
-                  }}
-                  className="shrink-0 rounded-xl border border-cl-border bg-cl-card px-4 text-sm font-semibold text-white"
-                >
-                  Aplicar
-                </button>
-              </div>
+              {discountPct > 0 ? (
+                <div className="flex items-center gap-2.5 rounded-xl border border-[rgba(34,211,102,.3)] bg-[rgba(34,211,102,.08)] px-3.5 py-3">
+                  <span className="text-lg">🎉</span>
+                  <div className="flex-1">
+                    <div className="text-[13px] font-bold text-[#22D366]">¡Código aplicado!</div>
+                    <div className="text-[11px] text-[#22D366]/70">{discountCode.toUpperCase()} · {discountPct}% de descuento</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    value={discountCode}
+                    onChange={(e) => setDiscountCode(e.target.value)}
+                    placeholder="XXXXX"
+                    className={`${inputClass} flex-1 tracking-wider`}
+                  />
+                  <button
+                    onClick={async () => {
+                      if (!discountCode.trim()) return;
+                      try {
+                        const res = await fetch(
+                          `/api/validar-descuento?codigo=${discountCode}`,
+                        );
+                        const data = await res.json();
+                        if (data.valido) setDiscountPct(data.porcentaje);
+                      } catch {
+                        /* ignore */
+                      }
+                    }}
+                    className="shrink-0 rounded-xl border border-cl-border bg-cl-card px-4 text-sm font-semibold text-white"
+                  >
+                    Aplicar
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
