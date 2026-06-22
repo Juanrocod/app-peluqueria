@@ -91,7 +91,7 @@ export function TurnosScreen({ turnos }: TurnosScreenProps) {
         <FilterChips
           active={filter}
           onChange={setFilter}
-          includeCompleted={tab === "hist"}
+          mode={tab === "hist" ? "historial" : "proximos"}
         />
       </div>
 

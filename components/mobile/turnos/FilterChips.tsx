@@ -1,9 +1,14 @@
 "use client";
 
-const FILTERS = [
+const PROXIMOS_FILTERS = [
   { key: "todos", label: "Todos" },
   { key: "PENDIENTE", label: "Pendiente" },
   { key: "CONFIRMADO", label: "Confirmado" },
+] as const;
+
+const HISTORIAL_FILTERS = [
+  { key: "todos", label: "Todos" },
+  { key: "COMPLETADO", label: "Completado" },
   { key: "CANCELADO", label: "Cancelado" },
 ] as const;
 
@@ -17,15 +22,13 @@ const FILTER_COLORS: Record<string, string> = {
 export function FilterChips({
   active,
   onChange,
-  includeCompleted = false,
+  mode = "proximos",
 }: {
   active: string;
   onChange: (f: string) => void;
-  includeCompleted?: boolean;
+  mode?: "proximos" | "historial";
 }) {
-  const filters = includeCompleted
-    ? [...FILTERS, { key: "COMPLETADO", label: "Completado" } as const]
-    : FILTERS;
+  const filters = mode === "historial" ? HISTORIAL_FILTERS : PROXIMOS_FILTERS;
 
   return (
     <div className="flex gap-1.5 overflow-x-auto pb-3">
