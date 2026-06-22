@@ -47,8 +47,9 @@ export function TurnosScreen({ turnos }: TurnosScreenProps) {
   }
 
   const filtered = turnos.filter((t) => {
-    if (tab === "prox" && t.estado === "COMPLETADO") return false;
-    if (tab === "hist" && t.estado !== "COMPLETADO") return false;
+    const isDone = t.estado === "COMPLETADO" || t.estado === "CANCELADO";
+    if (tab === "prox" && isDone) return false;
+    if (tab === "hist" && !isDone) return false;
     if (filter !== "todos" && t.estado !== filter) return false;
     return true;
   });
