@@ -44,11 +44,20 @@ export async function requestPasswordReset(email: string): Promise<{ ok: true }>
         to: email,
         subject: "Recuperá tu contraseña",
         html: `
-          <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;">
-            <h2 style="color:#1a1a1a;">Recuperar contraseña</h2>
-            <p style="color:#555;line-height:1.6;">Recibimos tu solicitud para restablecer la contraseña. Hacé click en el botón para crear una nueva:</p>
-            <a href="${resetUrl}" style="display:inline-block;background:#2F6BFF;color:#fff;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:bold;margin:16px 0;">Restablecer contraseña</a>
-            <p style="color:#999;font-size:13px;margin-top:24px;">Este link expira en 1 hora. Si no pediste esto, ignorá este email.</p>
+          <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#ffffff;">
+            <div style="text-align:center;margin-bottom:24px;">
+              <div style="display:inline-block;background:#131313;padding:10px 20px;border-radius:12px;">
+                <span style="font-size:20px;font-weight:bold;color:#ffffff;">✂ BarberFras</span>
+              </div>
+            </div>
+            <h2 style="color:#1a1a1a;font-size:22px;margin:0 0 12px;text-align:center;">Recuperá tu contraseña</h2>
+            <p style="color:#555;font-size:15px;line-height:1.6;text-align:center;">Recibimos tu solicitud para restablecer la contraseña. Usá el siguiente link para crear una nueva:</p>
+            <div style="background:#f0f4ff;border:1px solid #d0dbf0;border-radius:10px;padding:16px;margin:20px 0;word-break:break-all;text-align:center;">
+              <span style="font-size:13px;color:#2F6BFF;font-weight:bold;">${resetUrl}</span>
+            </div>
+            <p style="color:#555;font-size:14px;line-height:1.6;text-align:center;">Copiá y pegá el link en tu navegador si no se abre automáticamente.</p>
+            <hr style="border:none;border-top:1px solid #eee;margin:24px 0;" />
+            <p style="color:#999;font-size:12px;text-align:center;">Este link expira en 1 hora. Si no pediste esto, ignorá este email.</p>
           </div>
         `,
       });
