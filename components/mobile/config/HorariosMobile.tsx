@@ -160,7 +160,7 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
     <div className="pb-4">
       <div className="mb-4 flex items-center gap-2.5 px-4">
         <Clock size={19} color="#F26157" />
-        <span className="font-display text-xl font-semibold">Horarios</span>
+        <span className="font-display text-[28px] font-bold">Horarios</span>
       </div>
 
       <div className="px-4">

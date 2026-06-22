@@ -60,7 +60,7 @@ export function ProductosMobile({ productos }: { productos: Producto[] }) {
     <div className="pb-20">
       <div className="mb-4 flex items-center gap-2.5 px-4">
         <Box size={19} color="#E8A33D" />
-        <span className="font-display text-xl font-semibold">Productos</span>
+        <span className="font-display text-[28px] font-bold">Productos</span>
       </div>
 
       <div className="px-4">

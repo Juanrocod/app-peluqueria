@@ -1,13 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { X, Settings, Scissors, Users, Box, Clock, ChevronRight, LogOut } from "lucide-react";
+import { X, Settings, Scissors, Box, Clock, ChevronRight, LogOut } from "lucide-react";
 import { logout } from "@/app/actions/auth-actions";
 
 const MENU_ITEMS = [
   { href: "/admin/configuracion", label: "Configuración", sub: "Perfil y negocio",       Icon: Settings, color: "#2F6BFF" },
   { href: "/admin/servicios",     label: "Servicios",     sub: "Precios y duración",     Icon: Scissors, color: "#B79CFF" },
-  { href: "/admin/peluqueros",    label: "Peluqueros",    sub: "Equipo de trabajo",       Icon: Users,    color: "#34D399" },
   { href: "/admin/catalogo",      label: "Productos",     sub: "Stock y precios",         Icon: Box,      color: "#E8A33D" },
   { href: "/admin/horarios",      label: "Horarios",      sub: "Días y disponibilidad",   Icon: Clock,    color: "#F26157" },
 ] as const;

@@ -60,7 +60,7 @@ export function ServiciosMobile({ servicios }: { servicios: Servicio[] }) {
     <div className="pb-20">
       <div className="mb-4 flex items-center gap-2.5 px-4">
         <Scissors size={19} color="#B79CFF" />
-        <span className="font-display text-xl font-semibold">Servicios</span>
+        <span className="font-display text-[28px] font-bold">Servicios</span>
       </div>
 
       <div className="px-4">

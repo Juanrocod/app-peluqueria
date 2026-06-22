@@ -16,7 +16,7 @@ export function PerfilMobile({ nombre, descripcion, imagenUrl, codigoActivo }: P
     <div className="pb-20">
       <div className="mb-4 flex items-center gap-2.5 px-4">
         <Settings size={19} color="#2F6BFF" />
-        <span className="font-display text-xl font-semibold">Configuración</span>
+        <span className="font-display text-[28px] font-bold">Configuración</span>
       </div>
 
       <div className="px-4">
