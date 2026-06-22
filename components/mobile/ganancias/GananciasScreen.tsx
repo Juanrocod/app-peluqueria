@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { StatChip } from "@/components/ui/StatChip";
 import { SparklineChart } from "./SparklineChart";
 import { BarChart } from "./BarChart";
@@ -27,6 +28,7 @@ const SVC_COLORS: Record<string, string> = {
 
 export function GananciasScreen({ turnos }: GananciasScreenProps) {
   const [period, setPeriod] = useState<"week" | "month" | "year">("year");
+  const [selYear, setSelYear] = useState(new Date().getFullYear());
   const money = (n: number) => "$" + n.toLocaleString("es-AR");
 
   const stats = useMemo(() => {
@@ -39,20 +41,19 @@ export function GananciasScreen({ turnos }: GananciasScreenProps) {
         return d >= weekAgo;
       }
       if (period === "month") {
-        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        return d.getMonth() === now.getMonth() && d.getFullYear() === selYear;
       }
-      return d.getFullYear() === now.getFullYear();
+      return d.getFullYear() === selYear;
     });
 
     const total = filtered.reduce((a, t) => a + t.precioFinal, 0);
     const count = filtered.length;
     const ticket = count ? Math.round(total / count) : 0;
 
-    // Monthly data for bar chart
     const monthlyMap = new Map<number, number>();
     turnos.forEach((t) => {
       const d = new Date(t.fechaHora);
-      if (d.getFullYear() === now.getFullYear()) {
+      if (d.getFullYear() === selYear) {
         const m = d.getMonth();
         monthlyMap.set(m, (monthlyMap.get(m) ?? 0) + t.precioFinal);
       }
@@ -61,10 +62,9 @@ export function GananciasScreen({ turnos }: GananciasScreenProps) {
     const barData = monthLabels.map((label, i) => ({
       label,
       value: monthlyMap.get(i) ?? 0,
-      isCurrent: i === now.getMonth(),
+      isCurrent: selYear === now.getFullYear() && i === now.getMonth(),
     }));
 
-    // Service breakdown
     const svcMap = new Map<string, number>();
     filtered.forEach((t) => {
       svcMap.set(t.servicioNombre, (svcMap.get(t.servicioNombre) ?? 0) + t.precioFinal);
@@ -81,12 +81,12 @@ export function GananciasScreen({ turnos }: GananciasScreenProps) {
     const sparklineData = barData.map((d) => d.value);
 
     return { total, count, ticket, barData, serviceData, sparklineData };
-  }, [turnos, period]);
+  }, [turnos, period, selYear]);
 
   const periodLabels: Record<string, string> = {
     week: "TOTAL · ESTA SEMANA",
     month: "TOTAL · ESTE MES",
-    year: "TOTAL COBRADO · " + new Date().getFullYear(),
+    year: "TOTAL COBRADO · " + selYear,
   };
 
   return (
@@ -95,7 +95,15 @@ export function GananciasScreen({ turnos }: GananciasScreenProps) {
         {/* Title */}
         <div className="mb-2.5 flex items-center justify-between">
           <div className="font-display text-[28px] font-bold">Ganancias</div>
-          <span className="font-mono-num text-xs text-ap-muted">{new Date().getFullYear()}</span>
+          <div className="flex items-center gap-1">
+            <button onClick={() => setSelYear(selYear - 1)} className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-ap-border-soft bg-ap-s1">
+              <ChevronLeft size={14} color="#ADADB0" />
+            </button>
+            <span className="font-mono-num text-xs text-ap-muted w-10 text-center">{selYear}</span>
+            <button onClick={() => setSelYear(selYear + 1)} className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-ap-border-soft bg-ap-s1">
+              <ChevronRight size={14} color="#ADADB0" />
+            </button>
+          </div>
         </div>
 
         {/* Period chips */}
@@ -139,7 +147,7 @@ export function GananciasScreen({ turnos }: GananciasScreenProps) {
         {/* Bar chart */}
         <div className="mb-3 rounded-[13px] border border-ap-border-soft bg-ap-s1 p-2.5">
           <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-ap-muted">
-            Evolución mensual · {new Date().getFullYear()}
+            Evolución mensual · {selYear}
           </div>
           <BarChart data={stats.barData} />
         </div>
