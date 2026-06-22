@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth-guard";
+import { crearBloqueoSchema } from "@/lib/validations";
 
 export async function crearBloqueoAdmin(data: {
   fecha: Date;
@@ -11,6 +12,7 @@ export async function crearBloqueoAdmin(data: {
   horaFin: string;
   motivo?: string;
 }) {
+  crearBloqueoSchema.parse(data);
   await requireAdmin();
   const fechaUTC = new Date(
     Date.UTC(data.fecha.getFullYear(), data.fecha.getMonth(), data.fecha.getDate())
@@ -34,6 +36,7 @@ export async function crearBloqueo(data: {
   horaFin: string;
   motivo?: string;
 }) {
+  crearBloqueoSchema.parse(data);
   await requireAdmin();
   await prisma.bloqueoHorario.create({ data });
   revalidatePath("/admin/horarios");

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { EstadoTurno, OrigenTurno } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth-guard";
+import { crearTurnoSchema } from "@/lib/validations";
 
 export async function crearTurno(data: {
   fechaHora: Date;
@@ -22,13 +23,15 @@ export async function crearTurno(data: {
   descuentoAplicado?: number;
   productoIds?: string[];
 }) {
+  const validated = crearTurnoSchema.parse(data);
+
   try {
     const { bookingLimiter } = await import("@/lib/rate-limit");
-    const { success } = await bookingLimiter.limit(data.clienteTelefono || "anon");
+    const { success } = await bookingLimiter.limit(validated.clienteTelefono || "anon");
     if (!success) throw new Error("Demasiados intentos. Esperá un momento.");
   } catch (e) { if (e instanceof Error && e.message.includes("Demasiados")) throw e; }
 
-  const servicio = await prisma.servicio.findUnique({ where: { id: data.servicioId } });
+  const servicio = await prisma.servicio.findUnique({ where: { id: validated.servicioId } });
   if (!servicio) throw new Error("Servicio no encontrado");
 
   let fecha: Date;
@@ -39,20 +42,20 @@ export async function crearTurno(data: {
   // so browser in Argentina reads getHours()=9 correctly from the ISO string.
   const AR_OFFSET = 3;
 
-  if (data.fechaStr && data.horaSlot) {
-    const [y, m, d] = data.fechaStr.split("-").map(Number);
-    const [h, min] = data.horaSlot.split(":").map(Number);
+  if (validated.fechaStr && validated.horaSlot) {
+    const [y, m, d] = validated.fechaStr.split("-").map(Number);
+    const [h, min] = validated.horaSlot.split(":").map(Number);
     fecha = new Date(y, m - 1, d);
-    horaStr = data.horaSlot;
+    horaStr = validated.horaSlot;
     fechaHoraDB = new Date(Date.UTC(y, m - 1, d, h + AR_OFFSET, min));
   } else {
-    const fh = typeof data.fechaHora === "string" ? new Date(data.fechaHora) : data.fechaHora;
+    const fh = typeof validated.fechaHora === "string" ? new Date(validated.fechaHora) : validated.fechaHora;
     fecha = new Date(fh.getUTCFullYear(), fh.getUTCMonth(), fh.getUTCDate());
     horaStr = `${String(fh.getUTCHours()).padStart(2, "0")}:${String(fh.getUTCMinutes()).padStart(2, "0")}`;
     fechaHoraDB = fh;
   }
 
-  const modalidad = data.modalidad ?? "PRESENCIAL";
+  const modalidad = validated.modalidad ?? "PRESENCIAL";
 
   const { getSlotDisponibles } = await import("@/lib/disponibilidad");
 
@@ -66,20 +69,20 @@ export async function crearTurno(data: {
     return tx.turno.create({
       data: {
         fechaHora: fechaHoraDB,
-        clienteNombre: data.clienteNombre.slice(0, 100),
-        clienteTelefono: data.clienteTelefono.slice(0, 30),
-        clienteEmail: data.clienteEmail?.slice(0, 100) ?? null,
-        observaciones: data.observaciones?.slice(0, 500) ?? null,
+        clienteNombre: validated.clienteNombre.slice(0, 100),
+        clienteTelefono: validated.clienteTelefono.slice(0, 30),
+        clienteEmail: validated.clienteEmail?.slice(0, 100) ?? null,
+        observaciones: validated.observaciones?.slice(0, 500) ?? null,
         modalidad,
-        direccion: data.direccion?.slice(0, 200) ?? null,
-        servicioId: data.servicioId,
-        peluqueroId: data.peluqueroId ?? null,
-        notas: data.notas?.slice(0, 500) ?? null,
-        origen: data.origen ?? "ONLINE",
-        descuentoAplicado: data.descuentoAplicado != null ? Math.max(0, Math.min(100, data.descuentoAplicado)) : null,
+        direccion: validated.direccion?.slice(0, 200) ?? null,
+        servicioId: validated.servicioId,
+        peluqueroId: validated.peluqueroId ?? null,
+        notas: validated.notas?.slice(0, 500) ?? null,
+        origen: validated.origen ?? "ONLINE",
+        descuentoAplicado: validated.descuentoAplicado != null ? Math.max(0, Math.min(100, validated.descuentoAplicado)) : null,
         duracionSnapshot: servicio.duracion,
-        ...(data.productoIds?.length && data.productoIds.length <= 10
-          ? { productos: { create: data.productoIds.map((id) => ({ productoId: id })) } }
+        ...(validated.productoIds?.length && validated.productoIds.length <= 10
+          ? { productos: { create: validated.productoIds.map((id) => ({ productoId: id })) } }
           : {}),
       },
     });

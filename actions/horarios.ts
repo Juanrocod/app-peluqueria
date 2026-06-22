@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth-guard";
+import { crearFranjaSchema } from "@/lib/validations";
 
 export async function crearFranja(data: {
   diaSemana: number;
@@ -11,6 +12,7 @@ export async function crearFranja(data: {
   etiqueta?: string;
   esBloqueo?: boolean;
 }) {
+  crearFranjaSchema.parse(data);
   await requireAdmin();
   await prisma.horarioAtencion.create({ data: { ...data, activo: true } });
   revalidatePath("/admin/horarios");
@@ -23,15 +25,16 @@ export async function crearFranjaAdmin(data: {
   tipoFranja: "POSITIVA" | "NEGATIVA";
   motivo?: string;
 }) {
+  const validated = crearFranjaSchema.parse(data);
   await requireAdmin();
   const creada = await prisma.horarioAtencion.create({
     data: {
-      diaSemana: data.diaSemana,
-      horaApertura: data.horaApertura,
-      horaCierre: data.horaCierre,
-      tipoFranja: data.tipoFranja,
-      esBloqueo: data.tipoFranja === "NEGATIVA",
-      motivo: data.motivo ?? null,
+      diaSemana: validated.diaSemana,
+      horaApertura: validated.horaApertura,
+      horaCierre: validated.horaCierre,
+      tipoFranja: validated.tipoFranja,
+      esBloqueo: validated.tipoFranja === "NEGATIVA",
+      motivo: validated.motivo ?? null,
       activo: true,
     },
   });
