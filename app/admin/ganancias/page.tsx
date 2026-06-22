@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { GananciasScreen } from "@/components/mobile/ganancias/GananciasScreen";
+import { PullToRefresh } from "@/components/ui/PullToRefresh";
 
 export default async function GananciasPage() {
   const turnos = await prisma.turno.findMany({
@@ -83,8 +85,23 @@ export default async function GananciasPage() {
   const totalServiciosGeneral = mesesOrdenados.reduce((acc, m) => acc + m.totalServicio, 0);
   const totalProductosGeneral = mesesOrdenados.reduce((acc, m) => acc + m.totalProductos, 0);
 
+  const serializedForMobile = turnos.map((t) => ({
+    fechaHora: t.fechaHora.toISOString(),
+    precioFinal: Number(t.precioServicioFinal ?? t.servicio.precio),
+    servicioNombre: t.nombreServicioFinal ?? t.servicio.nombre,
+  }));
+
   return (
     <div>
+      {/* Mobile view */}
+      <div className="flex flex-1 flex-col md:hidden">
+        <PullToRefresh>
+          <GananciasScreen turnos={serializedForMobile} />
+        </PullToRefresh>
+      </div>
+
+      {/* Desktop view */}
+      <div className="hidden md:block">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">Ganancias</h2>
         {filas.length > 0 && (
@@ -177,6 +194,7 @@ export default async function GananciasPage() {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

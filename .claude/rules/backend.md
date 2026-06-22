@@ -1,8 +1,8 @@
 ---
 paths:
-  - "src/lib/**/*"
-  - "src/actions/**/*"
-  - "src/app/api/**/*"
+  - "lib/**/*"
+  - "actions/**/*"
+  - "app/api/**/*"
 ---
 
 # Backend — Motor de Disponibilidad y Lógica de Turnos
@@ -23,28 +23,27 @@ paths:
 - Duración estándar predefinida (intervalos de 30 o 60 minutos).
 - Los slots deben encajar perfectamente dentro de la Franja Positiva sin overflow.
 
-### Zona Horaria (Crítico)
-- **Almacenamiento:** siempre en **UTC**.
-- **Presentación:** la capa de UI fuerza el renderizado en la timezone local del negocio.
-- Nunca persistir timestamps naive.
+### Zona Horaria (CRÍTICO — leer antes de tocar)
+- **Servidor:** fuerza `TZ=America/Argentina/Buenos_Aires` en `next.config.mjs`. Esto hace que `getHours()`/`getMinutes()` devuelvan hora argentina tanto en local como en Vercel.
+- **Base de datos:** Neon almacena timestamps en UTC. Prisma los devuelve como `Date` JS.
+- **Comparación de slots:** `getSlotDisponibles()` en `lib/disponibilidad.ts` genera slots usando hora local del servidor (que es argentina por el TZ forzado). `crearTurno` extrae hora/minuto del `Date` recibido usando el mismo TZ del servidor.
+- **NO cambiar a UTC puro** — se intentó y causó mismatches entre slots generados y hora extraída. La solución actual (TZ forzado) es consistente.
 
 ## Estados del Turno
 
 | Estado | Descripción |
 |--------|-------------|
-| `Pendiente` | Solicitado pero no confirmado |
-| `Confirmado` | Aceptado por el administrador |
-| `Cancelado` | Cancelado por cliente o admin |
+| `PENDIENTE` | Solicitado pero no confirmado |
+| `CONFIRMADO` | Aceptado por el administrador |
+| `CANCELADO` | Cancelado por cliente o admin |
+| `COMPLETADO` | Realizado, migra a ganancias |
 
-## Manejo de Concurrencia
-- El backend **rechaza** el segundo intento de reserva sobre un slot ya tomado.
-- Devolver mensaje claro al cliente para que elija otro horario sin perder su selección de fecha.
-- Implementar bloqueo optimista o transacción con `SELECT FOR UPDATE` en la operación de reserva.
+## Seguridad
+- Todas las server actions admin están protegidas con `requireAdmin()` de `lib/auth-guard.ts`.
+- `crearTurno` usa check-then-create con `duracionSnapshot` para prevenir race conditions.
+- Las acciones de estado usan `startTransition(async () => { await action() })` — el `await` es obligatorio para que React detecte la transición.
 
-## Esquema Prisma — Modelos Requeridos
-El esquema debe soportar los tres modelos de disponibilidad:
-- **FranjaPositiva:** día de semana, hora inicio, hora fin.
-- **FranjaNegativa:** recurrente (día/hora) o puntual (fecha específica).
-- **Turno/Slot:** fecha, hora, duración, estado, FK a cliente y peluquero.
-
-Cualquier cambio al esquema debe ser propuesto y aprobado antes de ejecutar `prisma migrate`.
+## Convenciones
+- `diaSemana`: `0`=Domingo, `1`=Lunes … `6`=Sábado (convención JS `getDay()`)
+- `ORDEN_SEMANA = [1, 2, 3, 4, 5, 6, 0]` — renderizar siempre L→D
+- `revalidatePath` después de mutaciones: incluir todas las rutas afectadas (`/admin`, `/admin/turnos`, `/admin/hoy`, `/admin/ganancias`).

@@ -47,7 +47,8 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
-  bloqueos  BloqueoHorario[]
+  bloqueos      BloqueoHorario[]
+  resetTokens   PasswordResetToken[]
 }
 
 model Peluquero {
@@ -165,4 +166,16 @@ model CodigoDescuento {
 model ConfiguracionApp {
   clave String @id
   valor String
+}
+
+model PasswordResetToken {
+  id          String   @id @default(cuid())
+  hashedToken String   @unique
+  userId      String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([hashedToken])
 }

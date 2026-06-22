@@ -1,52 +1,42 @@
 ---
 paths:
-  - "src/components/**/*"
-  - "src/app/**/*"
+  - "components/**/*"
+  - "app/**/*.tsx"
+  - "app/**/*.css"
   - "**/*.tsx"
   - "**/*.css"
 ---
 
-# Frontend — Reglas de UI/UX y Panel de Administración
+# Frontend — Reglas de UI/UX
 
 ## Perfil del Usuario
-Dueño o administrador de una peluquería. Usa el panel a diario desde el celular (entre clientes, de pie) y desde desktop cuando planifica la semana. No es técnico: quiere información rápida, acciones directas, cero fricción. Éxito = ver el estado del día, confirmar un turno y navegar a cualquier sección en menos de 3 toques.
+Dueño o administrador de una peluquería. Usa la app a diario desde el celular (entre clientes, de pie) y ocasionalmente desde desktop. No es técnico: quiere información rápida, acciones directas, cero fricción.
 
-## Identidad Visual
-- **Oscuro por convicción:** dark mode es la identidad, no un tema alternativo. No mezclar fondos claros sin propósito.
-- **Paleta:** Zinc/slate oscuro como base. Violeta como acento primario. No decorativo: comunica software serio, no planilla.
-- **Tipografía premium y alta legibilidad.** Jerarquía de tamaños marcada (≥1.25 ratio entre niveles).
-- **Anti-references:** Excel legacy, templates ERP/2000s, tablas densas con borders grises, tipografía de 11px.
+## Arquitectura Responsive
+- **Mobile-first:** cada acción clave alcanzable con el pulgar. Áreas táctiles >= 44px.
+- **Breakpoint:** `md:` separa mobile de desktop. Mobile usa `components/mobile/`, desktop usa `components/admin/`.
+- **Bottom nav (mobile):** 4 items — Hoy | Turnos | Agenda | Ganancias. Configuración vía hamburguesa en AppBar.
+- **PWA:** manifest + service worker en `public/`. Meta tags para standalone iOS.
 
-## Principios de Diseño
-1. **Mobile-first en serio:** cada acción clave alcanzable con el pulgar. Áreas táctiles ≥ 44px.
-2. **Jerarquía antes que decoración:** información más importante en el tamaño más grande.
-3. **Densidad justa:** mostrar lo suficiente para decidir. Paginación, truncado y progresión son herramientas.
-4. **Accesibilidad:** WCAG AA mínimo, contraste ≥ 4.5:1, soporte `prefers-reduced-motion`.
+## Paleta de Colores
+- **Admin (panel peluquero):** tokens `ap-*` definidos en `globals.css`. Base carbon oscuro (`#131313`), acento azul primario (`#2F6BFF`).
+- **Cliente (formulario reserva):** tokens `cl-*`. Base navy profundo (`#0C1322`), acento gradiente azul-violeta.
+- **Dark mode es la identidad**, no un tema alternativo. No mezclar fondos claros.
+
+## Tipografía
+- **Títulos:** Playfair Display (serif) — `font-display`
+- **Body/UI:** Manrope (sans-serif) — `font-sans`
+- **Números:** JetBrains Mono (monospace) — `font-mono`
+- Jerarquía de tamaños marcada (>=1.25 ratio entre niveles).
 
 ## Regla Crítica: Cero Input Manual de Fechas
-**PROHIBIDO** usar inputs de texto libre (tipo `dd/mm/yyyy` o tipeo de horas) para selección de fechas u horarios.
+**PROHIBIDO** usar inputs de texto libre para selección de fechas u horarios. Usar componentes visuales (calendario, grilla de slots).
 
-## Componente de Calendario Interactivo (DatePicker)
-- La reserva de turnos se realiza **exclusivamente** a través de un DatePicker moderno.
-- El calendario debe bloquear visualmente (`disabled`) los días pasados.
-- El calendario debe bloquear los días no laborables según la base de datos.
-- Al seleccionar un día, el sistema renderiza **únicamente** los slots efectivamente disponibles calculados desde el backend.
+## Convenciones
+- Iconos: Lucide React (stroke, no fill). Tamaños: 22px nav, 18-20px botones, 16px inline.
+- Tailwind v4: sin `tailwind.config.ts`, tokens en `@theme {}` dentro de `globals.css`.
+- Sin shadcn/ui — componentes custom con Tailwind.
+- Texto usuario en español argentino ("vos", "turno", "reservá").
 
-## Panel de Administración — Directrices de Refactor Visual
-
-### Alcance: Solo Frontend
-**PROHIBIDO modificar** controladores, actions, API routes o lógica de backend. El refactor es **puramente visual**.
-
-### Estándar de Visualización de Agenda
-- Seguir el patrón **Google Calendar**: grilla temporal, vista día/semana, slots coloreados.
-- **Verde** = Franja Positiva (horario de trabajo activo).
-- **Rojo** = Franja Negativa (bloqueo, almuerzo, no disponible).
-- Interacción diaria principal: **Tap-to-toggle** sobre la vista de calendario.
-
-### Layout y Componentes
-- Inputs actuales → transformar en **cards limpias** de configuración de bloques.
-- En mobile: vista "Lista de bloques" o "Día completo" con selector de fecha superior.
-- Preservar todos los campos actuales (Día de la semana, Franjas horarias Positivas/Negativas, Bloqueo de días específicos). Rediseñar la presentación, no la funcionalidad.
-
-### Previsualización en Vivo
-El panel debe mostrar al administrador una **vista previa en tiempo real** de cómo el cliente verá la disponibilidad resultante de la configuración actual.
+## Estado Actual
+Pendiente: ajuste fino pre-producción (micro-fallas visuales, consistencia entre pantallas). Ver plan específico cuando se genere.

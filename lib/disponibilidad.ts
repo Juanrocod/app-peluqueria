@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { addMinutes, format, parseISO, setHours, setMinutes, startOfDay, endOfDay } from "date-fns";
 
-const BUFFER_DOMICILIO = 40; // minutos de viaje antes y después
-const GRANULARIDAD_SLOT = 30; // alineado con la grilla admin
+const BUFFER_DOMICILIO = 40;
+const GRANULARIDAD_SLOT = 30;
+const AR_OFFSET_MS = 3 * 60 * 60 * 1000;
 
 export async function getSlotDisponibles(
   fecha: Date,
@@ -65,12 +66,13 @@ export async function getSlotDisponibles(
   });
 
   // Turnos confirmados o pendientes ese día
+  // Extend 3h past midnight to catch turnos stored with AR offset (21:00 AR = 00:00 UTC+1)
   const turnosDelDia = await prisma.turno.findMany({
     where: {
-      fechaHora: { gte: startOfDay(fecha), lte: endOfDay(fecha) },
+      fechaHora: { gte: startOfDay(fecha), lte: new Date(endOfDay(fecha).getTime() + 3 * 60 * 60 * 1000) },
       estado: { notIn: ["CANCELADO"] },
     },
-    include: { servicio: true },
+    select: { fechaHora: true, modalidad: true, duracionSnapshot: true, servicio: { select: { duracion: true } } },
   });
 
   const durEfectiva = modalidad === "DOMICILIO"
@@ -99,11 +101,15 @@ export async function getSlotDisponibles(
     if (bloqueadoPuntual) return false;
 
     // Verificar turnos existentes
+    // Turnos are stored with AR offset (9:00 AR = T12:00Z), slots are in server-local time.
+    // Subtract offset to align turno times with slot times for comparison.
     const ocupado = turnosDelDia.some((t) => {
       const tModalidad = t.modalidad ?? "PRESENCIAL";
       const bufferT = tModalidad === "DOMICILIO" ? BUFFER_DOMICILIO : 0;
-      const tInicio = addMinutes(t.fechaHora, -bufferT);
-      const tFin = addMinutes(t.fechaHora, t.servicio.duracion + bufferT);
+      const tLocal = new Date(t.fechaHora.getTime() - AR_OFFSET_MS);
+      const durReal = t.duracionSnapshot ?? t.servicio.duracion;
+      const tInicio = addMinutes(tLocal, -bufferT);
+      const tFin = addMinutes(tLocal, durReal + bufferT);
       return slotInicio < tFin && slotFin > tInicio;
     });
 
@@ -111,4 +117,39 @@ export async function getSlotDisponibles(
   });
 
   return slotsLibres.map((s) => format(s, "HH:mm"));
+}
+
+export async function getSlotBase(
+  fecha: Date,
+  incluirEspecial = false,
+): Promise<string[]> {
+  const diaSemana = fecha.getDay();
+  const franjas = await prisma.horarioAtencion.findMany({
+    where: {
+      diaSemana,
+      activo: true,
+      tipoFranja: "POSITIVA",
+      ...(incluirEspecial ? {} : { etiqueta: null }),
+    },
+    orderBy: { horaApertura: "asc" },
+  });
+  const base = startOfDay(fecha);
+  const seen = new Set<number>();
+  const slots: Date[] = [];
+  for (const franja of franjas) {
+    const [aH, aM] = franja.horaApertura.split(":").map(Number);
+    const [cH, cM] = franja.horaCierre.split(":").map(Number);
+    const inicio = setMinutes(setHours(base, aH), aM);
+    const fin = setMinutes(setHours(base, cH), cM);
+    let cursor = inicio;
+    while (cursor < fin) {
+      const ts = cursor.getTime();
+      if (!seen.has(ts)) {
+        seen.add(ts);
+        slots.push(cursor);
+      }
+      cursor = addMinutes(cursor, 30);
+    }
+  }
+  return slots.map((s) => format(s, "HH:mm"));
 }

@@ -155,6 +155,8 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
       const [hh, mm] = hora.split(":").map(Number);
       await crearTurno({
         fechaHora: new Date(a, m - 1, d, hh, mm),
+        fechaStr: fecha,
+        horaSlot: hora,
         clienteNombre: nombre,
         clienteTelefono: telefono,
         clienteEmail: email || undefined,
@@ -167,7 +169,6 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
       });
       setPaso("confirmado");
     } catch (e) {
-      console.error("[confirmarReserva]", e);
       const msg = e instanceof Error ? e.message : "Error desconocido";
       setErrorReserva(`No se pudo guardar el turno: ${msg}`);
     } finally {
@@ -380,14 +381,16 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
                   />
                 </div>
               )}
-              <button
-                type="button"
-                disabled={modalidad === "DOMICILIO" && !direccion.trim()}
-                onClick={() => setPaso("datos")}
-                className="bg-gradient-to-r from-blue-500 to-violet-600 text-white py-2 rounded-lg text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
-              >
-                Continuar
-              </button>
+              <div className="sticky bottom-0 -mx-6 mt-2 border-t border-slate-700 bg-slate-900 px-6 py-4">
+                <button
+                  type="button"
+                  disabled={modalidad === "DOMICILIO" && !direccion.trim()}
+                  onClick={() => setPaso("datos")}
+                  className="w-full bg-gradient-to-r from-blue-500 to-violet-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50"
+                >
+                  Continuar
+                </button>
+              </div>
             </div>
           )}
         </>
@@ -426,14 +429,16 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
                 {descuento && <p className="text-green-400 text-xs mt-1">✓ {descuento.porcentaje}% de descuento aplicado</p>}
                 {errorCodigo && <p className="text-red-400 text-xs mt-1">{errorCodigo}</p>}
               </div>
-              <button
-                type="button"
-                disabled={!nombre.trim() || !telefono.trim()}
-                onClick={() => setPaso("productos")}
-                className="bg-gradient-to-r from-blue-500 to-violet-600 text-white py-2 rounded-lg text-sm font-medium hover:opacity-90 transition disabled:opacity-50"
-              >
-                Continuar
-              </button>
+              <div className="sticky bottom-0 -mx-6 mt-2 border-t border-slate-700 bg-slate-900 px-6 py-4">
+                <button
+                  type="button"
+                  disabled={!nombre.trim() || !telefono.trim()}
+                  onClick={() => setPaso("productos")}
+                  className="w-full bg-gradient-to-r from-blue-500 to-violet-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50"
+                >
+                  Continuar
+                </button>
+              </div>
             </div>
           )}
         </>
@@ -484,7 +489,7 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
             {descuento && (
               <div className="flex justify-between text-sm text-green-400">
                 <span>Descuento ({descuento.porcentaje}%)</span>
-                <span>-${((servicio?.precio ?? 0 + [...productosSeleccionados].reduce((acc, id) => acc + (productos.find((p) => p.id === id)?.precio ?? 0), 0)) * descuento.porcentaje / 100).toLocaleString("es-AR")}</span>
+                <span>-${(((servicio?.precio ?? 0) + [...productosSeleccionados].reduce((acc, id) => acc + (productos.find((p) => p.id === id)?.precio ?? 0), 0)) * descuento.porcentaje / 100).toLocaleString("es-AR")}</span>
               </div>
             )}
             <div className="flex justify-between font-bold mt-1 text-slate-100">
@@ -493,22 +498,24 @@ export default function FormularioReserva({ servicios, productos, marcaNombre = 
             </div>
           </div>
 
-          {errorReserva && (
-            <div className="bg-red-950/50 border border-red-800 text-red-400 text-sm rounded-lg px-4 py-3">
-              {errorReserva}
-            </div>
-          )}
-          <button
-            type="button"
-            disabled={enviando}
-            onClick={confirmarReserva}
-            className="bg-gradient-to-r from-blue-500 to-violet-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50"
-          >
-            {enviando ? "Reservando..." : "Confirmar reserva"}
-          </button>
-          <button type="button" disabled={enviando} onClick={confirmarReserva} className="text-xs text-slate-600 hover:underline text-center disabled:opacity-50">
-            Omitir y confirmar sin productos
-          </button>
+          <div className="sticky bottom-0 -mx-6 -mb-6 border-t border-slate-700 bg-slate-900 px-6 py-4 flex flex-col gap-2">
+            {errorReserva && (
+              <div className="bg-red-950/50 border border-red-800 text-red-400 text-sm rounded-lg px-4 py-3">
+                {errorReserva}
+              </div>
+            )}
+            <button
+              type="button"
+              disabled={enviando}
+              onClick={confirmarReserva}
+              className="bg-gradient-to-r from-blue-500 to-violet-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50"
+            >
+              {enviando ? "Reservando..." : "Confirmar reserva"}
+            </button>
+            <button type="button" disabled={enviando} onClick={confirmarReserva} className="text-xs text-slate-600 hover:underline text-center disabled:opacity-50">
+              Omitir y confirmar sin productos
+            </button>
+          </div>
         </div>
       )}
     </div>

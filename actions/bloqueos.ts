@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth-guard";
 
 export async function crearBloqueoAdmin(data: {
   fecha: Date;
@@ -10,11 +11,11 @@ export async function crearBloqueoAdmin(data: {
   horaFin: string;
   motivo?: string;
 }) {
-  // Guardar como medianoche UTC para alinear con @db.Date
+  await requireAdmin();
   const fechaUTC = new Date(
     Date.UTC(data.fecha.getFullYear(), data.fecha.getMonth(), data.fecha.getDate())
   );
-  await prisma.bloqueoHorario.create({
+  const creado = await prisma.bloqueoHorario.create({
     data: {
       fecha: fechaUTC,
       todoElDia: data.todoElDia,
@@ -24,6 +25,7 @@ export async function crearBloqueoAdmin(data: {
     },
   });
   revalidatePath("/admin/horarios");
+  return creado;
 }
 
 export async function crearBloqueo(data: {
@@ -32,6 +34,7 @@ export async function crearBloqueo(data: {
   horaFin: string;
   motivo?: string;
 }) {
+  await requireAdmin();
   await prisma.bloqueoHorario.create({ data });
   revalidatePath("/admin/horarios");
 }
@@ -40,11 +43,13 @@ export async function actualizarBloqueo(
   id: string,
   data: { fecha?: Date; horaInicio?: string; horaFin?: string; motivo?: string }
 ) {
+  await requireAdmin();
   await prisma.bloqueoHorario.update({ where: { id }, data });
   revalidatePath("/admin/horarios");
 }
 
 export async function eliminarBloqueo(id: string) {
+  await requireAdmin();
   await prisma.bloqueoHorario.delete({ where: { id } });
   revalidatePath("/admin/horarios");
 }

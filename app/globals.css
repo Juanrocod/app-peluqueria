@@ -1,19 +1,46 @@
 @import "tailwindcss";
 
 @theme {
-  /* Semantic slot colors (fixed by business rule) */
+  /* ── Admin palette (carbón) ─────────────────────── */
+  --color-ap-bg:          #131313;
+  --color-ap-s1:          #1C1C1E;
+  --color-ap-s2:          #262628;
+  --color-ap-s3:          #303033;
+  --color-ap-border:      #38383B;
+  --color-ap-border-soft: #2A2A2C;
+  --color-ap-text:        #F4F4F2;
+  --color-ap-sub:         #ADADB0;
+  --color-ap-muted:       #6F6F73;
+  --color-ap-primary:     #2F6BFF;
+  --color-ap-primary-dk:  #2456D6;
+  --color-ap-accent:      #16203A;
+  --color-ap-success:     #34D399;
+  --color-ap-warning:     #E8A33D;
+  --color-ap-danger:      #F26157;
+  --color-ap-purple:      #B79CFF;
+
+  /* ── Client palette (navy) ──────────────────────── */
+  --color-cl-bg:          #0C1322;
+  --color-cl-card:        #16213A;
+  --color-cl-slot:        #1A2742;
+  --color-cl-border:      #2A3A5E;
+  --color-cl-brand-from:  #3B6EF5;
+  --color-cl-brand-to:    #8B5CF6;
+
+  /* ── Semantic slot colors (fixed by business rule) ── */
   --color-slot-open-bg:      #10B98147;
   --color-slot-open-border:  #10B98173;
   --color-slot-block-bg:     #EF444442;
   --color-slot-block-border: #EF444466;
 }
 
-/* Base paint — zinc dark mode */
 html,
 body {
-  background-color: #09090b; /* zinc-950 */
-  color: #f4f4f5;             /* zinc-100 */
+  background-color: var(--color-ap-bg);
+  color: var(--color-ap-text);
   min-height: 100dvh;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -21,4 +48,18 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Font utilities */
+.font-display {
+  font-family: var(--font-playfair), serif;
+}
+.font-mono-num {
+  font-family: var(--font-mono), monospace;
+}
+
+@keyframes spring {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.15); }
+  100% { transform: scale(1); }
 }
