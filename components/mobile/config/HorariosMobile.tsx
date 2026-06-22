@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, ChevronLeft, ChevronRight, ChevronDown, Trash2, Plus, Info, Copy } from "lucide-react";
-import { crearFranjaAdmin, eliminarFranjaAdmin } from "@/actions/horarios";
+import { Clock, ChevronLeft, ChevronRight, ChevronDown, Trash2, Plus, Info, Copy, Edit } from "lucide-react";
+import { crearFranjaAdmin, eliminarFranjaAdmin, actualizarFranja } from "@/actions/horarios";
 import { crearBloqueoAdmin, eliminarBloqueo } from "@/actions/bloqueos";
 
 const DAYS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -39,6 +39,7 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
   const [bloqueosList, setBloqueosList] = useState(initialBloqueos);
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
   const [addingFranjaDay, setAddingFranjaDay] = useState<number | null>(null);
+  const [editingFranjaId, setEditingFranjaId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const positivas = horarios.filter((h) => h.tipoFranja === "POSITIVA");
@@ -58,6 +59,20 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
         await eliminarFranjaAdmin(id);
       } catch (err) {
         console.error("Error al eliminar franja:", err);
+      }
+    });
+  }
+
+  function handleEditFranja(form: FormData, id: string) {
+    const desde = form.get("desde") as string;
+    const hasta = form.get("hasta") as string;
+    setHorarios((prev) => prev.map((h) => h.id === id ? { ...h, horaApertura: desde, horaCierre: hasta } : h));
+    setEditingFranjaId(null);
+    startTransition(async () => {
+      try {
+        await actualizarFranja(id, { horaApertura: desde, horaCierre: hasta });
+      } catch (err) {
+        console.error("Error al editar franja:", err);
       }
     });
   }
@@ -234,14 +249,31 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
                 {expanded && (
                   <div className="border-t border-[#1E1E20] bg-[#161618] px-4 py-3">
                     {franjas.map((fr) => (
-                      <div key={fr.id} className="mb-2 flex items-center gap-2 rounded-[10px] border border-[#2A3A2C] bg-[#1A2A1C] px-3.5 py-2.5">
-                        <span className="flex-1 font-mono-num text-sm font-bold text-ap-text">
-                          {fr.horaApertura} → {fr.horaCierre}
-                        </span>
-                        <button onClick={() => handleDeleteFranja(fr.id)} disabled={isPending} className="flex text-ap-danger">
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+                      editingFranjaId === fr.id ? (
+                        <form
+                          key={fr.id}
+                          onSubmit={(e) => { e.preventDefault(); handleEditFranja(new FormData(e.currentTarget), fr.id); }}
+                          className="mb-2 flex items-center gap-2 rounded-[10px] border border-[rgba(47,107,255,.35)] bg-[#161E30] px-3 py-2"
+                        >
+                          <input name="desde" type="time" defaultValue={fr.horaApertura} required className="flex-1 rounded-lg border border-ap-border-soft bg-ap-s1 px-2 py-1.5 font-mono-num text-sm text-ap-text outline-none" />
+                          <span className="text-ap-muted">→</span>
+                          <input name="hasta" type="time" defaultValue={fr.horaCierre} required className="flex-1 rounded-lg border border-ap-border-soft bg-ap-s1 px-2 py-1.5 font-mono-num text-sm text-ap-text outline-none" />
+                          <button type="submit" disabled={isPending} className="rounded-lg bg-[#22D366] px-3 py-1.5 text-xs font-bold text-[#08130D]">✓</button>
+                          <button type="button" onClick={() => setEditingFranjaId(null)} className="text-xs text-ap-muted">✕</button>
+                        </form>
+                      ) : (
+                        <div key={fr.id} className="mb-2 flex items-center gap-2 rounded-[10px] border border-[#2A3A2C] bg-[#1A2A1C] px-3.5 py-2.5">
+                          <span className="flex-1 font-mono-num text-sm font-bold text-ap-text">
+                            {fr.horaApertura} → {fr.horaCierre}
+                          </span>
+                          <button onClick={() => setEditingFranjaId(fr.id)} disabled={isPending} className="flex text-ap-primary">
+                            <Edit size={16} />
+                          </button>
+                          <button onClick={() => handleDeleteFranja(fr.id)} disabled={isPending} className="flex text-ap-danger">
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      )
                     ))}
 
                     {franjas.length === 0 && (
