@@ -43,6 +43,7 @@ export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNom
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [cancelToken, setCancelToken] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const selectedSvcs = servicios.filter((s) => servicioIds.includes(s.id));
   const selectedSvc = selectedSvcs.length > 0 ? selectedSvcs[0] : undefined;
@@ -250,10 +251,10 @@ export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNom
                         Guardá este link por si necesitás cancelar (hasta 2hs antes)
                       </div>
                       <button
-                        onClick={() => { navigator.clipboard.writeText(cancelUrl); }}
-                        className="shrink-0 ml-2 rounded-lg border border-cl-border bg-cl-slot px-2.5 py-1 text-[11px] font-semibold text-white"
+                        onClick={() => { navigator.clipboard.writeText(cancelUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                        className={`shrink-0 ml-2 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-colors ${copied ? "border border-[#22D366] bg-[rgba(34,211,102,.15)] text-[#22D366]" : "border border-cl-border bg-cl-slot text-white"}`}
                       >
-                        Copiar
+                        {copied ? "¡Copiado!" : "Copiar"}
                       </button>
                     </div>
                     <div className="mt-2 rounded-xl border border-cl-border bg-cl-slot px-3 py-2.5 text-[11px] break-all" style={{ color: "#7B8AA3" }}>
