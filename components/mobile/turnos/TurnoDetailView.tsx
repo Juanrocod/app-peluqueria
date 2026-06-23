@@ -19,6 +19,7 @@ interface TurnoDetail {
   direccion?: string | null;
   estado: string;
   servicio: { nombre: string; precio: number; duracion: number };
+  servicios?: { nombre: string; duracion: number; precio: number }[];
 }
 
 interface TurnoDetailViewProps {
@@ -30,6 +31,18 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
   const [isPending, startTransition] = useTransition();
   const fecha = new Date(turno.fechaHora);
   const money = (n: number) => "$" + n.toLocaleString("es-AR");
+
+  // Multi-service support
+  const hasMultiSvc = turno.servicios && turno.servicios.length > 0;
+  const displayServiceName = hasMultiSvc
+    ? turno.servicios!.map((s) => s.nombre).join(", ")
+    : turno.servicio.nombre;
+  const displayDuration = hasMultiSvc
+    ? turno.servicios!.reduce((a, s) => a + s.duracion, 0)
+    : turno.servicio.duracion;
+  const displayPrice = hasMultiSvc
+    ? turno.servicios!.reduce((a, s) => a + s.precio, 0)
+    : turno.servicio.precio;
 
   function handleAction(estado: "CONFIRMADO" | "CANCELADO" | "COMPLETADO") {
     startTransition(async () => {
@@ -69,16 +82,16 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
 
         {/* Info chips — 2 columns */}
         <div className="grid grid-cols-2 gap-2">
-          <div className="rounded-[12px] border border-ap-border-soft bg-ap-s1 px-3 py-2.5">
+          <div className={`rounded-[12px] border border-ap-border-soft bg-ap-s1 px-3 py-2.5 ${hasMultiSvc && turno.servicios!.length > 1 ? "col-span-2" : ""}`}>
             <div className="flex items-center gap-2">
-              <Scissors size={15} color="#ADADB0" />
-              <span className="text-[13px] font-semibold">{turno.servicio.nombre}</span>
+              <Scissors size={15} color="#ADADB0" className="shrink-0" />
+              <span className="text-[13px] font-semibold">{displayServiceName}</span>
             </div>
           </div>
           <div className="rounded-[12px] border border-ap-border-soft bg-ap-s1 px-3 py-2.5">
             <div className="flex items-center gap-2">
               <Clock size={15} color="#ADADB0" />
-              <span className="text-[13px] font-semibold">{turno.servicio.duracion} min</span>
+              <span className="text-[13px] font-semibold">{displayDuration} min</span>
             </div>
           </div>
           <div className="rounded-[12px] border border-ap-border-soft bg-ap-s1 px-3 py-2.5">
@@ -92,7 +105,7 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
           <div className="rounded-[12px] border border-ap-border-soft bg-ap-s1 px-3 py-2.5">
             <div className="flex items-center gap-2">
               <DollarSign size={15} color="#ADADB0" />
-              <span className="font-mono-num text-[13px] font-semibold text-[#22D366]">{money(turno.servicio.precio)}</span>
+              <span className="font-mono-num text-[13px] font-semibold text-[#22D366]">{money(displayPrice)}</span>
             </div>
           </div>
           <div className="rounded-[12px] border border-ap-border-soft bg-ap-s1 px-3 py-2.5">

@@ -17,6 +17,7 @@ interface TurnoCardProps {
   telefono: string;
   observaciones?: string | null;
   productos?: { nombre: string }[];
+  servicios?: { nombre: string; duracion: number; precio: number }[];
 }
 
 export function TurnoCard(props: TurnoCardProps) {
@@ -24,6 +25,18 @@ export function TurnoCard(props: TurnoCardProps) {
   const [isPending, startTransition] = useTransition();
   const isDone = props.estado === "COMPLETADO";
   const isHome = props.modalidad === "DOMICILIO";
+
+  // Multi-service: use servicios array if available, otherwise fallback to single
+  const hasMultiService = props.servicios && props.servicios.length > 0;
+  const displayServiceName = hasMultiService
+    ? props.servicios!.map((s) => s.nombre).join(", ")
+    : props.servicio;
+  const displayDuration = hasMultiService
+    ? props.servicios!.reduce((a, s) => a + s.duracion, 0)
+    : props.duracion;
+  const displayPrice = hasMultiService
+    ? props.servicios!.reduce((a, s) => a + s.precio, 0)
+    : props.precio;
 
   function handleComplete(e: React.MouseEvent) {
     e.stopPropagation();
@@ -64,10 +77,10 @@ export function TurnoCard(props: TurnoCardProps) {
             )}
           </div>
           <div className={`mt-0.5 flex items-center gap-1.5 text-xs ${isDone ? "line-through" : ""}`}>
-            <span className="text-ap-sub">{props.servicio}</span>
+            <span className="text-ap-sub">{displayServiceName}</span>
             <span className="text-ap-muted">·</span>
             <span className={`font-mono-num font-semibold ${isDone ? "text-ap-muted" : "text-[#22D366]"}`}>
-              {money(props.precio)}
+              {money(displayPrice)}
             </span>
           </div>
         </div>
@@ -114,8 +127,10 @@ export function TurnoCard(props: TurnoCardProps) {
               <Scissors size={15} color="#2F6BFF" />
             </span>
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-ap-muted">Servicio</div>
-              <div className="mt-0.5 text-[13px] font-semibold text-ap-text">{props.servicio} · {props.duracion} min</div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-ap-muted">
+                {hasMultiService && props.servicios!.length > 1 ? "Servicios" : "Servicio"}
+              </div>
+              <div className="mt-0.5 text-[13px] font-semibold text-ap-text">{displayServiceName} · {displayDuration} min</div>
             </div>
           </div>
           <div className="flex items-center gap-2.5">

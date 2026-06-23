@@ -15,6 +15,11 @@ export default async function GananciasPage() {
           producto: { select: { nombre: true, ganancia: true } },
         },
       },
+      servicios: {
+        include: {
+          servicio: { select: { nombre: true, precio: true } },
+        },
+      },
     },
     orderBy: { fechaHora: "desc" },
   });
@@ -31,9 +36,14 @@ export default async function GananciasPage() {
   };
 
   const filas: FilaTurno[] = turnos.map((t) => {
-    // Usar snapshot si existe, precio actual como fallback
-    const precioServicio = Number(t.precioServicioFinal ?? t.servicio.precio);
-    const nombreServicio = t.nombreServicioFinal ?? t.servicio.nombre;
+    // Multi-service: sum from TurnoServicio snapshots if available
+    const hasMultiSvc = t.servicios.length > 0;
+    const precioServicio = hasMultiSvc
+      ? t.servicios.reduce((sum, ts) => sum + Number(ts.precioSnapshot ?? ts.servicio.precio), 0)
+      : Number(t.precioServicioFinal ?? t.servicio.precio);
+    const nombreServicio = hasMultiSvc
+      ? t.servicios.map((ts) => ts.nombreSnapshot ?? ts.servicio.nombre).join(", ")
+      : (t.nombreServicioFinal ?? t.servicio.nombre);
 
     const gananciasProductos = t.productos.reduce((acc, tp) => {
       // Prioridad: gananciaFinal (snapshot) → ganancia actual del producto
@@ -86,11 +96,18 @@ export default async function GananciasPage() {
   const totalServiciosGeneral = mesesOrdenados.reduce((acc, m) => acc + m.totalServicio, 0);
   const totalProductosGeneral = mesesOrdenados.reduce((acc, m) => acc + m.totalProductos, 0);
 
-  const serializedForMobile = turnos.map((t) => ({
-    fechaHora: t.fechaHora.toISOString(),
-    precioFinal: Number(t.precioServicioFinal ?? t.servicio.precio),
-    servicioNombre: t.nombreServicioFinal ?? t.servicio.nombre,
-  }));
+  const serializedForMobile = turnos.map((t) => {
+    const hasMultiSvc = t.servicios.length > 0;
+    return {
+      fechaHora: t.fechaHora.toISOString(),
+      precioFinal: hasMultiSvc
+        ? t.servicios.reduce((sum, ts) => sum + Number(ts.precioSnapshot ?? ts.servicio.precio), 0)
+        : Number(t.precioServicioFinal ?? t.servicio.precio),
+      servicioNombre: hasMultiSvc
+        ? t.servicios.map((ts) => ts.nombreSnapshot ?? ts.servicio.nombre).join(", ")
+        : (t.nombreServicioFinal ?? t.servicio.nombre),
+    };
+  });
 
   return (
     <div>

@@ -17,7 +17,7 @@ export default async function HoyPage() {
       fechaHora: { gte: desde, lte: hasta },
       estado: { notIn: ["CANCELADO"] },
     },
-    include: { servicio: true, productos: { include: { producto: true } } },
+    include: { servicio: true, productos: { include: { producto: true } }, servicios: { include: { servicio: true } } },
     orderBy: { fechaHora: "asc" },
   });
 
@@ -35,6 +35,11 @@ export default async function HoyPage() {
     },
     productos: t.productos.map((tp) => ({
       nombre: tp.producto.nombre,
+    })),
+    servicios: t.servicios.map((ts) => ({
+      nombre: ts.servicio.nombre,
+      duracion: ts.duracionSnapshot,
+      precio: Number(ts.servicio.precio),
     })),
   }));
 

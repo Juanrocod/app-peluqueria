@@ -27,6 +27,7 @@ interface Turno {
   direccion?: string | null;
   estado: string;
   servicio: { nombre: string; precio: number; duracion: number };
+  servicios?: { nombre: string; duracion: number; precio: number }[];
 }
 
 interface TurnosScreenProps {
@@ -123,6 +124,16 @@ export function TurnosScreen({ turnos }: TurnosScreenProps) {
               const sc = STATUS_COLOR[t.estado] ?? "#6F6F73";
               const fecha = new Date(t.fechaHora);
               const isExpired = fecha < now && (t.estado === "PENDIENTE" || t.estado === "CONFIRMADO");
+              const hasMultiSvc = t.servicios && t.servicios.length > 0;
+              const svcName = hasMultiSvc
+                ? t.servicios!.map((s) => s.nombre).join(", ")
+                : t.servicio.nombre;
+              const svcDuration = hasMultiSvc
+                ? t.servicios!.reduce((a, s) => a + s.duracion, 0)
+                : t.servicio.duracion;
+              const svcPrice = hasMultiSvc
+                ? t.servicios!.reduce((a, s) => a + s.precio, 0)
+                : t.servicio.precio;
               return (
                 <button
                   key={t.id}
@@ -140,9 +151,9 @@ export function TurnosScreen({ turnos }: TurnosScreenProps) {
                       <StatusBadge estado={t.estado} />
                     </div>
                     <div className={`mt-0.5 flex items-center gap-1.5 text-xs text-ap-sub ${isExpired ? "line-through" : ""}`}>
-                      <span>{t.servicio.nombre}</span>
+                      <span>{svcName}</span>
                       <span className="text-ap-muted">&middot;</span>
-                      <span>{t.servicio.duracion} min</span>
+                      <span>{svcDuration} min</span>
                     </div>
                   </div>
                   <div className="shrink-0 text-right">
@@ -150,7 +161,7 @@ export function TurnosScreen({ turnos }: TurnosScreenProps) {
                       {format(fecha, "HH:mm")}
                     </div>
                     <div className={`font-mono-num text-xs font-semibold ${isExpired ? "text-ap-muted" : "text-[#22D366]"}`}>
-                      {money(t.servicio.precio)}
+                      {money(svcPrice)}
                     </div>
                   </div>
                 </button>

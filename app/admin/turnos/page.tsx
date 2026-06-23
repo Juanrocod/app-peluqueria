@@ -8,7 +8,7 @@ import { PullToRefresh } from "@/components/ui/PullToRefresh";
 
 export default async function TurnosPage() {
   const turnos = await prisma.turno.findMany({
-    include: { servicio: true, peluquero: true, productos: { include: { producto: true } } },
+    include: { servicio: true, peluquero: true, productos: { include: { producto: true } }, servicios: { include: { servicio: true } } },
     orderBy: { fechaHora: "desc" },
     take: 100,
   });
@@ -28,6 +28,11 @@ export default async function TurnosPage() {
       precio: Number(t.servicio.precio),
       duracion: t.servicio.duracion,
     },
+    servicios: t.servicios.map((ts) => ({
+      nombre: ts.servicio.nombre,
+      duracion: ts.duracionSnapshot,
+      precio: Number(ts.servicio.precio),
+    })),
   }));
 
   return (
@@ -74,7 +79,11 @@ export default async function TurnosPage() {
                   <div className="font-medium">{turno.clienteNombre}</div>
                   <div className="text-zinc-400">{turno.clienteTelefono}</div>
                 </td>
-                <td className="px-4 py-3">{turno.servicio.nombre}</td>
+                <td className="px-4 py-3">
+                  {turno.servicios.length > 0
+                    ? turno.servicios.map((ts) => ts.servicio.nombre).join(", ")
+                    : turno.servicio.nombre}
+                </td>
                 <td className="px-4 py-3 text-zinc-400 text-xs">
                   {turno.productos.length > 0
                     ? turno.productos.map((tp) => tp.producto.nombre).join(", ")

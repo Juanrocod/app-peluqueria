@@ -23,6 +23,7 @@ interface Turno {
     precio: number;
   };
   productos: { nombre: string }[];
+  servicios?: { nombre: string; duracion: number; precio: number }[];
 }
 
 interface HoyScreenProps {
@@ -124,6 +125,7 @@ export function HoyScreen({ turnos, slotsTotal }: HoyScreenProps) {
                   telefono={t.clienteTelefono}
                   observaciones={t.observaciones}
                   productos={t.productos}
+                  servicios={t.servicios}
                 />
               ));
 

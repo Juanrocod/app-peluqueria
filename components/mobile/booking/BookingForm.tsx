@@ -25,7 +25,7 @@ interface BookingFormProps {
 
 export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   const [step, setStep] = useState(0);
-  const [servicioId, setServicioId] = useState<string | null>(null);
+  const [servicioIds, setServicioIds] = useState<string[]>([]);
   const [day, setDay] = useState<string | null>(null);
   const [time, setTime] = useState<string | null>(null);
   const [place, setPlace] = useState<"salon" | "home" | null>(null);
@@ -41,10 +41,21 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const selectedSvc = servicios.find((s) => s.id === servicioId);
+  const selectedSvcs = servicios.filter((s) => servicioIds.includes(s.id));
+  const selectedSvc = selectedSvcs.length > 0 ? selectedSvcs[0] : undefined;
+  const totalDuration = selectedSvcs.reduce((a, s) => a + s.duracion, 0);
+  const totalServicePrice = selectedSvcs.reduce((a, s) => a + s.precio, 0);
   const selectedProducts = productos.filter((p) => selectedProductIds.includes(p.id));
   const productosTotal = selectedProducts.reduce((a, p) => a + p.precio, 0);
   const money = (n: number) => "$" + n.toLocaleString("es-AR");
+
+  function toggleServicio(id: string) {
+    setServicioIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : prev.length < 5 ? [...prev, id] : prev
+    );
+    // Reset time when services change (duration affects available slots)
+    setTime(null);
+  }
 
   function toggleProducto(id: string) {
     setSelectedProductIds((prev) =>
@@ -68,16 +79,16 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   const [triedNext, setTriedNext] = useState(false);
 
   const canNext = useCallback(() => {
-    if (step === 0) return !!servicioId;
+    if (step === 0) return servicioIds.length > 0;
     if (step === 1) return !!time;
     if (step === 2)
       return place === "salon" || (place === "home" && address.trim() !== "");
     if (step === 3) return isNameValid && isPhoneValid && isEmailValid;
     return true;
-  }, [step, servicioId, time, place, address, isNameValid, isPhoneValid, isEmailValid]);
+  }, [step, servicioIds.length, time, place, address, isNameValid, isPhoneValid, isEmailValid]);
 
   async function handleConfirm() {
-    if (!selectedSvc || !day || !time) return;
+    if (servicioIds.length === 0 || !day || !time) return;
     setSubmitting(true);
     setError("");
     try {
@@ -95,7 +106,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
         observaciones: obs || undefined,
         modalidad: place === "home" ? "DOMICILIO" : "PRESENCIAL",
         direccion: place === "home" ? address : undefined,
-        servicioId: selectedSvc.id,
+        servicioIds,
         descuentoAplicado: discountPct || undefined,
         productoIds: selectedProductIds.length > 0 ? selectedProductIds : undefined,
       });
@@ -122,9 +133,10 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   }
 
   // Summary labels for completed steps
+  const serviceNames = selectedSvcs.map((s) => s.nombre).join(", ");
   const summaries = [
-    selectedSvc
-      ? `${selectedSvc.nombre} · ${selectedSvc.duracion} min · ${money(selectedSvc.precio)}`
+    selectedSvcs.length > 0
+      ? `${serviceNames} · ${totalDuration} min · ${money(totalServicePrice)}`
       : "",
     day && time ? `${day} a las ${time}` : "",
     place === "home"
@@ -169,7 +181,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
           <div className="space-y-0 px-5 pb-5">
             {(
               [
-                ["✂️", "SERVICIO", selectedSvc?.nombre ?? ""],
+                ["✂️", selectedSvcs.length > 1 ? "SERVICIOS" : "SERVICIO", serviceNames || ""],
                 ["📅", "FECHA Y HORA", `${day} · ${time}`],
                 [
                   "📍",
@@ -206,8 +218,8 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
               <span className="text-sm font-bold">Total estimado</span>
               <span className="font-mono-num text-xl font-bold text-[#22D366]">
                 {money(
-                  selectedSvc
-                    ? Math.round(selectedSvc.precio * (1 - discountPct / 100) + productosTotal)
+                  selectedSvcs.length > 0
+                    ? Math.round(totalServicePrice * (1 - discountPct / 100) + productosTotal)
                     : 0,
                 )}
               </span>
@@ -215,7 +227,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
             <button
               onClick={() => {
                 setStep(0);
-                setServicioId(null);
+                setServicioIds([]);
                 setDay(null);
                 setTime(null);
                 setPlace(null);
@@ -320,45 +332,59 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
           </div>
         </div>
 
-        {/* Step 0: Service selection */}
+        {/* Step 0: Service selection (multi-select) */}
         {step === 0 && (
-          <div className="flex flex-col gap-2.5">
-            {servicios.map((s, i) => {
-              const on = servicioId === s.id;
-              const dotColors = ["#22D366", "#2F6BFF", "#B79CFF", "#E8A33D", "#F26157", "#34D399"];
-              const dotColor = dotColors[i % dotColors.length];
-              return (
-                <button
-                  key={s.id}
-                  onClick={() => setServicioId(s.id)}
-                  className="flex w-full items-center gap-3 rounded-[14px] border-2 px-3.5 py-3 text-left transition-all"
-                  style={{
-                    background: on ? "rgba(34,211,102,.07)" : "#16213A",
-                    borderColor: on ? "#22D366" : "#223052",
-                    boxShadow: on
-                      ? "0 4px 16px -6px rgba(34,211,102,.4)"
-                      : "none",
-                  }}
-                >
-                  <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: dotColor }} />
-                  <div>
-                    <div className="text-[14.5px] font-bold text-white">
-                      {s.nombre}
+          <div>
+            <div className="flex flex-col gap-2.5">
+              {servicios.map((s, i) => {
+                const on = servicioIds.includes(s.id);
+                const dotColors = ["#22D366", "#2F6BFF", "#B79CFF", "#E8A33D", "#F26157", "#34D399"];
+                const dotColor = dotColors[i % dotColors.length];
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => toggleServicio(s.id)}
+                    className="flex w-full items-center gap-3 rounded-[14px] border-2 px-3.5 py-3 text-left transition-all"
+                    style={{
+                      background: on ? "rgba(34,211,102,.07)" : "#16213A",
+                      borderColor: on ? "#22D366" : "#223052",
+                      boxShadow: on
+                        ? "0 4px 16px -6px rgba(34,211,102,.4)"
+                        : "none",
+                    }}
+                  >
+                    <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: on ? "#22D366" : dotColor }} />
+                    <div className="flex-1">
+                      <div className="text-[14.5px] font-bold text-white">
+                        {s.nombre}
+                      </div>
+                      <div className="mt-0.5 font-mono-num text-xs text-[#C7D0E0]">
+                        {s.duracion} min · {money(s.precio)}
+                      </div>
                     </div>
-                    <div className="mt-0.5 font-mono-num text-xs text-[#C7D0E0]">
-                      {s.duracion} min · {money(s.precio)}
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
+                  </button>
+                );
+              })}
+            </div>
+            {selectedSvcs.length > 0 && (
+              <div className="mt-3 rounded-[13px] border border-[#223052] bg-[#16213A] px-3.5 py-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#9DA9C0]">
+                    {selectedSvcs.length} servicio{selectedSvcs.length > 1 ? "s" : ""}
+                  </span>
+                  <span className="font-mono-num text-xs text-[#C7D0E0]">
+                    {totalDuration} min · {money(totalServicePrice)}
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
         {/* Step 1: Date + Time */}
-        {step === 1 && selectedSvc && (
+        {step === 1 && selectedSvcs.length > 0 && (
           <DateTimeStep
-            servicioId={selectedSvc.id}
+            servicioIds={servicioIds}
             modalidad={place === "home" ? "DOMICILIO" : "PRESENCIAL"}
             selectedDay={day}
             selectedTime={time}
@@ -558,7 +584,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
         )}
 
         {/* Step 4: Confirm + Products */}
-        {step === 4 && selectedSvc && (
+        {step === 4 && selectedSvcs.length > 0 && (
           <div>
             {/* Products selection */}
             {productos.length > 0 && (
@@ -606,10 +632,12 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
 
             {/* Price summary */}
             <div className="border-t border-[#223052] pt-3">
-              <div className="mb-1.5 flex justify-between text-[13px] text-[#9DA9C0]">
-                <span>{selectedSvc.nombre}</span>
-                <span className="font-mono-num">{money(selectedSvc.precio)}</span>
-              </div>
+              {selectedSvcs.map((s) => (
+                <div key={s.id} className="mb-1.5 flex justify-between text-[13px] text-[#9DA9C0]">
+                  <span>{s.nombre}</span>
+                  <span className="font-mono-num">{money(s.precio)}</span>
+                </div>
+              ))}
               {selectedProducts.map((p) => (
                 <div key={p.id} className="mb-1.5 flex justify-between text-[13px] text-[#9DA9C0]">
                   <span>{p.nombre}</span>
@@ -620,14 +648,14 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                 <div className="mb-1.5 flex justify-between text-[13px] text-[#22D366]">
                   <span>Descuento ({discountPct}%)</span>
                   <span className="font-mono-num">
-                    -{money(Math.round((selectedSvc.precio * discountPct) / 100))}
+                    -{money(Math.round((totalServicePrice * discountPct) / 100))}
                   </span>
                 </div>
               )}
               <div className="mt-2 flex items-center justify-between">
                 <span className="text-sm font-bold">Total estimado</span>
                 <span className="font-mono-num text-xl font-bold text-[#22D366]">
-                  {money(Math.round(selectedSvc.precio * (1 - discountPct / 100) + productosTotal))}
+                  {money(Math.round(totalServicePrice * (1 - discountPct / 100) + productosTotal))}
                 </span>
               </div>
             </div>
@@ -670,14 +698,14 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
 // ── DateTimeStep (internal) ──────────────────────────────────
 
 function DateTimeStep({
-  servicioId,
+  servicioIds,
   modalidad,
   selectedDay,
   selectedTime,
   onSelectDay,
   onSelectTime,
 }: {
-  servicioId: string;
+  servicioIds: string[];
   modalidad: string;
   selectedDay: string | null;
   selectedTime: string | null;
@@ -731,8 +759,11 @@ function DateTimeStep({
   async function loadSlots(dateStr: string) {
     setLoading(true);
     try {
+      const idsParam = servicioIds.length > 1
+        ? `servicioIds=${servicioIds.join(",")}`
+        : `servicioId=${servicioIds[0]}`;
       const res = await fetch(
-        `/api/disponibilidad?fecha=${dateStr}&servicioId=${servicioId}&modalidad=${modalidad}`,
+        `/api/disponibilidad?fecha=${dateStr}&${idsParam}&modalidad=${modalidad}`,
       );
       const data = await res.json();
       setSlots(Array.isArray(data) ? data : data.slots ?? []);
