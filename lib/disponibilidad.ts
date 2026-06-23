@@ -81,7 +81,9 @@ export async function getSlotDisponibles(
 
   // Current time in server-local (UTC on Vercel). Compare against slot times (also UTC).
   const ahora = new Date();
-  const esHoy = fecha.getFullYear() === ahora.getFullYear() && fecha.getMonth() === ahora.getMonth() && fecha.getDate() === ahora.getDate();
+  // Compare in Argentina time (UTC-3)
+  const arNow = new Date(ahora.getTime() - AR_OFFSET_MS);
+  const esHoy = fecha.getFullYear() === arNow.getUTCFullYear() && fecha.getMonth() === arNow.getUTCMonth() && fecha.getDate() === arNow.getUTCDate();
 
   const slotsLibres = todosLosSlots.filter((slot) => {
     // Block past hours for today

@@ -7,10 +7,18 @@ import { PullToRefresh } from "@/components/ui/PullToRefresh";
 import { getSlotDisponibles } from "@/lib/disponibilidad";
 
 export default async function HoyPage() {
-  const hoy   = new Date();
-  const desde = startOfDay(hoy);
-  // Extend 3h past midnight to catch turnos stored with AR offset (21:00 AR = 00:00 UTC+1)
-  const hasta = new Date(endOfDay(hoy).getTime() + 3 * 60 * 60 * 1000);
+  // Calculate "today" in Argentina (UTC-3)
+  const nowUtc = new Date();
+  const arNow = new Date(nowUtc.getTime() - 3 * 60 * 60 * 1000);
+  const arYear = arNow.getUTCFullYear();
+  const arMonth = arNow.getUTCMonth();
+  const arDay = arNow.getUTCDate();
+
+  // Turnos are stored with +3h offset (9:00 AR = T12:00Z)
+  // So "today in Argentina" in UTC is: 03:00 UTC (00:00 AR) to 02:59 UTC next day (23:59 AR)
+  const desde = new Date(Date.UTC(arYear, arMonth, arDay, 3, 0, 0));
+  const hasta = new Date(Date.UTC(arYear, arMonth, arDay + 1, 2, 59, 59, 999));
+  const hoy = new Date(arYear, arMonth, arDay);
 
   const turnos = await prisma.turno.findMany({
     where: {
