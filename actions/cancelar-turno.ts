@@ -10,7 +10,7 @@ export async function cancelarTurnoPorCliente(
     return { ok: false, error: "Token inválido." };
   }
 
-  const turno = await prisma.turno.findUnique({
+  const turno = await prisma.turno.findFirst({
     where: { cancelToken: token },
     include: {
       servicio: { select: { nombre: true } },

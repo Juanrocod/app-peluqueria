@@ -16,7 +16,7 @@ export default async function MiTurnoPage({
     notFound();
   }
 
-  const turno = await prisma.turno.findUnique({
+  const turno = await prisma.turno.findFirst({
     where: { cancelToken: token },
     include: {
       servicio: { select: { nombre: true } },
