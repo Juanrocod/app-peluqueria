@@ -21,9 +21,11 @@ interface Producto {
 interface BookingFormProps {
   servicios: Servicio[];
   productos?: Producto[];
+  marcaTelefono?: string;
+  marcaNombre?: string;
 }
 
-export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
+export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNombre }: BookingFormProps) {
   const [step, setStep] = useState(0);
   const [servicioIds, setServicioIds] = useState<string[]>([]);
   const [day, setDay] = useState<string | null>(null);
@@ -40,6 +42,8 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [cancelToken, setCancelToken] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const selectedSvcs = servicios.filter((s) => servicioIds.includes(s.id));
   const selectedSvc = selectedSvcs.length > 0 ? selectedSvcs[0] : undefined;
@@ -96,7 +100,7 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
       const [h, min] = time.split(":").map(Number);
       const fechaHora = new Date(y, m - 1, d, h, min);
 
-      await crearTurno({
+      const result = await crearTurno({
         fechaHora,
         fechaStr: day,
         horaSlot: time,
@@ -110,6 +114,9 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
         descuentoAplicado: discountPct || undefined,
         productoIds: selectedProductIds.length > 0 ? selectedProductIds : undefined,
       });
+      if (result.cancelToken) {
+        setCancelToken(result.cancelToken);
+      }
       setDone(true);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Error al confirmar el turno";
@@ -224,6 +231,67 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                 )}
               </span>
             </div>
+            {/* Cancel link and WhatsApp */}
+            {cancelToken && (() => {
+              const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+              const cancelUrl = `${baseUrl}/mi-turno/${cancelToken}`;
+              const businessName = marcaNombre || "BarberFras";
+              const whatsappPhone = marcaTelefono ? marcaTelefono.replace(/\D/g, "") : "";
+              const whatsappMsg = `Hola *${businessName}*, soy *${name}*, tengo reservado el siguiente turno:
+
+- *Servicio:* ${serviceNames}
+- *Fecha:* ${day}
+- *Hora:* ${time}
+- *Ubicacion:* ${place === "home" ? "A domicilio" : "En el local"}
+
+En caso de no poder asistir, cancelo desde aca:
+${cancelUrl}
+
+Gracias!`;
+
+              return (
+                <div className="space-y-4 border-t border-cl-border pt-4">
+                  {/* Cancel link */}
+                  <div>
+                    <div className="mb-1.5 text-[11px] font-bold tracking-wider" style={{ color: "#5F6B85" }}>
+                      LINK DE CANCELACIÓN
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="text-[11px]" style={{ color: "#9DA9C0" }}>
+                        Guardá este link por si necesitás cancelar (hasta 2hs antes)
+                      </div>
+                      <button
+                        onClick={() => { navigator.clipboard.writeText(cancelUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                        className={`shrink-0 ml-2 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-colors ${copied ? "border border-[#22D366] bg-[rgba(34,211,102,.15)] text-[#22D366]" : "border border-cl-border bg-cl-slot text-white"}`}
+                      >
+                        {copied ? "¡Copiado!" : "Copiar"}
+                      </button>
+                    </div>
+                    <div className="mt-2 rounded-xl border border-cl-border bg-cl-slot px-3 py-2.5 text-[11px] break-all" style={{ color: "#7B8AA3" }}>
+                      {cancelUrl}
+                    </div>
+                  </div>
+
+                  {/* WhatsApp button */}
+                  {whatsappPhone && (
+                    <a
+                      href={`https://wa.me/${whatsappPhone.startsWith("54") ? whatsappPhone : `54${whatsappPhone}`}?text=${encodeURIComponent(whatsappMsg)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex w-full items-center justify-center gap-2 rounded-[13px] py-3.5 text-sm font-bold text-white transition-all"
+                      style={{ background: "#22D366" }}
+                    >
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                      </svg>
+                      Enviar por WhatsApp
+                    </a>
+                  )}
+                </div>
+              );
+            })()}
+
+            <div className="pt-3">
             <button
               onClick={() => {
                 setStep(0);
@@ -239,12 +307,14 @@ export function BookingForm({ servicios, productos = [] }: BookingFormProps) {
                 setDiscountCode("");
                 setDiscountPct(0);
                 setSelectedProductIds([]);
+                setCancelToken(null);
                 setDone(false);
               }}
               className="w-full rounded-[13px] border border-cl-border bg-cl-slot py-3.5 text-sm font-semibold text-white"
             >
               Reservar otro turno
             </button>
+            </div>
           </div>
         </div>
       </div>
