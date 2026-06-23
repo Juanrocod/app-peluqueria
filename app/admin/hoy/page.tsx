@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 30;
 import { prisma } from "@/lib/prisma";
 import { format, startOfDay, endOfDay } from "date-fns";
 import TodayView from "@/components/admin/today/TodayView";

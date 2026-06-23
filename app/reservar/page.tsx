@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import FormularioReserva from "@/components/booking/FormularioReserva";
 import { BookingForm } from "@/components/mobile/booking/BookingForm";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export async function generateMetadata(): Promise<Metadata> {
   const { prisma } = await import("@/lib/prisma");

@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 120;
 import { prisma } from "@/lib/prisma";
 import FormularioMarca from "@/components/admin/FormularioMarca";
 import FormularioDescuento from "@/components/admin/FormularioDescuento";
