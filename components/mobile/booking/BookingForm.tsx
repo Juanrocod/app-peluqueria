@@ -237,14 +237,12 @@ export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNom
               const cancelUrl = `${baseUrl}/mi-turno/${cancelToken}`;
               const businessName = marcaNombre || "BarberFras";
               const whatsappPhone = marcaTelefono ? marcaTelefono.replace(/\D/g, "") : "";
-              const whatsappMsg = `Hola *${businessName}*
-
-Soy *${name}*, tengo reservado el siguiente turno:
+              const whatsappMsg = `Hola *${businessName}*, soy *${name}*, tengo reservado el siguiente turno:
 
 - *Servicio:* ${serviceNames}
 - *Fecha:* ${day}
 - *Hora:* ${time}
-- *Modalidad:* ${place === "home" ? "A domicilio" : "En el local"}
+- *Ubicacion:* ${place === "home" ? "A domicilio" : "En el local"}
 
 En caso de no poder asistir, cancelo desde aca:
 ${cancelUrl}
