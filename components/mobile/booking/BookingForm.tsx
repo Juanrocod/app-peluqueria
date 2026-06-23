@@ -239,23 +239,31 @@ export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNom
               const whatsappMsg = `Hola ${businessName}! Soy ${name}. Tengo un turno para el ${day} a las ${time} (${serviceNames}). Si necesito cancelar: ${cancelUrl}`;
 
               return (
-                <div className="space-y-3 border-t border-cl-border pt-4">
+                <div className="space-y-4 border-t border-cl-border pt-4">
                   {/* Cancel link */}
                   <div>
                     <div className="mb-1.5 text-[11px] font-bold tracking-wider" style={{ color: "#5F6B85" }}>
-                      LINK DE CANCELACION
+                      LINK DE CANCELACIÓN
                     </div>
-                    <div className="rounded-xl border border-cl-border bg-cl-slot px-3 py-2.5 text-[12px] break-all" style={{ color: "#9DA9C0" }}>
+                    <div className="flex items-center justify-between">
+                      <div className="text-[11px]" style={{ color: "#9DA9C0" }}>
+                        Guardá este link por si necesitás cancelar (hasta 2hs antes)
+                      </div>
+                      <button
+                        onClick={() => { navigator.clipboard.writeText(cancelUrl); }}
+                        className="shrink-0 ml-2 rounded-lg border border-cl-border bg-cl-slot px-2.5 py-1 text-[11px] font-semibold text-white"
+                      >
+                        Copiar
+                      </button>
+                    </div>
+                    <div className="mt-2 rounded-xl border border-cl-border bg-cl-slot px-3 py-2.5 text-[11px] break-all" style={{ color: "#7B8AA3" }}>
                       {cancelUrl}
-                    </div>
-                    <div className="mt-1 text-[11px]" style={{ color: "#5F6B85" }}>
-                      Guard&aacute; este link por si necesit&aacute;s cancelar (hasta 2hs antes)
                     </div>
                   </div>
 
                   {/* WhatsApp button */}
                   {whatsappPhone && (
-                    <a
+                    <
                       href={`https://wa.me/${whatsappPhone.startsWith("54") ? whatsappPhone : `54${whatsappPhone}`}?text=${encodeURIComponent(whatsappMsg)}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -272,6 +280,7 @@ export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNom
               );
             })()}
 
+            <div className="pt-3">
             <button
               onClick={() => {
                 setStep(0);
@@ -294,6 +303,7 @@ export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNom
             >
               Reservar otro turno
             </button>
+            </div>
           </div>
         </div>
       </div>
