@@ -127,7 +127,7 @@ export default async function MiTurnoPage({
               <MapPin size={18} color="#7C9CFF" />
             </span>
             <div>
-              <div className="text-[11px] font-bold tracking-wider" style={{ color: "#5F6B85" }}>MODALIDAD</div>
+              <div className="text-[11px] font-bold tracking-wider" style={{ color: "#5F6B85" }}>UBICACIÓN</div>
               <div className="mt-0.5 text-[15px] font-bold text-white">
                 {turno.modalidad === "DOMICILIO" ? "A domicilio" : "En el local"}
               </div>
