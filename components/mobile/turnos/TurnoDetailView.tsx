@@ -44,7 +44,7 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
     ? turno.servicios!.reduce((a, s) => a + s.precio, 0)
     : turno.servicio.precio;
 
-  function handleAction(estado: "CONFIRMADO" | "CANCELADO" | "COMPLETADO") {
+  function handleAction(estado: "PENDIENTE" | "CONFIRMADO" | "CANCELADO" | "COMPLETADO") {
     startTransition(async () => {
       await actualizarEstadoTurno(turno.id, estado);
     });
