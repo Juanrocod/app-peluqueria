@@ -44,7 +44,7 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
     ? turno.servicios!.reduce((a, s) => a + s.precio, 0)
     : turno.servicio.precio;
 
-  function handleAction(estado: "CONFIRMADO" | "CANCELADO" | "COMPLETADO") {
+  function handleAction(estado: "PENDIENTE" | "CONFIRMADO" | "CANCELADO" | "COMPLETADO") {
     startTransition(async () => {
       await actualizarEstadoTurno(turno.id, estado);
     });
@@ -205,9 +205,27 @@ export function TurnoDetailView({ turno, onBack }: TurnoDetailViewProps) {
             </button>
           )}
           {turno.estado === "COMPLETADO" && (
-            <div className="rounded-[13px] border border-[rgba(47,107,255,.2)] bg-[rgba(47,107,255,.08)] p-3.5 text-center text-[13px] font-semibold text-ap-primary">
-              Turno realizado - migrado a Ganancias
+            <div>
+              <div className="mb-2.5 rounded-[13px] border border-[rgba(47,107,255,.2)] bg-[rgba(47,107,255,.08)] p-3.5 text-center text-[13px] font-semibold text-ap-primary">
+                Turno realizado - migrado a Ganancias
+              </div>
+              <button
+                onClick={() => handleAction("CONFIRMADO")}
+                disabled={isPending}
+                className="w-full rounded-[13px] border border-ap-border-soft bg-ap-s1 py-3 text-sm font-semibold text-ap-muted transition-colors hover:bg-[#232325] disabled:opacity-50"
+              >
+                Revertir a Confirmado
+              </button>
             </div>
+          )}
+          {turno.estado === "CANCELADO" && (
+            <button
+              onClick={() => handleAction("PENDIENTE")}
+              disabled={isPending}
+              className="w-full rounded-[13px] border border-ap-border-soft bg-ap-s1 py-3 text-sm font-semibold text-ap-muted transition-colors hover:bg-[#232325] disabled:opacity-50"
+            >
+              Revertir a Pendiente
+            </button>
           )}
         </div>
       </div>
