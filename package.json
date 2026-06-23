@@ -30,6 +30,7 @@
     "react-big-calendar": "^1.18.0",
     "react-dom": "^19.0.0",
     "resend": "^6.14.0",
+    "web-push": "^3.6.7",
     "zod": "^4.4.3"
   },
   "overrides": {
@@ -42,6 +43,7 @@
     "@types/react": "^19",
     "@types/react-big-calendar": "^1.16.0",
     "@types/react-dom": "^19",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "^15.3.3",
     "prisma": "^6.9.0",

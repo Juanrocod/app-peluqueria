@@ -114,6 +114,18 @@ export async function crearTurno(data: {
 
   revalidatePath("/admin");
   revalidatePath("/admin/turnos");
+  revalidatePath("/admin/hoy");
+
+  try {
+    const { sendPushToAll } = await import("@/lib/push");
+    const svcNames = servicios.map((s) => s.nombre).join(", ");
+    await sendPushToAll(
+      "Nuevo turno",
+      `${validated.clienteNombre} · ${svcNames} · ${horaStr}`,
+      "/admin/turnos",
+    );
+  } catch {}
+
   return { ok: true, id: turno.id };
 }
 

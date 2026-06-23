@@ -28,6 +28,7 @@ interface Turno {
   estado: string;
   servicio: { nombre: string; precio: number; duracion: number };
   servicios?: { nombre: string; duracion: number; precio: number }[];
+  isNew?: boolean;
 }
 
 interface TurnosScreenProps {
@@ -144,7 +145,12 @@ export function TurnosScreen({ turnos }: TurnosScreenProps) {
                     opacity: isExpired ? 0.55 : 1,
                   }}
                 >
-                  <Avatar name={t.clienteNombre} size={40} />
+                  <div className="relative">
+                    <Avatar name={t.clienteNombre} size={40} />
+                    {t.isNew && (
+                      <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-ap-s1 bg-[#22D366]" />
+                    )}
+                  </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className={`text-[14px] font-bold ${isExpired ? "text-ap-muted line-through" : "text-ap-text"}`}>{t.clienteNombre}</span>

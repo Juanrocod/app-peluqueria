@@ -153,6 +153,14 @@ model HorarioAtencion {
   @@index([diaSemana, tipoFranja, activo])
 }
 
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+}
+
 model BloqueoHorario {
   id          String   @id @default(cuid())
   fecha       DateTime @db.Date
