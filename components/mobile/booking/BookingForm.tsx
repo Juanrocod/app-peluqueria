@@ -263,7 +263,7 @@ export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNom
 
                   {/* WhatsApp button */}
                   {whatsappPhone && (
-                    <
+                    <a
                       href={`https://wa.me/${whatsappPhone.startsWith("54") ? whatsappPhone : `54${whatsappPhone}`}?text=${encodeURIComponent(whatsappMsg)}`}
                       target="_blank"
                       rel="noopener noreferrer"
