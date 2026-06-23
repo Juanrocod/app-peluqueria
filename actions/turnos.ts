@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { EstadoTurno, OrigenTurno } from "@prisma/client";
 import { requireAdmin } from "@/lib/auth-guard";
 import { crearTurnoSchema } from "@/lib/validations";
+import { randomBytes } from "crypto";
 
 export async function crearTurno(data: {
   fechaHora: Date;
@@ -73,6 +74,8 @@ export async function crearTurno(data: {
 
   const { getSlotDisponibles } = await import("@/lib/disponibilidad");
 
+  const cancelToken = randomBytes(16).toString("hex");
+
   const turno = await prisma.$transaction(async (tx) => {
     const slotsDisponibles = await getSlotDisponibles(fecha, duracionTotal, false, modalidad);
 
@@ -93,6 +96,7 @@ export async function crearTurno(data: {
         peluqueroId: validated.peluqueroId ?? null,
         notas: validated.notas?.slice(0, 500) ?? null,
         origen: validated.origen ?? "ONLINE",
+        cancelToken,
         descuentoAplicado: await (async () => {
           if (!validated.descuentoAplicado) return null;
           const codigo = await prisma.codigoDescuento.findFirst({ where: { activo: true, descuento: validated.descuentoAplicado } });
@@ -126,7 +130,52 @@ export async function crearTurno(data: {
     );
   } catch {}
 
-  return { ok: true, id: turno.id };
+  // Send cancel link via email if client provided email and Resend is configured
+  if (validated.clienteEmail && process.env.RESEND_API_KEY) {
+    try {
+      const baseUrl = process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : process.env.NEXTAUTH_URL || "http://localhost:3000";
+      const cancelUrl = `${baseUrl}/mi-turno/${turno.cancelToken}`;
+      const svcNames = servicios.map((s) => s.nombre).join(", ");
+      const fechaDisplay = fecha.toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" });
+
+      const { Resend } = await import("resend");
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      await resend.emails.send({
+        from: process.env.RESEND_FROM || "BarberFras <onboarding@resend.dev>",
+        to: validated.clienteEmail,
+        subject: "Tu turno fue reservado",
+        html: `
+          <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#ffffff;">
+            <div style="text-align:center;margin-bottom:24px;">
+              <div style="display:inline-block;background:#131313;padding:10px 20px;border-radius:12px;">
+                <span style="font-size:20px;font-weight:bold;color:#ffffff;">&#9986; BarberFras</span>
+              </div>
+            </div>
+            <h2 style="color:#1a1a1a;font-size:22px;margin:0 0 12px;text-align:center;">Tu turno fue reservado</h2>
+            <p style="color:#555;font-size:15px;line-height:1.6;text-align:center;">Hola ${validated.clienteNombre}, tu turno quedó confirmado.</p>
+            <div style="background:#f0f4ff;border:1px solid #d0dbf0;border-radius:10px;padding:16px;margin:20px 0;">
+              <p style="margin:4px 0;color:#333;font-size:14px;"><strong>Servicio:</strong> ${svcNames}</p>
+              <p style="margin:4px 0;color:#333;font-size:14px;"><strong>Fecha:</strong> ${fechaDisplay}</p>
+              <p style="margin:4px 0;color:#333;font-size:14px;"><strong>Hora:</strong> ${horaStr}</p>
+              <p style="margin:4px 0;color:#333;font-size:14px;"><strong>Modalidad:</strong> ${modalidad === "DOMICILIO" ? "A domicilio" : "En el local"}</p>
+            </div>
+            <p style="color:#555;font-size:14px;line-height:1.6;text-align:center;">Si necesitás cancelar tu turno, usá el siguiente link (hasta 2 horas antes):</p>
+            <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:10px;padding:16px;margin:20px 0;word-break:break-all;text-align:center;">
+              <a href="${cancelUrl}" style="font-size:13px;color:#2F6BFF;font-weight:bold;text-decoration:underline;">${cancelUrl}</a>
+            </div>
+            <hr style="border:none;border-top:1px solid #eee;margin:24px 0;" />
+            <p style="color:#999;font-size:12px;text-align:center;">Podés cancelar hasta 2 horas antes del turno.</p>
+          </div>
+        `,
+      });
+    } catch {
+      // Email send failure should not break the booking flow
+    }
+  }
+
+  return { ok: true, id: turno.id, cancelToken: turno.cancelToken };
 }
 
 export async function actualizarEstadoTurno(id: string, estado: EstadoTurno) {

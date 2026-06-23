@@ -52,6 +52,8 @@ export default async function ReservarPage() {
         <BookingForm
           servicios={serializedServicios}
           productos={productos.map((p) => ({ id: p.id, nombre: p.nombre, precio: Number(p.precio), imagenUrl: p.imagenUrl ?? "" }))}
+          marcaTelefono={marcaTelefono || undefined}
+          marcaNombre={marcaNombre || undefined}
         />
       </div>
 
