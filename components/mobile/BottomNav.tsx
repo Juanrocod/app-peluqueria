@@ -15,20 +15,27 @@ const NAV_ITEMS = [
 
 export function MobileBottomNav({ hasNewTurnos = false }: { hasNewTurnos?: boolean }) {
   const pathname = usePathname();
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissedHoy, setDismissedHoy] = useState(false);
+  const [dismissedTurnos, setDismissedTurnos] = useState(false);
 
   useEffect(() => {
-    if (hasNewTurnos) setDismissed(false);
+    if (hasNewTurnos) {
+      setDismissedHoy(false);
+      setDismissedTurnos(false);
+    }
   }, [hasNewTurnos]);
 
   useEffect(() => {
-    if ((hasNewTurnos || !dismissed) && (pathname === "/admin/turnos" || pathname === "/admin/hoy")) {
-      setDismissed(true);
+    if (pathname === "/admin/hoy") {
+      setDismissedHoy(true);
+    }
+    if (pathname === "/admin/turnos") {
+      setDismissedTurnos(true);
+    }
+    if (dismissedHoy && dismissedTurnos) {
       markTurnosSeen();
     }
-  }, [pathname]);
-
-  const showDot = hasNewTurnos && !dismissed;
+  }, [pathname, dismissedHoy, dismissedTurnos]);
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex border-t border-[#232325] bg-[#161617] md:hidden"
@@ -37,7 +44,10 @@ export function MobileBottomNav({ hasNewTurnos = false }: { hasNewTurnos?: boole
         const isActive =
           href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
         const color = isActive ? "#2F6BFF" : "#6F6F73";
-        const dot = showDot && (notifyKey === "hoy" || notifyKey === "turnos");
+        const dot = hasNewTurnos && (
+          (notifyKey === "hoy" && !dismissedHoy) ||
+          (notifyKey === "turnos" && !dismissedTurnos)
+        );
         return (
           <Link
             key={href}

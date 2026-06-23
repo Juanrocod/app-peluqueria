@@ -7,6 +7,9 @@ import { TurnosScreen } from "@/components/mobile/turnos/TurnosScreen";
 import { PullToRefresh } from "@/components/ui/PullToRefresh";
 
 export default async function TurnosPage() {
+  const lastSeenRow = await prisma.configuracionApp.findUnique({ where: { clave: "admin_last_seen_turnos" } });
+  const lastSeen = lastSeenRow?.valor ?? new Date(0).toISOString();
+
   const turnos = await prisma.turno.findMany({
     include: { servicio: true, peluquero: true, productos: { include: { producto: true } }, servicios: { include: { servicio: true } } },
     orderBy: { fechaHora: "desc" },
@@ -33,6 +36,7 @@ export default async function TurnosPage() {
       duracion: ts.duracionSnapshot,
       precio: Number(ts.servicio.precio),
     })),
+    isNew: t.createdAt.toISOString() > lastSeen,
   }));
 
   return (
