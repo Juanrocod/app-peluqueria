@@ -73,6 +73,7 @@ export const crearFranjaSchema = z.object({
   horaCierre: z.string().regex(horaRegex),
   tipoFranja: z.enum(["POSITIVA", "NEGATIVA"]),
   motivo: z.string().max(200).optional(),
+  recargo: z.number().int().min(1).max(100).optional(),
 });
 
 export const crearBloqueoSchema = z.object({
