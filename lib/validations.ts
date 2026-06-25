@@ -26,6 +26,7 @@ export const crearTurnoSchema = z.object({
   notas: z.string().max(500).optional().or(z.literal("")),
   origen: z.enum(["ONLINE", "MANUAL"]).optional(),
   descuentoAplicado: z.number().min(0).max(100).optional(),
+  recargoPremium: z.number().int().min(1).max(100).optional(),
   productoIds: z.array(z.string().cuid()).max(10).optional(),
 });
 
