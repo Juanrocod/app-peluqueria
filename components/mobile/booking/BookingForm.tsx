@@ -784,6 +784,7 @@ function DateTimeStep({
 }) {
   const [slots, setSlots] = useState<string[]>([]);
   const [allSlots, setAllSlots] = useState<string[]>([]);
+  const [premiumSlots, setPremiumSlots] = useState<{ slot: string; recargo: number }[]>([]);
   const [loading, setLoading] = useState(false);
   const [nightMode, setNightMode] = useState(false);
 
@@ -838,6 +839,7 @@ function DateTimeStep({
       const data = await res.json();
       setSlots(Array.isArray(data) ? data : data.slots ?? []);
       setAllSlots(data.allSlots ?? []);
+      setPremiumSlots(data.premiumSlots ?? []);
     } catch {
       setSlots([]);
     }
@@ -858,12 +860,18 @@ function DateTimeStep({
     ? parseInt(selectedDay.split("-")[1]) - 1 === viewMonth &&
       parseInt(selectedDay.split("-")[0]) === viewYear
     : false;
-  const selectedDow = selectedDay ? new Date(selectedDay).getDay() : null;
-  const isSaturday = selectedDow === 6;
+  const premiumSet = new Set(premiumSlots.map((p) => p.slot));
+  const hasPremium = premiumSlots.length > 0 && allSlots.some((s) => premiumSet.has(s));
+  const premiumRecargo = premiumSlots.length > 0 ? premiumSlots[0].recargo : 0;
 
-  const displaySlots = nightMode
-    ? allSlots.filter((s) => parseInt(s) >= 20)
-    : allSlots.filter((s) => parseInt(s) < 20);
+  const normalSlots = hasPremium
+    ? allSlots.filter((s) => !premiumSet.has(s))
+    : allSlots;
+  const premiumDisplaySlots = hasPremium
+    ? allSlots.filter((s) => premiumSet.has(s))
+    : [];
+
+  const displaySlots = nightMode ? premiumDisplaySlots : normalSlots;
 
   function isDayPast(d: number) {
     if (viewYear < today.getFullYear()) return true;
@@ -937,23 +945,23 @@ function DateTimeStep({
         })}
       </div>
 
-      {/* Saturday night toggle */}
-      {isSaturday && allSlots.some((s) => parseInt(s) >= 20) && (
+      {/* Premium night toggle */}
+      {hasPremium && premiumDisplaySlots.length > 0 && (
         <button
           onClick={() => setNightMode(!nightMode)}
           className="mb-4 flex w-full items-center gap-2.5 rounded-[13px] border px-3.5 py-3 text-left"
           style={{
-            background: nightMode ? "rgba(124,92,246,.14)" : "#16213A",
+            background: nightMode ? "rgba(139,92,246,.14)" : "#16213A",
             borderColor: nightMode ? "#6D4FCF" : "#223052",
           }}
         >
           <span className="text-base">🌙</span>
           <div className="flex-1">
             <div className="text-[13px] font-bold" style={{ color: nightMode ? "#C4B0FF" : "#F4F4F2" }}>
-              Horario nocturno especial
+              Horario nocturno
             </div>
             <div className="text-[11px]" style={{ color: nightMode ? "#9B85D6" : "#5F6B85" }}>
-              20:00 - 23:00
+              Horarios con alta demanda · Recargo del {premiumRecargo}%
             </div>
           </div>
           <span
