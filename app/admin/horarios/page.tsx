@@ -26,6 +26,8 @@ export default async function HorariosPage() {
     horaCierre: h.horaCierre,
     tipoFranja: h.tipoFranja,
     motivo: h.motivo,
+    etiqueta: h.etiqueta,
+    recargo: h.recargo,
   }));
 
   const bloqueosData = bloqueos.map((b) => ({
