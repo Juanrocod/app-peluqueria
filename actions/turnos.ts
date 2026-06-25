@@ -23,6 +23,7 @@ export async function crearTurno(data: {
   notas?: string;
   origen?: OrigenTurno;
   descuentoAplicado?: number;
+  recargoPremium?: number;
   productoIds?: string[];
 }) {
   const validated = crearTurnoSchema.parse(data);
@@ -103,6 +104,7 @@ export async function crearTurno(data: {
           return codigo ? codigo.descuento : null;
         })(),
         duracionSnapshot: duracionTotal,
+        recargoPremium: validated.recargoPremium ?? null,
         servicios: {
           create: servicios.map((s) => ({
             servicioId: s.id,

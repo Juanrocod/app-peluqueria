@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, ChevronLeft, ChevronRight, ChevronDown, Trash2, Plus, Info, Edit } from "lucide-react";
-import { crearFranjaAdmin, eliminarFranjaAdmin, actualizarFranja } from "@/actions/horarios";
+import { Clock, ChevronLeft, ChevronRight, ChevronDown, Trash2, Plus, Info, Edit, Star } from "lucide-react";
+import { crearFranjaAdmin, eliminarFranjaAdmin, actualizarFranja, crearFranjaPremium, eliminarFranjaPremium } from "@/actions/horarios";
 import { crearBloqueoAdmin, eliminarBloqueo } from "@/actions/bloqueos";
 
 const DAYS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
@@ -17,6 +17,8 @@ interface Franja {
   horaCierre: string;
   tipoFranja: string;
   motivo: string | null;
+  etiqueta: string | null;
+  recargo: number | null;
 }
 
 interface Bloqueo {
@@ -41,8 +43,11 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
   const [addingFranjaDay, setAddingFranjaDay] = useState<number | null>(null);
   const [editingFranjaId, setEditingFranjaId] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [addingPremium, setAddingPremium] = useState(false);
 
-  const positivas = horarios.filter((h) => h.tipoFranja === "POSITIVA");
+  const premiumFranjas = horarios.filter((h) => h.etiqueta === "premium" && h.recargo);
+
+  const positivas = horarios.filter((h) => h.tipoFranja === "POSITIVA" && h.etiqueta !== "premium");
   const dayFranjas = (dia: number) => positivas.filter((h) => h.diaSemana === dia);
   const dayHasSchedule = (dia: number) => dayFranjas(dia).length > 0;
 
@@ -83,7 +88,7 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
     const tempId = `temp-${Date.now()}`;
     setHorarios((prev) => [
       ...prev,
-      { id: tempId, diaSemana: dia, horaApertura: desde, horaCierre: hasta, tipoFranja: "POSITIVA", motivo: null },
+      { id: tempId, diaSemana: dia, horaApertura: desde, horaCierre: hasta, tipoFranja: "POSITIVA", motivo: null, etiqueta: null, recargo: null },
     ]);
     setAddingFranjaDay(null);
     startTransition(async () => {
@@ -96,10 +101,44 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
     });
   }
 
+  function handleAddPremium(form: FormData) {
+    const dia = parseInt(form.get("dia") as string);
+    const desde = form.get("desde") as string;
+    const hasta = form.get("hasta") as string;
+    const recargo = parseInt(form.get("recargo") as string);
+    if (isNaN(dia) || isNaN(recargo)) return;
+    const tempId = `temp-${Date.now()}`;
+    setHorarios((prev) => [
+      ...prev,
+      { id: tempId, diaSemana: dia, horaApertura: desde, horaCierre: hasta, tipoFranja: "POSITIVA", motivo: null, etiqueta: "premium", recargo },
+    ]);
+    setAddingPremium(false);
+    startTransition(async () => {
+      try {
+        const creada = await crearFranjaPremium({ diaSemana: dia, horaApertura: desde, horaCierre: hasta, recargo });
+        setHorarios((prev) => prev.map((h) => h.id === tempId ? { ...h, id: creada.id } : h));
+      } catch (err) {
+        console.error("Error al crear franja premium:", err);
+        setHorarios((prev) => prev.filter((h) => h.id !== tempId));
+      }
+    });
+  }
+
+  function handleDeletePremium(id: string) {
+    setHorarios((prev) => prev.filter((h) => h.id !== id));
+    startTransition(async () => {
+      try {
+        await eliminarFranjaPremium(id);
+      } catch (err) {
+        console.error("Error al eliminar franja premium:", err);
+      }
+    });
+  }
+
   function handleToggleDay(dia: number) {
     const franjas = dayFranjas(dia);
     if (franjas.length > 0) {
-      setHorarios((prev) => prev.filter((h) => !(h.diaSemana === dia && h.tipoFranja === "POSITIVA")));
+      setHorarios((prev) => prev.filter((h) => !(h.diaSemana === dia && h.tipoFranja === "POSITIVA" && h.etiqueta !== "premium")));
       startTransition(async () => {
         try {
           for (const fr of franjas) {
@@ -113,7 +152,7 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
       const tempId = `temp-${Date.now()}`;
       setHorarios((prev) => [
         ...prev,
-        { id: tempId, diaSemana: dia, horaApertura: "09:00", horaCierre: "18:00", tipoFranja: "POSITIVA", motivo: null },
+        { id: tempId, diaSemana: dia, horaApertura: "09:00", horaCierre: "18:00", tipoFranja: "POSITIVA", motivo: null, etiqueta: null, recargo: null },
       ]);
       setExpandedDay(dia);
       startTransition(async () => {
@@ -303,6 +342,72 @@ export function HorariosMobile({ horarios: initialHorarios, bloqueos: initialBlo
             <span className="text-xs leading-relaxed text-ap-sub">
               Cada turno a domicilio bloquea <strong className="text-ap-text">45 min antes</strong> y <strong className="text-ap-text">45 min después</strong> para el traslado.
             </span>
+          </div>
+        </div>
+
+        <div className="mb-4 rounded-2xl border border-[rgba(139,92,246,.3)] bg-[rgba(139,92,246,.06)] overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2.5 border-b border-[rgba(139,92,246,.15)]">
+            <div className="flex items-center gap-2">
+              <Star size={15} color="#B79CFF" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#B79CFF]">Franjas premium</span>
+            </div>
+            <span className="text-[11px] text-[#8B7AB8]">Horarios con recargo</span>
+          </div>
+
+          <div className="px-4 py-3">
+            {premiumFranjas.length === 0 && !addingPremium && (
+              <div className="mb-2 text-center text-xs text-[#8B7AB8]">
+                Sin franjas premium. Crea una para ofrecer horarios con recargo.
+              </div>
+            )}
+
+            {premiumFranjas.map((fr) => (
+              <div key={fr.id} className="mb-2 flex items-center gap-2 rounded-[10px] border border-[rgba(139,92,246,.25)] bg-[rgba(139,92,246,.1)] px-3.5 py-2.5">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold" style={{ background: `${DAY_COLORS[fr.diaSemana]}20`, color: DAY_COLORS[fr.diaSemana] }}>
+                  {DAY_LETTERS[fr.diaSemana]}
+                </span>
+                <span className="flex-1 font-mono-num text-sm font-bold text-ap-text">
+                  {fr.horaApertura} → {fr.horaCierre}
+                </span>
+                <span className="rounded-md bg-[rgba(139,92,246,.2)] px-2 py-0.5 text-[11px] font-bold text-[#B79CFF]">
+                  +{fr.recargo}%
+                </span>
+                <button onClick={() => handleDeletePremium(fr.id)} disabled={isPending} className="flex text-ap-danger">
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))}
+
+            {addingPremium ? (
+              <form
+                onSubmit={(e) => { e.preventDefault(); handleAddPremium(new FormData(e.currentTarget)); }}
+                className="mt-2 flex flex-col gap-2"
+              >
+                <div className="flex items-center gap-2">
+                  <select name="dia" required className="flex-1 rounded-lg border border-[rgba(139,92,246,.25)] bg-ap-s1 px-2 py-1.5 text-sm text-ap-text outline-none">
+                    {[1, 2, 3, 4, 5, 6, 0].map((d) => (
+                      <option key={d} value={d}>{DAYS[d]}</option>
+                    ))}
+                  </select>
+                  <input name="recargo" type="number" min="1" max="100" defaultValue="20" required placeholder="%" className="w-16 rounded-lg border border-[rgba(139,92,246,.25)] bg-ap-s1 px-2 py-1.5 font-mono-num text-sm text-ap-text outline-none text-center" />
+                  <span className="text-[11px] text-[#8B7AB8]">%</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input name="desde" type="time" defaultValue="20:00" required className="flex-1 rounded-lg border border-[rgba(139,92,246,.25)] bg-ap-s1 px-2 py-1.5 font-mono-num text-sm text-ap-text outline-none" />
+                  <span className="text-[#8B7AB8]">→</span>
+                  <input name="hasta" type="time" defaultValue="23:00" required className="flex-1 rounded-lg border border-[rgba(139,92,246,.25)] bg-ap-s1 px-2 py-1.5 font-mono-num text-sm text-ap-text outline-none" />
+                  <button type="submit" disabled={isPending} className="rounded-lg bg-[#8B5CF6] px-3 py-1.5 text-xs font-bold text-white">✓</button>
+                  <button type="button" onClick={() => setAddingPremium(false)} className="text-xs text-ap-muted">✕</button>
+                </div>
+              </form>
+            ) : (
+              <button
+                onClick={() => setAddingPremium(true)}
+                className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-[#B79CFF]"
+              >
+                <Plus size={14} /> Agregar franja premium
+              </button>
+            )}
           </div>
         </div>
 

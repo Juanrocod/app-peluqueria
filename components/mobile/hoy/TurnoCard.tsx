@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useOptimistic, useTransition } from "react";
 import { ChevronRight, MapPin, Scissors, Phone, Tag, Check, ShoppingBag } from "lucide-react";
 import { actualizarEstadoTurno } from "@/actions/turnos";
 
@@ -22,8 +22,9 @@ interface TurnoCardProps {
 
 export function TurnoCard(props: TurnoCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [optimisticEstado, setOptimisticEstado] = useOptimistic(props.estado);
   const [isPending, startTransition] = useTransition();
-  const isDone = props.estado === "COMPLETADO";
+  const isDone = optimisticEstado === "COMPLETADO";
   const isHome = props.modalidad === "DOMICILIO";
 
   // Multi-service: use servicios array if available, otherwise fallback to single
@@ -42,6 +43,7 @@ export function TurnoCard(props: TurnoCardProps) {
     e.stopPropagation();
     if (isDone) return;
     startTransition(async () => {
+      setOptimisticEstado("COMPLETADO");
       await actualizarEstadoTurno(props.id, "COMPLETADO");
     });
   }

@@ -38,6 +38,7 @@ export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNom
   const [obs, setObs] = useState("");
   const [discountCode, setDiscountCode] = useState("");
   const [discountPct, setDiscountPct] = useState(0);
+  const [recargoPct, setRecargoPct] = useState(0);
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -59,6 +60,7 @@ export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNom
     );
     // Reset time when services change (duration affects available slots)
     setTime(null);
+    setRecargoPct(0);
   }
 
   function toggleProducto(id: string) {
@@ -112,6 +114,7 @@ export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNom
         direccion: place === "home" ? address : undefined,
         servicioIds,
         descuentoAplicado: discountPct || undefined,
+        recargoPremium: recargoPct || undefined,
         productoIds: selectedProductIds.length > 0 ? selectedProductIds : undefined,
       });
       if (result.cancelToken) {
@@ -143,7 +146,7 @@ export function BookingForm({ servicios, productos = [], marcaTelefono, marcaNom
   const serviceNames = selectedSvcs.map((s) => s.nombre).join(", ");
   const summaries = [
     selectedSvcs.length > 0
-      ? `${serviceNames} · ${totalDuration} min · ${money(totalServicePrice)}`
+      ? `${serviceNames} · ${totalDuration} min · ${money(totalServicePrice)}${recargoPct > 0 ? ` (+${recargoPct}%)` : ""}`
       : "",
     day && time ? `${day} a las ${time}` : "",
     place === "home"
@@ -461,8 +464,10 @@ Gracias!`;
             onSelectDay={(d) => {
               setDay(d);
               setTime(null);
+              setRecargoPct(0);
             }}
             onSelectTime={setTime}
+            onPremiumChange={setRecargoPct}
           />
         )}
 
@@ -722,10 +727,18 @@ Gracias!`;
                   </span>
                 </div>
               )}
+              {recargoPct > 0 && (
+                <div className="mb-1.5 flex justify-between text-[13px] text-[#B79CFF]">
+                  <span>Recargo nocturno ({recargoPct}%)</span>
+                  <span className="font-mono-num">
+                    +{money(Math.round((totalServicePrice * recargoPct) / 100))}
+                  </span>
+                </div>
+              )}
               <div className="mt-2 flex items-center justify-between">
                 <span className="text-sm font-bold">Total estimado</span>
                 <span className="font-mono-num text-xl font-bold text-[#22D366]">
-                  {money(Math.round(totalServicePrice * (1 - discountPct / 100) + productosTotal))}
+                  {money(Math.round(totalServicePrice * (1 - discountPct / 100 + recargoPct / 100) + productosTotal))}
                 </span>
               </div>
             </div>
@@ -774,6 +787,7 @@ function DateTimeStep({
   selectedTime,
   onSelectDay,
   onSelectTime,
+  onPremiumChange,
 }: {
   servicioIds: string[];
   modalidad: string;
@@ -781,9 +795,11 @@ function DateTimeStep({
   selectedTime: string | null;
   onSelectDay: (d: string) => void;
   onSelectTime: (t: string) => void;
+  onPremiumChange: (recargo: number) => void;
 }) {
   const [slots, setSlots] = useState<string[]>([]);
   const [allSlots, setAllSlots] = useState<string[]>([]);
+  const [premiumSlots, setPremiumSlots] = useState<{ slot: string; recargo: number }[]>([]);
   const [loading, setLoading] = useState(false);
   const [nightMode, setNightMode] = useState(false);
 
@@ -838,6 +854,7 @@ function DateTimeStep({
       const data = await res.json();
       setSlots(Array.isArray(data) ? data : data.slots ?? []);
       setAllSlots(data.allSlots ?? []);
+      setPremiumSlots(data.premiumSlots ?? []);
     } catch {
       setSlots([]);
     }
@@ -849,6 +866,7 @@ function DateTimeStep({
     onSelectDay(dateStr);
     loadSlots(dateStr);
     setNightMode(false);
+    onPremiumChange(0);
   }
 
   const selectedDayNum = selectedDay
@@ -858,12 +876,18 @@ function DateTimeStep({
     ? parseInt(selectedDay.split("-")[1]) - 1 === viewMonth &&
       parseInt(selectedDay.split("-")[0]) === viewYear
     : false;
-  const selectedDow = selectedDay ? new Date(selectedDay).getDay() : null;
-  const isSaturday = selectedDow === 6;
+  const premiumSet = new Set(premiumSlots.map((p) => p.slot));
+  const hasPremium = premiumSlots.length > 0 && allSlots.some((s) => premiumSet.has(s));
+  const premiumRecargo = premiumSlots.length > 0 ? premiumSlots[0].recargo : 0;
 
-  const displaySlots = nightMode
-    ? allSlots.filter((s) => parseInt(s) >= 20)
-    : allSlots.filter((s) => parseInt(s) < 20);
+  const normalSlots = hasPremium
+    ? allSlots.filter((s) => !premiumSet.has(s))
+    : allSlots;
+  const premiumDisplaySlots = hasPremium
+    ? allSlots.filter((s) => premiumSet.has(s))
+    : [];
+
+  const displaySlots = nightMode ? premiumDisplaySlots : normalSlots;
 
   function isDayPast(d: number) {
     if (viewYear < today.getFullYear()) return true;
@@ -937,23 +961,23 @@ function DateTimeStep({
         })}
       </div>
 
-      {/* Saturday night toggle */}
-      {isSaturday && allSlots.some((s) => parseInt(s) >= 20) && (
+      {/* Premium night toggle */}
+      {hasPremium && premiumDisplaySlots.length > 0 && (
         <button
           onClick={() => setNightMode(!nightMode)}
           className="mb-4 flex w-full items-center gap-2.5 rounded-[13px] border px-3.5 py-3 text-left"
           style={{
-            background: nightMode ? "rgba(124,92,246,.14)" : "#16213A",
+            background: nightMode ? "rgba(139,92,246,.14)" : "#16213A",
             borderColor: nightMode ? "#6D4FCF" : "#223052",
           }}
         >
           <span className="text-base">🌙</span>
           <div className="flex-1">
             <div className="text-[13px] font-bold" style={{ color: nightMode ? "#C4B0FF" : "#F4F4F2" }}>
-              Horario nocturno especial
+              Horario nocturno
             </div>
             <div className="text-[11px]" style={{ color: nightMode ? "#9B85D6" : "#5F6B85" }}>
-              20:00 - 23:00
+              Horarios con alta demanda · Recargo del {premiumRecargo}%
             </div>
           </div>
           <span
@@ -995,7 +1019,12 @@ function DateTimeStep({
                   <button
                     key={t}
                     disabled={!isFree}
-                    onClick={() => isFree && onSelectTime(t)}
+                    onClick={() => {
+                      if (!isFree) return;
+                      onSelectTime(t);
+                      const pm = premiumSlots.find((p) => p.slot === t);
+                      onPremiumChange(pm ? pm.recargo : 0);
+                    }}
                     className="rounded-[11px] border py-3 text-center font-mono-num text-[13px] font-semibold transition-all"
                     style={{
                       background: on

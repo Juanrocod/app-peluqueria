@@ -19,7 +19,11 @@ export async function getSlotDisponibles(
       diaSemana,
       activo: true,
       tipoFranja: "POSITIVA",
-      ...(incluirEspecial ? {} : { etiqueta: null }),
+      OR: [
+        { etiqueta: null },
+        { etiqueta: "premium" },
+        ...(incluirEspecial ? [{}] : []),
+      ],
     },
     orderBy: { horaApertura: "asc" },
   });
@@ -138,7 +142,11 @@ export async function getSlotBase(
       diaSemana,
       activo: true,
       tipoFranja: "POSITIVA",
-      ...(incluirEspecial ? {} : { etiqueta: null }),
+      OR: [
+        { etiqueta: null },
+        { etiqueta: "premium" },
+        ...(incluirEspecial ? [{}] : []),
+      ],
     },
     orderBy: { horaApertura: "asc" },
   });
@@ -161,4 +169,44 @@ export async function getSlotBase(
     }
   }
   return slots.map((s) => format(s, "HH:mm"));
+}
+
+export async function getPremiumSlots(
+  fecha: Date,
+): Promise<{ slot: string; recargo: number }[]> {
+  const diaSemana = fecha.getDay();
+  const franjasPremium = await prisma.horarioAtencion.findMany({
+    where: {
+      diaSemana,
+      activo: true,
+      tipoFranja: "POSITIVA",
+      etiqueta: "premium",
+      recargo: { not: null },
+    },
+  });
+
+  if (franjasPremium.length === 0) return [];
+
+  const base = startOfDay(fecha);
+  const result: { slot: string; recargo: number }[] = [];
+  const seen = new Set<string>();
+
+  for (const franja of franjasPremium) {
+    const [aH, aM] = franja.horaApertura.split(":").map(Number);
+    const [cH, cM] = franja.horaCierre.split(":").map(Number);
+    const inicio = setMinutes(setHours(base, aH), aM);
+    const fin = setMinutes(setHours(base, cH), cM);
+
+    let cursor = inicio;
+    while (cursor < fin) {
+      const label = format(cursor, "HH:mm");
+      if (!seen.has(label)) {
+        seen.add(label);
+        result.push({ slot: label, recargo: franja.recargo! });
+      }
+      cursor = addMinutes(cursor, GRANULARIDAD_SLOT);
+    }
+  }
+
+  return result;
 }

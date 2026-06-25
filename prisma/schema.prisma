@@ -85,6 +85,7 @@ model Turno {
   origen                OrigenTurno    @default(ONLINE)
   notas                 String?
   descuentoAplicado     Int?
+  recargoPremium        Int?
   duracionSnapshot      Int?           // snapshot de servicio.duracion al reservar
   // Snapshot al completar (valores fijos, no cambian si editás precios)
   precioServicioFinal   Decimal?       @db.Decimal(10, 2)
@@ -149,6 +150,7 @@ model HorarioAtencion {
   esBloqueo    Boolean    @default(false) // mantenido por retrocompat.
   tipoFranja   TipoFranja @default(POSITIVA)
   motivo       String?    // descripción del bloqueo (solo texto operativo, sin PII)
+  recargo      Int?       // porcentaje de recargo para franjas premium (ej: 20 = +20%)
   activo       Boolean    @default(true)
 
   @@index([diaSemana, tipoFranja, activo])

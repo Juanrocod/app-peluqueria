@@ -94,3 +94,35 @@ export async function toggleFranja(id: string, activo: boolean) {
   await prisma.horarioAtencion.update({ where: { id }, data: { activo } });
   revalidatePath("/admin/horarios");
 }
+
+export async function crearFranjaPremium(data: {
+  diaSemana: number;
+  horaApertura: string;
+  horaCierre: string;
+  recargo: number;
+}) {
+  await requireAdmin();
+  const validated = crearFranjaSchema.parse({
+    ...data,
+    tipoFranja: "POSITIVA",
+  });
+  const creada = await prisma.horarioAtencion.create({
+    data: {
+      diaSemana: validated.diaSemana,
+      horaApertura: validated.horaApertura,
+      horaCierre: validated.horaCierre,
+      tipoFranja: "POSITIVA",
+      etiqueta: "premium",
+      recargo: validated.recargo,
+      activo: true,
+    },
+  });
+  revalidatePath("/admin/horarios");
+  return creada;
+}
+
+export async function eliminarFranjaPremium(id: string) {
+  await requireAdmin();
+  await prisma.horarioAtencion.delete({ where: { id } });
+  revalidatePath("/admin/horarios");
+}
