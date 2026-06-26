@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Scissors, Check, User, Phone as PhoneIcon, Mail, MessageSquare } from "lucide-react";
 import { crearTurno } from "@/actions/turnos";
 
@@ -802,10 +802,26 @@ function DateTimeStep({
   const [premiumSlots, setPremiumSlots] = useState<{ slot: string; recargo: number }[]>([]);
   const [loading, setLoading] = useState(false);
   const [nightMode, setNightMode] = useState(false);
+  const [availableDays, setAvailableDays] = useState<Set<string> | null>(null);
 
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
+
+  const svcKey = servicioIds.join(",");
+  useEffect(() => {
+    if (servicioIds.length === 0) return;
+    const mes = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}`;
+    setAvailableDays(null);
+    fetch(`/api/disponibilidad/mes?mes=${mes}&servicioId=${servicioIds[0]}&modalidad=${modalidad}`)
+      .then((r) => r.json())
+      .then((data) => {
+        const dias: string[] = data.diasDisponibles ?? [];
+        setAvailableDays(new Set(dias));
+      })
+      .catch(() => setAvailableDays(null));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewYear, viewMonth, svcKey, modalidad]);
 
   const isCurrentMonth =
     viewYear === today.getFullYear() && viewMonth === today.getMonth();
@@ -896,6 +912,12 @@ function DateTimeStep({
     return false;
   }
 
+  function isDayUnavailable(d: number) {
+    if (availableDays === null) return false;
+    const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    return !availableDays.has(dateStr);
+  }
+
   return (
     <div>
       {/* Month header with navigation */}
@@ -932,12 +954,14 @@ function DateTimeStep({
         {cells.map((d, i) => {
           if (!d) return <div key={i} className="h-[38px]" />;
           const past = isDayPast(d);
+          const unavailable = !past && isDayUnavailable(d);
+          const disabled = past || unavailable;
           const on = selectedInCurrentView && d === selectedDayNum;
           const isToday = isCurrentMonth && d === today.getDate();
           return (
             <button
               key={i}
-              disabled={past}
+              disabled={disabled}
               onClick={() => handleDayClick(d)}
               className="flex h-[38px] items-center justify-center rounded-[10px] font-mono-num text-sm transition-all"
               style={{
@@ -948,11 +972,12 @@ function DateTimeStep({
                   isToday && !on
                     ? "1.5px solid #4D8BFF"
                     : "1px solid transparent",
-                color: past ? "#39455E" : on ? "#fff" : "#E4E8F0",
+                color: disabled ? "#39455E" : on ? "#fff" : "#E4E8F0",
                 fontWeight: on ? 700 : 500,
                 boxShadow: on
                   ? "0 6px 18px -4px rgba(124,92,246,.55)"
                   : "none",
+                textDecoration: unavailable ? "line-through" : "none",
               }}
             >
               {d}
