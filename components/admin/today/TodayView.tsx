@@ -94,7 +94,12 @@ export default function TodayView({
                     className="font-mono text-sm font-semibold text-ap-text"
                     style={{ fontVariantNumeric: "tabular-nums" }}
                   >
-                    {format(new Date(t.fechaHora), "HH:mm")}
+                    {t.fechaHora.toLocaleTimeString("es-AR", {
+                      timeZone: "America/Argentina/Buenos_Aires",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: false,
+                    })}
                   </span>
                   <span
                     className={`rounded-full border px-2 py-0.5 text-[9px] font-semibold ${styles.badge}`}

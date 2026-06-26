@@ -59,11 +59,18 @@ export async function cancelarTurnoPorCliente(
       turno.servicios.length > 0
         ? turno.servicios.map((ts) => ts.servicio.nombre).join(", ")
         : turno.servicio.nombre;
+    const tz = "America/Argentina/Buenos_Aires";
     const fechaStr = turno.fechaHora.toLocaleDateString("es-AR", {
+      timeZone: tz,
       day: "numeric",
       month: "long",
     });
-    const horaStr = `${String(turno.fechaHora.getHours()).padStart(2, "0")}:${String(turno.fechaHora.getMinutes()).padStart(2, "0")}`;
+    const horaStr = turno.fechaHora.toLocaleTimeString("es-AR", {
+      timeZone: tz,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
     await sendPushToAll(
       "Turno cancelado",
       `${turno.clienteNombre} canceló su turno del ${fechaStr} a las ${horaStr} (${svcNames})`,
