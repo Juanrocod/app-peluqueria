@@ -1,7 +1,5 @@
 export const revalidate = 120;
 import { prisma } from "@/lib/prisma";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { GananciasScreen } from "@/components/mobile/ganancias/GananciasScreen";
 import { PullToRefresh } from "@/components/ui/PullToRefresh";
 
@@ -79,8 +77,12 @@ export default async function GananciasPage() {
 
   const meses = new Map<string, MesData>();
   for (const f of filas) {
-    const key = format(f.fechaHora, "yyyy-MM");
-    const label = format(f.fechaHora, "MMMM yyyy", { locale: es });
+    const AR_TZ = "America/Argentina/Buenos_Aires";
+    // "sv-SE" devuelve ISO YYYY-MM-DD en la timezone indicada — ideal para slicing
+    const key = f.fechaHora.toLocaleDateString("sv-SE", { timeZone: AR_TZ }).slice(0, 7);
+    const monthName = f.fechaHora.toLocaleDateString("es-AR", { timeZone: AR_TZ, month: "long" });
+    const yearNum = f.fechaHora.toLocaleDateString("es-AR", { timeZone: AR_TZ, year: "numeric" });
+    const label = `${monthName} ${yearNum}`;
     if (!meses.has(key)) {
       meses.set(key, { key, label, filas: [], totalServicio: 0, totalProductos: 0, total: 0 });
     }
@@ -169,8 +171,19 @@ export default async function GananciasPage() {
                   {mes.filas.map((f, i) => (
                     <tr key={f.id} className={`border-b border-zinc-800 last:border-0 ${i % 2 === 0 ? "bg-zinc-900" : "bg-zinc-800/40"}`}>
                       <td className="px-5 py-2.5 text-zinc-400 whitespace-nowrap">
-                        {format(f.fechaHora, "d MMM", { locale: es })}
-                        <span className="ml-1 text-zinc-500 text-xs">{format(f.fechaHora, "HH:mm")}</span>
+                        {f.fechaHora.toLocaleDateString("es-AR", {
+                          timeZone: "America/Argentina/Buenos_Aires",
+                          day: "numeric",
+                          month: "short",
+                        })}
+                        <span className="ml-1 text-zinc-500 text-xs">
+                          {f.fechaHora.toLocaleTimeString("es-AR", {
+                            timeZone: "America/Argentina/Buenos_Aires",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
+                        </span>
                       </td>
                       <td className="px-5 py-2.5 font-medium">{f.clienteNombre}</td>
                       <td className="px-5 py-2.5 text-zinc-300">
