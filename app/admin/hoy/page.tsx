@@ -1,7 +1,7 @@
 export const revalidate = 30;
 import { prisma } from "@/lib/prisma";
 import { format, startOfDay, endOfDay } from "date-fns";
-import TodayView from "@/components/admin/today/TodayView";
+import { DesktopHoyClient } from "@/components/admin/today/DesktopHoyClient";
 import { HoyScreen } from "@/components/mobile/hoy/HoyScreen";
 import { PullToRefresh } from "@/components/ui/PullToRefresh";
 import { getSlotDisponibles } from "@/lib/disponibilidad";
@@ -57,9 +57,9 @@ export default async function HoyPage() {
     <div className="flex flex-col overflow-auto">
       {/* Desktop view */}
       <div className="hidden md:block">
-        <TodayView
-          turnos={turnos}
-          slotsLibres={slotsLibres}
+        <DesktopHoyClient
+          turnos={serializedTurnos}
+          slotsTotal={slotsTotal}
           fecha={format(hoy, "yyyy-MM-dd")}
         />
       </div>
