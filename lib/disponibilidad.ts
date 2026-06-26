@@ -88,10 +88,12 @@ export async function getSlotDisponibles(
   // Compare in Argentina time (UTC-3)
   const arNow = new Date(ahora.getTime() - AR_OFFSET_MS);
   const esHoy = fecha.getFullYear() === arNow.getUTCFullYear() && fecha.getMonth() === arNow.getUTCMonth() && fecha.getDate() === arNow.getUTCDate();
+  // arNow.getUTCHours/Minutes always yields the current Argentina time regardless of server TZ
+  const ahoraARLabel = `${String(arNow.getUTCHours()).padStart(2, "0")}:${String(arNow.getUTCMinutes()).padStart(2, "0")}`;
 
   const slotsLibres = todosLosSlots.filter((slot) => {
-    // Block past hours for today
-    if (esHoy && slot <= ahora) return false;
+    // Block past hours for today — compare slot label (HH:mm) against current Argentina time
+    if (esHoy && format(slot, "HH:mm") <= ahoraARLabel) return false;
 
     const slotInicio = modalidad === "DOMICILIO" ? addMinutes(slot, -BUFFER_DOMICILIO) : slot;
     const slotFin = addMinutes(slotInicio, durEfectiva);
