@@ -1,7 +1,5 @@
 export const revalidate = 30;
 import { prisma } from "@/lib/prisma";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import AccionesturnoRow from "@/components/admin/AccionesTurnoRow";
 import { TurnosScreen } from "@/components/mobile/turnos/TurnosScreen";
 import { PullToRefresh } from "@/components/ui/PullToRefresh";
@@ -77,7 +75,16 @@ export default async function TurnosPage() {
             {turnos.map((turno) => (
               <tr key={turno.id} className="border-b border-zinc-800 hover:bg-zinc-800">
                 <td className="px-4 py-3">
-                  {format(turno.fechaHora, "dd/MM HH:mm", { locale: es })}
+                  {turno.fechaHora.toLocaleDateString("es-AR", {
+                    timeZone: "America/Argentina/Buenos_Aires",
+                    day: "2-digit",
+                    month: "2-digit",
+                  }) + " " + turno.fechaHora.toLocaleTimeString("es-AR", {
+                    timeZone: "America/Argentina/Buenos_Aires",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  })}
                 </td>
                 <td className="px-4 py-3">
                   <div className="font-medium">{turno.clienteNombre}</div>
