@@ -76,6 +76,12 @@ export async function GET(req: NextRequest) {
   const franjasNegativas = horarios.filter((h) => h.tipoFranja === "NEGATIVA");
   const hoy = startOfToday();
 
+  // Current Argentina time for past-slot filtering on today
+  const AR_OFFSET = 3 * 60 * 60 * 1000;
+  const arNow = new Date(new Date().getTime() - AR_OFFSET);
+  const hoyARStr = `${arNow.getUTCFullYear()}-${String(arNow.getUTCMonth() + 1).padStart(2, "0")}-${String(arNow.getUTCDate()).padStart(2, "0")}`;
+  const ahoraARLabel = `${String(arNow.getUTCHours()).padStart(2, "0")}:${String(arNow.getUTCMinutes()).padStart(2, "00")}`;
+
   const diasDisponibles: string[] = [];
 
   for (let d = 1; d <= ultimoDia.getDate(); d++) {
@@ -84,6 +90,7 @@ export async function GET(req: NextRequest) {
 
     const diaSemana = fecha.getDay();
     const fechaStr = format(fecha, "yyyy-MM-dd");
+    const esHoy = fechaStr === hoyARStr;
 
     // Capa 1: ¿hay franjas positivas para este día de semana?
     const positivasDelDia = franjasPositivas.filter(
@@ -122,6 +129,12 @@ export async function GET(req: NextRequest) {
 
       let cursor = inicio;
       while (addMinutes(cursor, duracion) <= fin) {
+        // Skip past slots for today (same logic as lib/disponibilidad.ts)
+        if (esHoy && format(cursor, "HH:mm") <= ahoraARLabel) {
+          cursor = addMinutes(cursor, GRANULARIDAD_SLOT);
+          continue;
+        }
+
         const slotInicio =
           modalidad === "DOMICILIO" ? addMinutes(cursor, -BUFFER_DOMICILIO) : cursor;
         const slotFin = addMinutes(slotInicio, durEfectiva);
