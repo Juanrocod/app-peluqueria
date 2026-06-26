@@ -45,13 +45,20 @@ export default async function MiTurnoPage({
       ? turno.servicios.map((ts) => ts.servicio.nombre).join(", ")
       : turno.servicio.nombre;
 
+  const tz = "America/Argentina/Buenos_Aires";
   const fechaDisplay = turno.fechaHora.toLocaleDateString("es-AR", {
+    timeZone: tz,
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
   });
-  const horaDisplay = `${String(turno.fechaHora.getHours()).padStart(2, "0")}:${String(turno.fechaHora.getMinutes()).padStart(2, "0")}`;
+  const horaDisplay = turno.fechaHora.toLocaleTimeString("es-AR", {
+    timeZone: tz,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 
   const isCancelled = turno.estado === "CANCELADO";
   const isCompleted = turno.estado === "COMPLETADO";
