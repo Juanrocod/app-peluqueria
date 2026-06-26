@@ -143,8 +143,9 @@ export async function GET(req: NextRequest) {
               const buf = tMod === "DOMICILIO" ? BUFFER_DOMICILIO : 0;
               // Turnos stored with +3h AR offset — subtract to align with slot times (same as getSlotDisponibles)
               const tLocal = new Date(t.fechaHora.getTime() - 3 * 60 * 60 * 1000);
+              const durReal = t.duracionSnapshot ?? t.servicio.duracion;
               const tI = addMinutes(tLocal, -buf);
-              const tF = addMinutes(tLocal, t.servicio.duracion + buf);
+              const tF = addMinutes(tLocal, durReal + buf);
               return slotInicio < tF && slotFin > tI;
             });
             if (!ocupado) {
