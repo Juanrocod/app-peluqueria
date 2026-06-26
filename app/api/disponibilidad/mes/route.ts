@@ -141,8 +141,10 @@ export async function GET(req: NextRequest) {
             const ocupado = turnosDelDia.some((t) => {
               const tMod = t.modalidad ?? "PRESENCIAL";
               const buf = tMod === "DOMICILIO" ? BUFFER_DOMICILIO : 0;
-              const tI = addMinutes(t.fechaHora, -buf);
-              const tF = addMinutes(t.fechaHora, t.servicio.duracion + buf);
+              // Turnos stored with +3h AR offset — subtract to align with slot times (same as getSlotDisponibles)
+              const tLocal = new Date(t.fechaHora.getTime() - 3 * 60 * 60 * 1000);
+              const tI = addMinutes(tLocal, -buf);
+              const tF = addMinutes(tLocal, t.servicio.duracion + buf);
               return slotInicio < tF && slotFin > tI;
             });
             if (!ocupado) {
