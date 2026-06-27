@@ -175,10 +175,7 @@ export function DesktopGananciasClient({ turnos }: { turnos: TurnoDesktop[] }) {
 
       {/* KPI chips */}
       <div className="mb-6 grid grid-cols-5 gap-3">
-        <KpiChip label="Servicios" value={money(kpis.totalServicios)} color="#2F6BFF" icon={<Scissors size={14} />} />
-        <KpiChip label="Productos" value={money(kpis.totalProductos)} color="#22D366" icon={<Package size={14} />} />
-
-        {/* Total — chip central con gradiente azul */}
+        {/* Total — primer chip con gradiente azul */}
         <div
           className="rounded-[14px] border border-[#253450] p-3.5 flex flex-col justify-center items-center text-center"
           style={{ background: "linear-gradient(145deg, #182238, #0F1827)" }}
@@ -195,6 +192,8 @@ export function DesktopGananciasClient({ turnos }: { turnos: TurnoDesktop[] }) {
           )}
         </div>
 
+        <KpiChip label="Servicios" value={money(kpis.totalServicios)} color="#2F6BFF" icon={<Scissors size={14} />} />
+        <KpiChip label="Productos" value={money(kpis.totalProductos)} color="#22D366" icon={<Package size={14} />} />
         <KpiChip label="Turnos" value={String(kpis.count)} color="#B79CFF" icon={<Users size={14} />} />
         <KpiChip label="Ticket prom." value={money(kpis.ticket)} color="#E8A33D" icon={<Receipt size={14} />} />
       </div>
