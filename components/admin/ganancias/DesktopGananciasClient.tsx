@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight, Scissors, Package, Users, Receipt } from "lucide-react";
+import { ChevronLeft, ChevronRight, Scissors, Package, Users, Receipt, TrendingUp, TrendingDown } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -47,10 +47,30 @@ export function DesktopGananciasClient({ turnos }: { turnos: TurnoDesktop[] }) {
       (s, t) => s + t.productos.reduce((ps, p) => ps + p.ganancia, 0),
       0
     );
+    const total = totalServicios + totalProductos;
     const count = filtered.length;
-    const ticket = count ? Math.round((totalServicios + totalProductos) / count) : 0;
-    return { totalServicios, totalProductos, count, ticket };
-  }, [filtered]);
+    const ticket = count ? Math.round(total / count) : 0;
+
+    // Trend vs previous period
+    const prevPeriodTotal = (() => {
+      if (period === "year") {
+        return turnos
+          .filter((t) => new Date(t.fechaHora).getFullYear() === selYear - 1)
+          .reduce((s, t) => s + t.gananciaServicio + t.productos.reduce((ps, p) => ps + p.ganancia, 0), 0);
+      }
+      const prevM = selMonth === 0 ? 11 : selMonth - 1;
+      const prevY = selMonth === 0 ? selYear - 1 : selYear;
+      return turnos
+        .filter((t) => {
+          const d = new Date(t.fechaHora);
+          return d.getFullYear() === prevY && d.getMonth() === prevM;
+        })
+        .reduce((s, t) => s + t.gananciaServicio + t.productos.reduce((ps, p) => ps + p.ganancia, 0), 0);
+    })();
+    const trendPct = prevPeriodTotal > 0 ? Math.round(((total - prevPeriodTotal) / prevPeriodTotal) * 100) : null;
+
+    return { totalServicios, totalProductos, total, count, ticket, trendPct };
+  }, [filtered, turnos, period, selYear, selMonth]);
 
   const barData = useMemo(() => {
     return MONTHS.map((label, i) => {
@@ -150,6 +170,40 @@ export function DesktopGananciasClient({ turnos }: { turnos: TurnoDesktop[] }) {
               <ChevronRight size={14} color="#ADADB0" />
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Total hero card */}
+      <div
+        className="mb-4 rounded-[16px] border border-[#253450] p-5"
+        style={{ background: "linear-gradient(145deg, #182238, #0F1827)" }}
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[#5F7BAD]">
+              {period === "year" ? `TOTAL COBRADO · ${selYear}` : `TOTAL · ${MONTHS[selMonth]} ${selYear}`}
+            </div>
+            <div className="font-mono-num text-4xl font-extrabold text-white">
+              {money(kpis.total)}
+            </div>
+          </div>
+          {kpis.trendPct !== null && (
+            <div
+              className="flex items-center gap-1.5 rounded-[10px] border px-3 py-2"
+              style={{
+                borderColor: kpis.trendPct >= 0 ? "rgba(34,211,102,.3)" : "rgba(242,97,87,.3)",
+                background: kpis.trendPct >= 0 ? "rgba(34,211,102,.08)" : "rgba(242,97,87,.08)",
+              }}
+            >
+              {kpis.trendPct >= 0
+                ? <TrendingUp size={14} color="#22D366" />
+                : <TrendingDown size={14} color="#F26157" />}
+              <span className={`font-mono-num text-sm font-bold ${kpis.trendPct >= 0 ? "text-[#22D366]" : "text-[#F26157]"}`}>
+                {kpis.trendPct >= 0 ? "+" : ""}{kpis.trendPct}%{" "}
+                vs {period === "year" ? selYear - 1 : MONTHS[selMonth === 0 ? 11 : selMonth - 1]}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
