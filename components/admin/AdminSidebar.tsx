@@ -9,7 +9,6 @@ const NAV_ITEMS = [
   { href: "/admin/hoy",           label: "Hoy"           },
   { href: "/admin/turnos",        label: "Turnos"        },
   { href: "/admin/servicios",     label: "Servicios"     },
-  { href: "/admin/peluqueros",    label: "Peluqueros"    },
   { href: "/admin/horarios",      label: "Horarios"      },
   { href: "/admin/catalogo",      label: "Catálogo"      },
   { href: "/admin/ganancias",     label: "Ganancias"     },
