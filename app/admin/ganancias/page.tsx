@@ -41,6 +41,10 @@ export default async function GananciasPage() {
       servicioNombre: hasMultiSvc
         ? t.servicios.map((ts) => ts.nombreSnapshot ?? ts.servicio.nombre).join(", ")
         : (t.nombreServicioFinal ?? t.servicio.nombre),
+      productos: t.productos.map((tp) => ({
+        nombre: tp.nombreProductoFinal ?? tp.producto.nombre,
+        ganancia: Number(tp.gananciaFinal ?? 0),
+      })),
     };
   });
 
