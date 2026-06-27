@@ -259,7 +259,7 @@ export function DesktopHoyClient({
         </div>
       )}
 
-      {total > 0 && turnos.every((t) => t.estado === "COMPLETADO" || t.estado === "CANCELADO") && (
+      {total > 0 && doneCount > 0 && turnos.every((t) => t.estado === "COMPLETADO" || t.estado === "CANCELADO") && (
         <div className="flex items-center gap-3 rounded-xl border border-[#1B3D28] bg-[rgba(34,211,102,.07)] px-4 py-3">
           <span className="text-lg">🎉</span>
           <span className="text-sm font-semibold text-[#34D399]">¡Todos los turnos de hoy completados!</span>

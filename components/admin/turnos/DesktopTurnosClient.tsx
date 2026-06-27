@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { X, Phone, MapPin, Clock, DollarSign, CalendarDays, MessageSquare } from "lucide-react";
 import { actualizarEstadoTurno } from "@/actions/turnos";
@@ -152,13 +153,13 @@ export function DesktopTurnosClient({ turnos }: { turnos: SerializedTurno[] }) {
               {filtered.length} resultado{filtered.length !== 1 ? "s" : ""}
             </p>
           </div>
-          <a
+          <Link
             href="/admin/turnos/nuevo"
             className="rounded-lg px-3 py-2 text-sm font-semibold text-white transition-colors"
             style={{ background: "#2F6BFF" }}
           >
             + Nuevo turno
-          </a>
+          </Link>
         </div>
 
         {/* Tabs */}
@@ -303,14 +304,14 @@ export function DesktopTurnosClient({ turnos }: { turnos: SerializedTurno[] }) {
             {/* Panel body */}
             <div className="flex-1 overflow-y-auto px-5 py-4">
               <div className="grid grid-cols-2 gap-3">
-                {[
-                  { Icon: Phone,       value: selected.clienteTelefono },
-                  { Icon: Clock,       value: `${svc.duracion} min` },
-                  { Icon: CalendarDays,value: `${fechaLong} ${hora}` },
-                  { Icon: DollarSign,  value: money(svc.precio) },
-                ].map(({ Icon, value }) => (
+                {([
+                  { Icon: Phone,        value: selected.clienteTelefono,                                                                          key: "phone"    },
+                  { Icon: Clock,        value: `${svc.duracion} min`,                                                                             key: "clock"    },
+                  { Icon: CalendarDays, value: `${fechaLong} ${hora}`,                                                                            key: "date"     },
+                  { Icon: DollarSign,   value: money(svc.precio),                                                                                  key: "price"    },
+                ] as const).map(({ Icon, value, key }) => (
                   <div
-                    key={value}
+                    key={key}
                     className="flex items-start gap-2 rounded-xl border border-ap-border bg-ap-s2 px-3 py-2.5"
                   >
                     <Icon size={16} className="mt-0.5 shrink-0 text-ap-muted" />
