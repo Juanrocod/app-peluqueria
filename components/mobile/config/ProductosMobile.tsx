@@ -11,6 +11,7 @@ interface Producto {
   precio: number;
   ganancia: number | null;
   imagenUrl: string;
+  descripcion: string;
 }
 
 export function ProductosMobile({ productos }: { productos: Producto[] }) {
@@ -23,11 +24,15 @@ export function ProductosMobile({ productos }: { productos: Producto[] }) {
   function handleAdd(form: FormData) {
     const venta = Number(form.get("venta"));
     const compra = Number(form.get("compra"));
+    const desc = (form.get("descripcion") as string).trim();
+    const img = (form.get("imagenUrl") as string).trim();
     startTransition(async () => {
       await crearProducto({
         nombre: form.get("nombre") as string,
         precio: venta,
         ganancia: venta - compra,
+        descripcion: desc || undefined,
+        imagenUrl: img || undefined,
       });
       setShowAdd(false);
       router.refresh();
@@ -37,11 +42,15 @@ export function ProductosMobile({ productos }: { productos: Producto[] }) {
   function handleSave(form: FormData, id: string) {
     const venta = Number(form.get("venta"));
     const compra = Number(form.get("compra"));
+    const desc = (form.get("descripcion") as string).trim();
+    const img = (form.get("imagenUrl") as string).trim();
     startTransition(async () => {
       await actualizarProducto(id, {
         nombre: form.get("nombre") as string,
         precio: venta,
         ganancia: venta - compra,
+        descripcion: desc || undefined,
+        imagenUrl: img || undefined,
       });
       setEditingId(null);
       router.refresh();
@@ -78,6 +87,14 @@ export function ProductosMobile({ productos }: { productos: Producto[] }) {
               <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-ap-muted">Nombre</div>
               <input name="nombre" placeholder="Ej: Pomada mate" required className="w-full rounded-[10px] border border-ap-border-soft bg-[#232325] px-3 py-2.5 text-sm text-ap-text outline-none placeholder-ap-muted focus:border-ap-primary" />
             </div>
+            <div className="mb-2">
+              <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-ap-muted">Descripción (opcional)</div>
+              <textarea name="descripcion" placeholder="Ej: Fijación media, aroma cítrico" rows={2} className="w-full resize-none rounded-[10px] border border-ap-border-soft bg-[#232325] px-3 py-2.5 text-sm text-ap-text outline-none placeholder-ap-muted focus:border-ap-primary" />
+            </div>
+            <div className="mb-2">
+              <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-ap-muted">URL de imagen (opcional)</div>
+              <input name="imagenUrl" type="url" placeholder="https://..." className="w-full rounded-[10px] border border-ap-border-soft bg-[#232325] px-3 py-2.5 text-sm text-ap-text outline-none placeholder-ap-muted focus:border-ap-primary" />
+            </div>
             <div className="mb-2 grid grid-cols-2 gap-2">
               <div>
                 <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-ap-muted">Precio de venta</div>
@@ -112,8 +129,19 @@ export function ProductosMobile({ productos }: { productos: Producto[] }) {
                 onClick={() => { setEditingId(isEditing ? null : p.id); setShowAdd(false); }}
                 className="flex w-full items-center gap-3 px-3.5 py-3 text-left transition-colors hover:bg-[#232325]"
               >
-                <div className="flex-1">
+                {p.imagenUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={p.imagenUrl} alt={p.nombre} className="h-10 w-10 shrink-0 rounded-[8px] object-cover" />
+                ) : (
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-[#232325]">
+                    <Box size={18} color="#6F6F73" />
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
                   <div className="text-sm font-bold">{p.nombre}</div>
+                  {p.descripcion && (
+                    <div className="mt-0.5 truncate text-[11px] text-ap-muted">{p.descripcion}</div>
+                  )}
                   <div className="mt-0.5 flex items-center gap-2 text-xs">
                     <span className="font-mono-num text-ap-primary">Venta {money(p.precio)}</span>
                     <span className="text-ap-muted">·</span>
@@ -129,6 +157,18 @@ export function ProductosMobile({ productos }: { productos: Producto[] }) {
                   className="flex flex-col gap-2.5 border-t border-[#1E1E20] bg-[#161618] px-3.5 py-3"
                 >
                   <input name="nombre" defaultValue={p.nombre} className="w-full rounded-[10px] border border-ap-border-soft bg-ap-s1 px-3 py-2 text-sm font-bold text-ap-text outline-none focus:border-ap-primary" />
+                  <div>
+                    <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-ap-muted">Descripción (opcional)</div>
+                    <textarea name="descripcion" defaultValue={p.descripcion} rows={2} className="w-full resize-none rounded-[10px] border border-ap-border-soft bg-ap-s1 px-3 py-2 text-sm text-ap-text outline-none focus:border-ap-primary" />
+                  </div>
+                  <div>
+                    <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-ap-muted">URL de imagen (opcional)</div>
+                    {p.imagenUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={p.imagenUrl} alt={p.nombre} className="mb-2 h-16 w-16 rounded-[8px] object-cover" />
+                    )}
+                    <input name="imagenUrl" type="url" defaultValue={p.imagenUrl} placeholder="https://..." className="w-full rounded-[10px] border border-ap-border-soft bg-ap-s1 px-3 py-2 text-sm text-ap-text outline-none focus:border-ap-primary" />
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-ap-muted">Venta</div>

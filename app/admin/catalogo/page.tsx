@@ -14,6 +14,7 @@ export default async function CatalogoPage() {
     precio: Number(p.precio),
     ganancia: p.ganancia !== null ? Number(p.ganancia) : null,
     imagenUrl: p.imagenUrl ?? "",
+    descripcion: p.descripcion ?? "",
   }));
 
   return (
