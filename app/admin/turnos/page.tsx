@@ -9,7 +9,7 @@ export default async function TurnosPage() {
   const lastSeen = lastSeenRow?.valor ?? new Date(0).toISOString();
 
   const turnos = await prisma.turno.findMany({
-    include: { servicio: true, peluquero: true, productos: { include: { producto: true } }, servicios: { include: { servicio: true } } },
+    include: { servicio: true, productos: { include: { producto: true } }, servicios: { include: { servicio: true } } },
     orderBy: { fechaHora: "asc" },
     take: 100,
   });
