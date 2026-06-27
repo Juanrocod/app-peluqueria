@@ -6,6 +6,7 @@ import {
   BarChart,
   Bar,
   XAxis,
+  YAxis,
   Tooltip,
   ResponsiveContainer,
   PieChart,
@@ -133,7 +134,7 @@ export function DesktopGananciasClient({ turnos }: { turnos: TurnoDesktop[] }) {
               <button onClick={prevMonth} className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-ap-border-soft bg-ap-s1">
                 <ChevronLeft size={14} color="#ADADB0" />
               </button>
-              <span className="w-10 text-center font-mono text-xs text-ap-muted">{MONTHS[selMonth]}</span>
+              <span className="w-10 text-center font-mono-num text-xs text-ap-muted">{MONTHS[selMonth]}</span>
               <button onClick={nextMonth} className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-ap-border-soft bg-ap-s1">
                 <ChevronRight size={14} color="#ADADB0" />
               </button>
@@ -144,7 +145,7 @@ export function DesktopGananciasClient({ turnos }: { turnos: TurnoDesktop[] }) {
             <button onClick={() => setSelYear((y) => y - 1)} className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-ap-border-soft bg-ap-s1">
               <ChevronLeft size={14} color="#ADADB0" />
             </button>
-            <span className="w-10 text-center font-mono text-xs text-ap-muted">{selYear}</span>
+            <span className="w-10 text-center font-mono-num text-xs text-ap-muted">{selYear}</span>
             <button onClick={() => setSelYear((y) => y + 1)} className="flex h-7 w-7 items-center justify-center rounded-[8px] border border-ap-border-soft bg-ap-s1">
               <ChevronRight size={14} color="#ADADB0" />
             </button>
@@ -176,6 +177,7 @@ export function DesktopGananciasClient({ turnos }: { turnos: TurnoDesktop[] }) {
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={barData} barSize={22} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
             <XAxis dataKey="label" tick={{ fill: "#6F6F73", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis hide />
             <Tooltip content={<BarTooltip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
             <Bar dataKey="servicios" stackId="a" fill="#2F6BFF" radius={[0, 0, 3, 3]} />
             <Bar dataKey="productos" stackId="a" fill="#22D366" radius={[3, 3, 0, 0]} />
@@ -219,7 +221,7 @@ function KpiChip({
         {icon}
         <span className="text-[10px] font-bold uppercase tracking-wider">{label}</span>
       </div>
-      <div className="font-mono text-xl font-extrabold text-ap-text">{value}</div>
+      <div className="font-mono-num text-xl font-extrabold text-ap-text">{value}</div>
     </div>
   );
 }
@@ -268,7 +270,7 @@ function PieCard({
                 />
                 <span className="flex-1 truncate text-[11px] text-ap-text">{d.name}</span>
                 <div className="shrink-0 text-right">
-                  <div className="font-mono text-[11px] font-bold text-ap-text">{money(d.value)}</div>
+                  <div className="font-mono-num text-[11px] font-bold text-ap-text">{money(d.value)}</div>
                   <div className="text-[9px] text-ap-muted">{d.unidades} ud.</div>
                 </div>
               </div>
@@ -276,7 +278,7 @@ function PieCard({
             {total > 0 && (
               <div className="mt-1 flex justify-between border-t border-ap-border-soft pt-1.5">
                 <span className="text-[10px] text-ap-muted">Total</span>
-                <span className="font-mono text-[11px] font-bold text-ap-text">{money(total)}</span>
+                <span className="font-mono-num text-[11px] font-bold text-ap-text">{money(total)}</span>
               </div>
             )}
           </div>
