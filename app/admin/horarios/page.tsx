@@ -47,7 +47,7 @@ export default async function HorariosPage() {
 
       {/* Desktop */}
       <div className="hidden md:block">
-        <div className="mb-4 border-b border-ap-border pb-4">
+        <div className="border-b border-ap-border bg-ap-s2 px-4 py-4 mb-4">
           <p className="text-xs font-semibold uppercase tracking-widest text-ap-accent">Config</p>
           <h1 className="mt-0.5 text-xl font-bold text-ap-text">Horarios de atención</h1>
           <p className="mt-0.5 text-sm text-ap-sub">Configurá tu disponibilidad semanal en 3 capas.</p>
