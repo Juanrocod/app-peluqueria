@@ -127,18 +127,7 @@ export function DesktopGananciasClient({ turnos }: { turnos: TurnoDesktop[] }) {
     <div className="p-6">
       {/* Header */}
       <div className="mb-6 flex items-center justify-between">
-        <div>
-          <span className="font-display text-3xl font-bold text-ap-text">Ganancias</span>
-          <div className="mt-1 flex items-center gap-2">
-            <span className="font-mono-num text-lg font-extrabold text-ap-text">{money(kpis.total)}</span>
-            {kpis.trendPct !== null && (
-              <span className={`flex items-center gap-1 font-mono-num text-xs font-bold ${kpis.trendPct >= 0 ? "text-[#22D366]" : "text-[#F26157]"}`}>
-                {kpis.trendPct >= 0 ? <TrendingUp size={11} /> : <TrendingDown size={11} />}
-                {kpis.trendPct >= 0 ? "+" : ""}{kpis.trendPct}% vs {period === "year" ? selYear - 1 : MONTHS[selMonth === 0 ? 11 : selMonth - 1]}
-              </span>
-            )}
-          </div>
-        </div>
+        <span className="font-display text-3xl font-bold text-ap-text">Ganancias</span>
         <div className="flex items-center gap-3">
           <div className="flex gap-1.5">
             {(["month", "year"] as const).map((p) => {
@@ -185,9 +174,27 @@ export function DesktopGananciasClient({ turnos }: { turnos: TurnoDesktop[] }) {
       </div>
 
       {/* KPI chips */}
-      <div className="mb-6 grid grid-cols-4 gap-3">
+      <div className="mb-6 grid grid-cols-5 gap-3">
         <KpiChip label="Servicios" value={money(kpis.totalServicios)} color="#2F6BFF" icon={<Scissors size={14} />} />
         <KpiChip label="Productos" value={money(kpis.totalProductos)} color="#22D366" icon={<Package size={14} />} />
+
+        {/* Total — chip central con gradiente azul */}
+        <div
+          className="rounded-[14px] border border-[#253450] p-3.5 flex flex-col justify-center items-center text-center"
+          style={{ background: "linear-gradient(145deg, #182238, #0F1827)" }}
+        >
+          <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-[#5F7BAD]">
+            {period === "year" ? `Total · ${selYear}` : `Total · ${MONTHS[selMonth]}`}
+          </div>
+          <div className="font-mono-num text-xl font-extrabold text-white">{money(kpis.total)}</div>
+          {kpis.trendPct !== null && (
+            <div className={`mt-1 flex items-center gap-0.5 font-mono-num text-[10px] font-bold ${kpis.trendPct >= 0 ? "text-[#22D366]" : "text-[#F26157]"}`}>
+              {kpis.trendPct >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+              {kpis.trendPct >= 0 ? "+" : ""}{kpis.trendPct}%
+            </div>
+          )}
+        </div>
+
         <KpiChip label="Turnos" value={String(kpis.count)} color="#B79CFF" icon={<Users size={14} />} />
         <KpiChip label="Ticket prom." value={money(kpis.ticket)} color="#E8A33D" icon={<Receipt size={14} />} />
       </div>
