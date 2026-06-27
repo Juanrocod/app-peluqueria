@@ -26,7 +26,7 @@ export default async function AdminLayout({
 
   return (
     <>
-      <AdminSidebar email={session.user.email ?? ""}>
+      <AdminSidebar email={session.user.email ?? ""} hasNewTurnos={hasNewTurnos}>
         <MobileAppBar businessName={marcaNombre} />
         {children}
       </AdminSidebar>

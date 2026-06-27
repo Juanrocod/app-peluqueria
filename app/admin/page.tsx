@@ -1,49 +1,39 @@
 export const revalidate = 60;
 import { prisma } from "@/lib/prisma";
-import CalendarioAdmin from "@/components/admin/CalendarioAdmin";
 import { AgendaScreen } from "@/components/mobile/agenda/AgendaScreen";
 import { PullToRefresh } from "@/components/ui/PullToRefresh";
-import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, format } from "date-fns";
+import { startOfMonth, endOfMonth, startOfYear, endOfYear } from "date-fns";
 
-export default async function AdminDashboard({
-  searchParams,
-}: {
-  searchParams: Promise<{ semana?: string }>;
-}) {
-  const params = await searchParams;
+export default async function AdminDashboard() {
   const hoy = new Date();
 
-  // Calcular lunes de la semana solicitada (o semana actual)
-  let desde: Date;
-  if (params.semana) {
-    const [y, m, d] = params.semana.split("-").map(Number);
-    desde = new Date(y, m - 1, d);
-  } else {
-    desde = startOfWeek(hoy, { weekStartsOn: 1 });
-  }
-  const hasta = endOfWeek(desde, { weekStartsOn: 1 });
+  const [turnosMes, turnosAnio] = await Promise.all([
+    // Para AgendaScreen mobile (mes actual, dot indicators)
+    prisma.turno.findMany({
+      where: {
+        fechaHora: { gte: startOfMonth(hoy), lte: endOfMonth(hoy) },
+        estado: { notIn: ["CANCELADO"] },
+      },
+      include: { servicio: { select: { nombre: true, duracion: true } } },
+    }),
+    // Para AgendaScreen desktop (año completo, navegación por mes)
+    prisma.turno.findMany({
+      where: {
+        fechaHora: { gte: startOfYear(hoy), lte: endOfYear(hoy) },
+        estado: { notIn: ["CANCELADO"] },
+      },
+      include: { servicio: { select: { nombre: true, duracion: true } } },
+    }),
+  ]);
 
-  const turnos = await prisma.turno.findMany({
-    where: {
-      fechaHora: { gte: desde, lte: hasta },
-      estado: { notIn: ["CANCELADO", "COMPLETADO"] },
-    },
-    include: { servicio: true, peluquero: true },
-    orderBy: { fechaHora: "asc" },
-  });
+  const serializedTurnos = turnosMes.map((t) => ({
+    fechaHora: t.fechaHora.toISOString(),
+    servicioNombre: t.servicio.nombre,
+    clienteNombre: t.clienteNombre,
+    duracion: t.servicio.duracion,
+  }));
 
-  const semanaDesdeISO = format(desde, "yyyy-MM-dd");
-  const hoyISO = format(hoy, "yyyy-MM-dd");
-
-  // Mobile agenda: fetch turnos for the current month (dot indicators)
-  const monthTurnos = await prisma.turno.findMany({
-    where: {
-      fechaHora: { gte: startOfMonth(hoy), lte: endOfMonth(hoy) },
-      estado: { notIn: ["CANCELADO"] },
-    },
-    include: { servicio: { select: { nombre: true, duracion: true } } },
-  });
-  const serializedTurnos = monthTurnos.map((t) => ({
+  const serializedTurnosAnio = turnosAnio.map((t) => ({
     fechaHora: t.fechaHora.toISOString(),
     servicioNombre: t.servicio.nombre,
     clienteNombre: t.clienteNombre,
@@ -52,25 +42,12 @@ export default async function AdminDashboard({
 
   return (
     <div>
-      {/* Desktop: existing calendar */}
+      {/* Desktop: AgendaScreen con datos de año completo */}
       <div className="hidden md:block">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Agenda</h2>
-          <a
-            href="/admin/turnos/nuevo"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
-          >
-            + Nuevo turno
-          </a>
-        </div>
-        <CalendarioAdmin
-          turnos={turnos}
-          semanaDesde={semanaDesdeISO}
-          hoy={hoyISO}
-        />
+        <AgendaScreen turnos={serializedTurnosAnio} />
       </div>
 
-      {/* Mobile: agenda with Year/Month/Day navigation */}
+      {/* Mobile: agenda con mes actual */}
       <div className="md:hidden flex flex-1 flex-col min-h-[calc(100dvh-120px)]">
         <PullToRefresh>
           <AgendaScreen turnos={serializedTurnos} />
